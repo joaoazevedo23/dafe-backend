@@ -3,7 +3,7 @@ import { PostService } from './post.service';
 
 
 @Controller('posts') //rota /posts
-export class PostsController {
+export class PostController {
     constructor(private readonly postService: PostService) { }
 
     /* 
