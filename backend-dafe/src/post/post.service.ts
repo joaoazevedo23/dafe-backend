@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Post, PostSchema } from './schemas/post.schema';
+import { Post, PostSchema } from '../../models/post.schema';
 
 @Injectable()
 export class PostService {

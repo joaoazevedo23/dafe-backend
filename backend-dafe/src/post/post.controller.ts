@@ -29,7 +29,7 @@ export class PostController {
         return this.postService.create(post)
     }
 
-    @Delete(':id') // mandar postagens
+    @Delete(':id') // deletar postagens
     delete(@Param('id') id: string) {
         return this.postService.delete(id)
     }
