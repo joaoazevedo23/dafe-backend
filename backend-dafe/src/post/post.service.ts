@@ -9,20 +9,22 @@ import { validateId } from 'src/utils/validate-id';
 @Injectable()
 export class PostService {
   constructor(
-    @InjectModel(Post.name) private readonly postModel: Model<PostSchema>,
+    @InjectModel(Post.name) private readonly postSchema: Model<PostSchema>,
   ) {}
 
   // Buscar todos os posts ou filtrar por tópico
   async findAll(topico?: string): Promise<Post[]> {
     if (topico) {
-        return this.postModel.find({ topico: topico }).exec();
+        return this.postSchema.find({ topico: topico }).exec();
     }
-    return this.postModel.find().exec();
+    return this.postSchema.find().exec();
   }
 
   // Buscar um post por ID
   async findOne(id: string): Promise<Post> {
-    const post = await this.postModel.findById(id).exec();
+    
+    validateId(id); // Valida o ID antes de fazer a busca
+    const post = await this.postSchema.findById(id).exec();
     if (!post) {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
     }
@@ -31,7 +33,7 @@ export class PostService {
 
   // Criar novo post
   async create(createpostdto: CreatePostDTO): Promise<Post> {
-      const novoPost = new this.postModel(createpostdto);
+      const novoPost = new this.postSchema(createpostdto);
       return await novoPost.save();
   }
   
@@ -40,7 +42,7 @@ export class PostService {
 
     validateId(id); 
 
-    const post = await this.postModel.findByIdAndUpdate(id, updatePostDTO, { new: true }).exec();
+    const post = await this.postSchema.findByIdAndUpdate(id, updatePostDTO, { new: true }).exec();
     if (!post) {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
     }
@@ -52,7 +54,7 @@ export class PostService {
 
     validateId(id); 
 
-    const post = await this.postModel.findByIdAndDelete(id).exec();
+    const post = await this.postSchema.findByIdAndDelete(id).exec();
     if (!post) {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
     }

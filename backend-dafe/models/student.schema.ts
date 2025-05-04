@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-export type AlunoSchema = Aluno & Document;
+export type StudentSchema = Student & Document;
 
 @Schema()
-export class Aluno {
+export class Student {
   @Prop({ required: [true, 'Adicione um nome'] })
   nome: string;
 
@@ -17,14 +17,12 @@ export class Aluno {
   @Prop({ required: [true, 'Adicione um usuário'] })
   usuario: string;
 
-  @Prop({ required: [true, 'Adicione um curso'] })
+  @Prop({ required: true, enum: ['DS', 'ADM', 'LOG'] })
   curso: string;
 
-  @Prop({ required: [true, 'Adicione um módulo'] })
+  @Prop({ required: true, enum: [1, 2, 3] })
   modulo: number;
 
-  @Prop({ type: Types.ObjectId, required: [true, 'Adicione um identificador'] })
-  id_usu: Types.ObjectId;
 }
 
-export const AlunoSchema = SchemaFactory.createForClass(Aluno);
+export const StudentSchema = SchemaFactory.createForClass(Student);
