@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ComplaintsService } from './complaints.service';
+import { CreateComplaintsDTO } from './dtos/create-complaints.dto';
+import { UpdateComplaintsDTO } from './dtos/update-complaints.dto';
 
 @Controller('complaints')
 export class ComplaintsController {
@@ -17,16 +19,19 @@ export class ComplaintsController {
             return this.complaintsService.findAll(topico);
         }
     
-    
         @Get(':id') // pegar só um
         findOne(@Param('id') id: string) {
             return this.complaintsService.findOne(id)
         }
     
         @Post() // mandar complaints
-        create(@Body() post: any) {
-            
+        create(@Body() post: CreateComplaintsDTO) {
             return this.complaintsService.create(post)
+        }
+
+        @Patch(':id') // atualizar complaints
+        update(@Param('id') id: string, @Body() post: UpdateComplaintsDTO) {    
+            return this.complaintsService.update(id, post)
         }
     
         @Delete(':id') // deletar complaints

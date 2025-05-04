@@ -13,7 +13,7 @@ export class Complaints {
   @Prop({ required: [true, 'Adicione um tópico'] })
   topico: string;
 
-  @Prop({ required: [true, 'Adicione o conteudo da denúncia'], minlength: 20 })
+  @Prop({ required: [true, 'Adicione o conteudo da denúncia']})
   conteudo: string;
 }
 

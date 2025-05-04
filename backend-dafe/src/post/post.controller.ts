@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { PostService } from './post.service';
+import { CreatePostDTO } from './dtos/create-post.dto';
+import { UpdatePostDTO } from './dtos/update-post.dto';
 
 @Controller('posts') //rota /posts
 export class PostController {
@@ -17,16 +19,20 @@ export class PostController {
         return this.postService.findAll(topico);
     }
 
-
     @Get(':id') // pegar só um
     findOne(@Param('id') id: string) {
         return this.postService.findOne(id)
     }
 
     @Post() // mandar postagens
-    create(@Body() post: any) {
+    create(@Body() post: CreatePostDTO) {
         
         return this.postService.create(post)
+    }
+
+    @Patch(':id') // editar postagens
+    update(@Param('id') id: string, @Body() post: UpdatePostDTO) {
+        return this.postService.update(id, post)
     }
 
     @Delete(':id') // deletar postagens

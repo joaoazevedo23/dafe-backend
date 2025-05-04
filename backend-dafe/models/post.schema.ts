@@ -8,10 +8,10 @@ export class Post {
   @Prop({ required: true })
   titulo: string;
 
-  @Prop({ required: true, minlength: 20 })
+  @Prop({ required: true, minlength: 5 })
   conteudo: string;
 
-  @Prop({ required: true, minlength: 20 })
+  @Prop({ required: true, minlength: 5 })
   descricao: string;
 
   @Prop({ default: Date.now })

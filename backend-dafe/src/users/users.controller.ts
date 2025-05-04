@@ -35,5 +35,4 @@ export class UsersController {
     delete(@Query('id') id: string) {
         return []
     }
-
 }

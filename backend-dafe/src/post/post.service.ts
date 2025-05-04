@@ -2,6 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Post, PostSchema } from '../../models/post.schema';
+import { CreatePostDTO } from './dtos/create-post.dto';
+import { UpdatePostDTO } from './dtos/update-post.dto';
+import { validateId } from 'src/utils/validate-id';
 
 @Injectable()
 export class PostService {
@@ -27,20 +30,28 @@ export class PostService {
   }
 
   // Criar novo post
-  async create(postData: Partial<Post>): Promise<Post> {
-    console.log('Recebido:', postData);
-    try {
-      const novoPost = new this.postModel(postData);
+  async create(createpostdto: CreatePostDTO): Promise<Post> {
+      const novoPost = new this.postModel(createpostdto);
       return await novoPost.save();
-    } catch (err) {
-      console.error('Erro ao salvar post:', err);
-      throw err;
-    }
   }
   
+  // Atualizar post por ID
+  async update(id: string, updatePostDTO: UpdatePostDTO): Promise<Post> {
+
+    validateId(id); 
+
+    const post = await this.postModel.findByIdAndUpdate(id, updatePostDTO, { new: true }).exec();
+    if (!post) {
+      throw new NotFoundException(`Post com id ${id} não encontrado`);
+    }
+    return post;
+  }
 
   // Deletar por ID
   async delete(id: string): Promise<{ message: string }> {
+
+    validateId(id); 
+
     const post = await this.postModel.findByIdAndDelete(id).exec();
     if (!post) {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
