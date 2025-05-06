@@ -15,7 +15,7 @@ export class ComplaintsController {
         */
     
         @Get() // /complaints
-        findAll(@Query('topico') topico?: 'aulas' | 'diretores' | 'alunos' | 'atividades' | 'extracurriculares') {
+        findAll(@Query('topico') topico?: 'Aulas' | 'Diretores' | 'Alunos' | 'Atividades' | 'Extracurriculares') {
             return this.complaintsService.findAll(topico);
         }
     

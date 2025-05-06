@@ -9,6 +9,6 @@ export class CreateComplaintsDTO{
     conteudo: string;
 
     @IsString()
-    @IsIn(['aulas', 'diretores', 'alunos', 'atividades', 'extracurriculares'])
+    @IsIn(['Aulas', 'Diretores', 'Alunos', 'Atividades', 'Extracurriculares'])
     topico: string;
 }
