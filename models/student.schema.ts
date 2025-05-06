@@ -17,12 +17,16 @@ export class Student {
   @Prop({ required: [true, 'Adicione um usuário'] })
   usuario: string;
 
-  @Prop({ required: true, enum: ['DS', 'ADM', 'LOG'] })
+  @Prop({ required: [true, 'Adicione sua instituição'] })
+  instituicao: string;
+
+  @Prop({ required: true, enum: ['Desenvolvimento de Sistemas', 'Administração', 'Logistica'] })
   curso: string;
 
   @Prop({ required: true, enum: [1, 2, 3] })
   modulo: number;
 
 }
+
 
 export const StudentSchema = SchemaFactory.createForClass(Student);

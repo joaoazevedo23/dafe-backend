@@ -6,6 +6,7 @@ import { PostModule } from './post/post.module';
 import { CommentsModule } from './comments/comments.module';
 import { StudentsModule } from './students/students.module';
 import { ComplaintsModule } from './complaints/complaints.module';
+import { EncryptService } from './utils/encrypt/encrypt.service';
 
 
 @Module({
@@ -19,6 +20,6 @@ import { ComplaintsModule } from './complaints/complaints.module';
   ],
 
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EncryptService],
 })
 export class AppModule { }

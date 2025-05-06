@@ -25,7 +25,10 @@ export class CreateStudentsDTO{
     usuario: string;
 
     @IsString()
-    @IsIn(['DS', 'ADM','LOG'])
+    instituicao: string;
+
+    @IsString()
+    @IsIn(['Desenvolvimento de Sistemas','Administração','Logística'])
     curso: string;
 
     @IsNumber()

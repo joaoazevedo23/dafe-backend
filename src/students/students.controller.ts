@@ -2,10 +2,13 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { StudentsService } from './students.service';
 import { CreateStudentsDTO } from './dtos/create-students.dto';   
 import { UpdateStudentsDTO } from './dtos/update-students.dto';
+import { EncryptService } from 'src/utils/encrypt/encrypt.service';
 
 @Controller('students')
 export class StudentsController {
-    constructor(private readonly studentsService: StudentsService) { }
+    constructor(
+    private readonly studentsService: StudentsService,
+    private readonly encryptService: EncryptService,){}
 
     /* 
         GET /students -- get para puxar todos os students
@@ -17,7 +20,7 @@ export class StudentsController {
     @Get() // /students?modulo=1&curso=DS
     findAll(
         @Query('modulo') modulo?: '1' | '2' | '3',
-        @Query('curso') curso?: 'DS' | 'ADM' | 'LOG',
+        @Query('curso') curso?: 'Desenvolvimento de Sistemas' | 'Administração' | 'Logistica',
     ){
         const aluno = this.studentsService.findAll(curso, Number(modulo))
         return aluno
@@ -29,7 +32,8 @@ export class StudentsController {
     }
 
     @Post() // /students
-    create(@Body() student: CreateStudentsDTO) {
+    async create(@Body() student: CreateStudentsDTO) {
+        student.senha = await this.encryptService.encrypt(student.senha);
         return this.studentsService.create(student)
     }
 
