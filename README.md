@@ -1,98 +1,101 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 📚 DAFE – API de Feedback Escolar e Fóruns de Conversa
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Esta é a API do projeto **DAFE**, uma aplicação voltada para o **feedback escolar** e **fóruns de conversa entre alunos**. Desenvolvida com **NestJS** e conectada a um banco de dados **MongoDB Atlas**, a API oferece rotas para registro de estudantes, criação de fóruns de discussão (posts), envio de denúncias e, em breve, permitirá comentários em posts e envio de formulários de feedback escolar.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## ⚙️ Tecnologias utilizadas
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+* [NestJS](https://nestjs.com/) – Framework para Node.js
+* [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) – Banco de dados na nuvem
+* [Mongoose](https://mongoosejs.com/) – ODM para MongoDB
+* [JWT (JSON Web Token)](https://jwt.io/) – Autenticação e autorização
+* [Thunder Client](https://www.thunderclient.com/) – Cliente HTTP para testes (usado para simular os envios)
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## 📌 Funcionalidades atuais
 
-## Compile and run the project
+### ✅ Implementadas - Funcionando
 
-```bash
-# development
-$ npm run start
+* **Autenticação com JWT**: atualmente protegendo as rotas de criação e acesso aos **posts** (fóruns).
+* **`/students`**: registro de estudantes. Necessário se cadastrar aqui para acessar as outras funcionalidades protegidas.
+* **`/posts`**: criação e visualização de fóruns de conversa entre estudantes (autenticado via JWT).
+* **`/complaints`**: envio de denúncias relacionadas ao ambiente escolar.
 
-# watch mode
-$ npm run start:dev
+### ⚠️ Em desenvolvimento
 
-# production mode
-$ npm run start:prod
-```
+* **`/comments`**: comentários em posts (ainda não implementado).
+* **`/feedback-forms`**: formulários para feedback escolar (em progresso).
+* Integração completa com JWT para proteger mais rotas além dos posts.
 
-## Run tests
+---
+
+## 🛠️ Como utilizar
+
+### 1. Clone o repositório
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone https://github.com/joaoazevedo23/dafe-backend
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 2. Instale as dependências
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 3. Adicione o Mongo DB (Compass) 
 
-## Resources
+Abra o arquivo:
+```
+dafe-backend/src/app.module.ts
+```
+E insira a conexão com o banco local. Estamos vendo como permitir que mais users acessem o banco online Atlas
 
-Check out a few resources that may come in handy when working with NestJS:
+### 4. Execute o projeto
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run start:dev
+```
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🔐 Autenticação
 
-## Stay in touch
+Para acessar rotas protegidas (como `/posts`), siga os passos:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. Registre um estudante com uma requisição `POST` em `/students`.
+2. Faça o login com uma requisição `POST` em `/login-jwt`.
+3. Envie o token no cabeçalho das requisições protegidas:
 
-## License
+```http
+Authorization: Bearer seu_token_jwt
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+> ⚠️ Atualmente, **apenas a rota de posts está protegida** por autenticação JWT.
+
+---
+
+## 🧪 Testes com Thunder Client
+
+Para simular o envio de formulários e testar rotas, utilizei o **Thunder Client**. Recomendo os seguintes passos:
+
+* Registre um estudante (`POST /students`)
+* Copie o token JWT da resposta
+* Use esse token no header das próximas requisições protegidas (`Authorization: Bearer <token>`)
+
+---
+
+## 📋 To-do (Próximos passos)
+
+* [ ] Implementar e proteger a rota `/comments`
+* [ ] Desenvolver e conectar os formulários de feedback escolar
+* [ ] Expandir autenticação JWT para outras rotas
+* [ ] Documentar endpoints
+
+---
+
+## ❓ Dúvidas?
+
+Se quiser perguntar algo, estou disponível para ajudar. Ainda estou finalizando algumas partes do projeto, mas posso esclarecer qualquer ponto que não esteja claro no momento.
