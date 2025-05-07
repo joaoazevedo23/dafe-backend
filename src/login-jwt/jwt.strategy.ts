@@ -1,0 +1,28 @@
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { ExtractJwt, Strategy } from "passport-jwt";
+import { StudentsService } from "src/students/students.service";
+
+interface JwtPayload {
+    sub: string;
+    email: string;
+}
+
+@Injectable()// Analizar os dados e gerar o token
+export class JwtStrategy extends PassportStrategy(Strategy) {
+    constructor(private readonly studentsService: StudentsService) {
+        super({
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
+            secretOrKey: "segredo_shiiiu",
+        });
+    }
+
+    async validate(payload: JwtPayload) {
+        const student = await this.studentsService.findOne(payload.sub);
+        if (!student) {
+            throw new UnauthorizedException('Token inválido');
+        }
+        return student;
+    }
+}       

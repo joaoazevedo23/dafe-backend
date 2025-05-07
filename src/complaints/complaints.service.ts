@@ -22,23 +22,25 @@ export class ComplaintsService {
         return this.complaintsModel.find().exec();
       }
     
-      // Buscar um Complaints por ID
+      // Buscar uma complaints por id
       async findOne(id: string): Promise<Complaints> {
         const Complaints = await this.complaintsModel.findById(id).exec();
+        
+        validateId(id);
         if (!Complaints) {
-          throw new NotFoundException(`Complaints com id ${id} não encontrado`);
+          throw new NotFoundException(`Denúncia com id ${id} não encontrado`);
         }
         return Complaints;
       }
     
-      // Criar novo Complaints
+      // Criar novo complaints
       async create(createcomplts: CreateComplaintsDTO): Promise<Complaints> {
           const novoComplaints = new this.complaintsModel(createcomplts);
           return await novoComplaints.save();
       }
 
 
-      // Atualizar Complaints por ID
+      // Atualizar complaints por iD --> criada só por preucaução
       async update(id: string, ComplaintsData: Partial<Complaints>): Promise<Complaints> {
 
         validateId(id); 
@@ -55,8 +57,8 @@ export class ComplaintsService {
         validateId(id); 
         const Complaints = await this.complaintsModel.findByIdAndDelete(id).exec();
         if (!Complaints) {
-          throw new NotFoundException(`Complaints com id ${id} não encontrado`);
+          throw new NotFoundException(`Denúncia com id ${id} não encontrado`);
         }
-        return { message: `Complaints com id ${id} foi deletado com sucesso.` };
+        return { message: `Denúncia com id ${id} foi deletado com sucesso.` };
       }
 }

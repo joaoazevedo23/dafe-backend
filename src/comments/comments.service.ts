@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+
+// A principio dados mockados.
 @Injectable()
 export class CommentsService {
     private comments = [

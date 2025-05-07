@@ -52,7 +52,7 @@ export class PostService {
   // Deletar por ID
   async delete(id: string): Promise<{ message: string }> {
 
-    validateId(id); 
+    validateId(id); // Módulo separado para validação do ID
 
     const post = await this.postSchema.findByIdAndDelete(id).exec();
     if (!post) {
