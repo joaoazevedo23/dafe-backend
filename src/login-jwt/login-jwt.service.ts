@@ -13,7 +13,7 @@ export class LoginJwtService {
     @InjectModel(Student.name) private readonly studentsSchema: Model<StudentSchema>,
   ) {}
 
-  async login(email: string, senha: string): Promise<{ token: string }> { // Tenta achar os dados do login no banco
+  async login(email: string, senha: string, lembrar: boolean): Promise<{ token: string }> { // Tenta achar os dados do login no banco
     const student = await this.studentsSchema.findOne({ email }).exec();
     if (!student) {
       throw new UnauthorizedException('Email não encontrado');
@@ -24,8 +24,18 @@ export class LoginJwtService {
       throw new UnauthorizedException('Senha incorreta');
     }
 
-    const payload = {sub: student._id, email: student.email, nome: student.nome, curso: student.curso, modulo: student.modulo, usuario: student.usuario, instituicao: student.instituicao};
-    const token = this.jwtService.sign(payload, { expiresIn: '7h' }); // Expira em 1h
-    return { token };
+    const payload = {id: student._id, email: student.email, nome: student.nome, curso: student.curso, modulo: student.modulo, usuario: student.usuario, instituicao: student.instituicao};
+
+    if(lembrar === true){
+      const token = this.jwtService.sign(payload,  { expiresIn: '24h' }); // Expira em 24 horas
+      return { token };
+
+    }
+    else{
+      const token = this.jwtService.sign(payload, { expiresIn: '7h' }); // Expira em 7hrs
+      return { token };
+    }
+    
+    
   }
 }

@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { StudentsService } from "src/students/students.service";
 
 interface JwtPayload {
-    sub: string;
+    id: string;
     email: string;
 }
 
@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: JwtPayload) {
-        const student = await this.studentsService.findOne(payload.sub);
+        const student = await this.studentsService.findOne(payload.id);
         if (!student) {
             throw new UnauthorizedException('Token inválido');
         }

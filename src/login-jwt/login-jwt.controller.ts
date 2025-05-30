@@ -8,7 +8,7 @@ export class LoginJwtController {
 
   @Post() // POST /login-jwt
   async login(@Body() createLoginDto: CreateLoginDTO) {
-    const { email, senha } = createLoginDto;
-    return await this.logJwtService.login(email, senha);
+    const { email, senha, lembrar} = createLoginDto;
+    return await this.logJwtService.login(email, senha, lembrar);
   }
 }

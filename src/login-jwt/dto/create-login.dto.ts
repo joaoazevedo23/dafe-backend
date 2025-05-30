@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsIn, MinLength, Validate, IsNumber, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsIn, MinLength, Validate, IsNumber, Min, IsBoolean } from 'class-validator';
 
 export class CreateLoginDTO{
 
@@ -7,4 +7,8 @@ export class CreateLoginDTO{
 
     @IsString()
     senha: string;
+
+    @IsBoolean()
+    lembrar: boolean;
+
 }
