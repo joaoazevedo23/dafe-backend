@@ -24,8 +24,8 @@ export class LoginJwtService {
       throw new UnauthorizedException('Senha incorreta');
     }
 
-    const payload = {sub: student._id, email: student.email};
-    const token = this.jwtService.sign(payload, { expiresIn: '1h' }); // Expira em 1h
+    const payload = {sub: student._id, email: student.email, nome: student.nome, curso: student.curso, modulo: student.modulo, usuario: student.usuario, instituicao: student.instituicao};
+    const token = this.jwtService.sign(payload, { expiresIn: '7h' }); // Expira em 1h
     return { token };
   }
 }

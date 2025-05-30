@@ -13,7 +13,7 @@ import { LoginJwtModule } from './login-jwt/login-jwt.module';
 @Module({
 
   imports: [
-    MongooseModule.forRoot('link para concção com o banco Mongo DB - Pode ser local ou online'),
+    MongooseModule.forRoot('mongodb://localhost:27017'),
     PostModule,
     CommentsModule,
     StudentsModule,
