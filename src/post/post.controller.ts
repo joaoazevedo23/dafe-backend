@@ -1,8 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Req, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
+import { Request } from 'express';
+
+interface UserPayload {
+  id: string;
+  nome: string;
+  email: string;
+}
 
 @UseGuards(JwtAuthGuard)
 @Controller('posts') //rota /posts
@@ -27,19 +34,24 @@ export class PostController {
     }
 
     @Post() // mandar postagens
-    create(@Body() post: CreatePostDTO) {
-        
-        return this.postService.create(post)
-    }
+  create(@Body() postDto: CreatePostDTO, @Req() req: Request) { // 👈 [2] INJETAMOS O REQ
+    const user = req.user as UserPayload; // Pegamos o usuário do token
+    return this.postService.create(postDto, user.id); // 👈 [3] PASSAMOS O ID DO USUÁRIO
+  }
 
-    @Patch(':id') // editar postagens
-    update(@Param('id') id: string, @Body() post: UpdatePostDTO) {
-        return this.postService.update(id, post)
-    }
+  @Patch(':id') // editar postagens
+  update(
+    @Param('id') id: string,
+    @Body() postDto: UpdatePostDTO,
+    @Req() req: Request, // 👈 [4] INJETAMOS O REQ AQUI TAMBÉM
+  ) {
+    const user = req.user as UserPayload;
+    return this.postService.update(id, postDto, user.id); // Para verificar permissão
+  }
 
-    @Delete(':id') // deletar postagens
-    delete(@Param('id') id: string) {
-        return this.postService.delete(id)
-    }
-
+  @Delete(':id') // deletar postagens
+  delete(@Param('id') id: string, @Req() req: Request) { // 👈 [5] E AQUI
+    const user = req.user as UserPayload;
+    return this.postService.delete(id, user.id); // Para verificar permissão
+  }
 }
