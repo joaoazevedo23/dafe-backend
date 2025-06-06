@@ -19,7 +19,7 @@ export class PostService {
     return this.postModel
       .find(query)
       .sort({ createdAt: -1 })
-      .populate('autor', 'nome email usuario instituicao curso modulo') // 👈 ALTERAÇÃO AQUI
+      .populate('autor', 'nome email usuario instituicao curso modulo') 
       .exec();
   }
 
@@ -27,7 +27,7 @@ export class PostService {
     validateId(id);
     const post = await this.postModel
       .findById(id)
-      .populate('autor', 'nome email usuario instituicao curso modulo') // 👈 ALTERAÇÃO AQUI
+      .populate('autor', 'nome email usuario instituicao curso modulo') 
       .exec();
     if (!post) {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
@@ -42,7 +42,7 @@ async create(createPostDto: CreatePostDTO, autorId: string): Promise<Post> {
     };
     const novoPost = new this.postModel(postCompleto);
     
-    // 👇 A CORREÇÃO É NESTA LINHA: Adicionamos a tipagem : PostDocument
+   
     const postSalvo: PostSchema = await novoPost.save();
 
     // Chamamos findOne para retornar o post já populado
@@ -62,7 +62,7 @@ async create(createPostDto: CreatePostDTO, autorId: string): Promise<Post> {
 
     const postAtualizado = await this.postModel
       .findByIdAndUpdate(id, updatePostDTO, { new: true })
-      .populate('autor', 'nome email usuario instituicao curso modulo') // 👈 ALTERAÇÃO AQUI
+      .populate('autor', 'nome email usuario instituicao curso modulo') 
       .exec();
 
     if (!postAtualizado) { // Adicionando uma verificação caso o update não retorne um post

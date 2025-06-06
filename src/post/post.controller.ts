@@ -34,23 +34,23 @@ export class PostController {
     }
 
     @Post() // mandar postagens
-  create(@Body() postDto: CreatePostDTO, @Req() req: Request) { // 👈 [2] INJETAMOS O REQ
+  create(@Body() postDto: CreatePostDTO, @Req() req: Request) { 
     const user = req.user as UserPayload; // Pegamos o usuário do token
-    return this.postService.create(postDto, user.id); // 👈 [3] PASSAMOS O ID DO USUÁRIO
+    return this.postService.create(postDto, user.id); 
   }
 
   @Patch(':id') // editar postagens
   update(
     @Param('id') id: string,
     @Body() postDto: UpdatePostDTO,
-    @Req() req: Request, // 👈 [4] INJETAMOS O REQ AQUI TAMBÉM
+    @Req() req: Request, 
   ) {
     const user = req.user as UserPayload;
     return this.postService.update(id, postDto, user.id); // Para verificar permissão
   }
 
   @Delete(':id') // deletar postagens
-  delete(@Param('id') id: string, @Req() req: Request) { // 👈 [5] E AQUI
+  delete(@Param('id') id: string, @Req() req: Request) { 
     const user = req.user as UserPayload;
     return this.postService.delete(id, user.id); // Para verificar permissão
   }

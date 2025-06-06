@@ -1,18 +1,50 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CommentsController } from './comments.controller';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Req } from '@nestjs/common';
+import { Request } from 'express';
+import { CommentsService } from './comments.service';
+import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
+import { CreateCommentDTO } from './dtos/create-comment.dto';
 
-describe('CommentsController', () => {
-  let controller: CommentsController;
+interface UserPayload {
+  id: string;
+  nome: string;
+  email: string;
+}
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [CommentsController],
-    }).compile();
+@Controller('comments')
+export class CommentsController {
+  constructor(private readonly commentsService: CommentsService) {}
 
-    controller = module.get<CommentsController>(CommentsController);
-  });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+  @Get('/post/:postId')
+  findByPost(@Param('postId') postId: string) {
+    return this.commentsService.findByPost(postId);
+  }
+
+  @Get('/aluno/:alunoId')
+  findByAluno(@Param('alunoId') alunoId: string) {
+    return this.commentsService.findByAluno(alunoId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/post/:postId')
+  create(
+    @Param('postId') postId: string,
+    @Body() dto: CreateCommentDTO,
+    @Req() req: Request, 
+  ) {
+ 
+    const user = req.user as UserPayload;
+    return this.commentsService.create(dto, user.id, postId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':commentId')
+  delete(
+    @Param('commentId') commentId: string,
+    @Req() req: Request, 
+  ) {
+
+    const user = req.user as UserPayload;
+    return this.commentsService.delete(commentId, user.id);
+  }
+}
