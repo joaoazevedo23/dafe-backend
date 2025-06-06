@@ -26,6 +26,9 @@ export class Post {
   @Prop({ required: false, min: 0 })
   interacao: number;
 
+  @Prop({required: false, min: 0})
+  commentsCount: number;
+
   @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Student', required: true})
   autor: Student | MongooseSchema.Types.ObjectId;
 } 

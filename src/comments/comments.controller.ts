@@ -1,32 +1,51 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Req } from '@nestjs/common';
+import { Request } from 'express';
 import { CommentsService } from './comments.service';
+import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
+import { CreateCommentDTO } from './dtos/create-comment.dto';
 
-@Controller('comments') //rota /comments
+
+interface UserPayload {
+  id: string;
+  nome: string;
+  email: string;
+}
+
+@Controller('comments')
 export class CommentsController {
-    constructor(private readonly commentsService: CommentsService) { }
+  constructor(private readonly commentsService: CommentsService) {}
 
-    @Get() // /comments/
-    findAll() {
-        return []
-    }
+ 
+  @Get('/post/:postId')
+  findByPost(@Param('postId') postId: string) {
+    return this.commentsService.findByPost(postId);
+  }
 
-    @Get('/post/:id') // pegar comentários de um post específico
-    findByPost(@Param('id') id: number) {
-        return []
-    }
+  @Get('/aluno/:alunoId')
+  findByAluno(@Param('alunoId') alunoId: string) {
+    return this.commentsService.findByAluno(alunoId);
+  }
 
-    @Get('/aluno/:aluno_id') // pegar comentários de um aluno específico
-    findByAluno(@Param('aluno_id') aluno_id: string) {
-        return []
-    }
+  @UseGuards(JwtAuthGuard)
+  @Post('/post/:postId')
+  create(
+    @Param('postId') postId: string,
+    @Body() dto: CreateCommentDTO,
+    @Req() req: Request, 
+  ) {
+    
+    const user = req.user as UserPayload;
+    return this.commentsService.create(dto, user.id, postId);
+  }
 
-    @Post() // criar comentários
-    create(@Body() comment: any) {
-        return []
-    }
-
-    @Delete(':id') // deletar comentários
-    delete(@Param('id') id: string) {
-        return []
-    }
+  @UseGuards(JwtAuthGuard)
+  @Delete(':commentId')
+  delete(
+    @Param('commentId') commentId: string,
+    @Req() req: Request, 
+  ) {
+    
+    const user = req.user as UserPayload;
+    return this.commentsService.delete(commentId, user.id);
+  }
 }

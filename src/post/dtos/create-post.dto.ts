@@ -21,6 +21,11 @@ export class CreatePostDTO{
     @IsOptional()
     @IsNumber()
     @Min(0)
-    interacao?: number
+    interacao?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    commentsCount?: number
 
 }
