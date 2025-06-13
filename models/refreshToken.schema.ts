@@ -1,9 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 
+export type RefreshTokenSchema = RefreshToken & Document;
+
 
 @Schema({timestamps: true})
-export class RefreshToken extends Document{
+export class RefreshToken{
     @Prop({ required: true, unique: true})
     longToken: string;
 
@@ -16,10 +18,10 @@ export class RefreshToken extends Document{
     @Prop({default: false})
     revoked: boolean;
 
-    @Prop({ type: 'Student'})
+    @Prop()
     userAgent?: string;
 
-    @Prop({ tyoe: String})
+    @Prop({ type: String})
     ipAddress?: string;
 }
 

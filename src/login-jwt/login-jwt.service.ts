@@ -14,7 +14,7 @@ export class LoginJwtService {
     private readonly jwtService: JwtService,
     private readonly encryptService: EncryptService,
     @InjectModel(Student.name) private readonly studentsSchema: Model<StudentSchema>,
-    @InjectModel(RefreshToken.name) private readonly refreshTokenSchema: Model<RefreshToken>
+    @InjectModel(RefreshToken.name) private readonly refreshTokenSchema: Model<RefreshTokenSchema>
 
   ) { }
 
