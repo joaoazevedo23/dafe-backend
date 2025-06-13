@@ -11,4 +11,15 @@ export class LoginJwtController {
     const { email, senha, lembrar} = createLoginDto;
     return await this.logJwtService.login(email, senha, lembrar);
   }
+
+  @Post('refresh') // POST /login-jwt
+  async refreshTk(@Body('refreshToken') refreshToken: string) {
+    return await this.logJwtService.refreshTokens(refreshToken);
+  }
+
+  @Post('logout') // POST /login-jwt/logout
+  async logout(@Body('refreshToken') refreshToken: string) {  
+    await this.logJwtService.logout(refreshToken);
+    return { message: 'Logout realizado com sucesso' };
+  }
 }
