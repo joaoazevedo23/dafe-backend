@@ -20,7 +20,7 @@ export class StudentsController {
     @Get() // /students?modulo=1&curso=DS
     findAll(
         @Query('modulo') modulo?: '1' | '2' | '3',
-        @Query('curso') curso?: 'Desenvolvimento de Sistemas' | 'Administração' | 'Logistica',
+        @Query('curso') curso?: 'Desenvolvimento de Sistemas' | 'Administração' | 'Logística' | 'Marketing' | 'Gestão de Recursos Humanos',
     ){
         const aluno = this.studentsService.findAll(curso, Number(modulo))
         return aluno
