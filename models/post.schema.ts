@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose'; 
 import { Student } from './student.schema';
+import {Comments} from './comments.schema';
 
 export type PostSchema = Post & Document;
 
@@ -34,3 +35,9 @@ export class Post {
 } 
 
 export const PostSchema = SchemaFactory.createForClass(Post);
+
+PostSchema.pre('deleteOne', { document:true, query: false}, async function(next){
+await this.model('Comments').deleteMany({ post: this._id });
+console.log(`Post com id ${this._id} deletado, removendo comentários associados.`);
+next();
+});

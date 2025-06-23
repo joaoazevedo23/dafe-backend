@@ -14,5 +14,6 @@ import { LoginJwtModule } from 'src/login-jwt/login-jwt.module'; // 👈 [1] IMP
   ],
   controllers: [PostController],
   providers: [PostService],
+  exports: [PostService],
 })
 export class PostModule {}

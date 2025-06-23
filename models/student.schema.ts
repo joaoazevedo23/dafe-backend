@@ -20,7 +20,7 @@ export class Student {
   @Prop({ required: [true, 'Adicione sua instituição'] })
   instituicao: string;
 
-  @Prop({ required: true, enum: ['Desenvolvimento de Sistemas', 'Administração', 'Logistica'] })
+  @Prop({ required: true, enum: ['Desenvolvimento de Sistemas', 'Administração', 'Logística', 'Marketing', 'Gestão de Recursos Humanos'] })
   curso: string;
 
   @Prop({ required: true, enum: [1, 2, 3] })

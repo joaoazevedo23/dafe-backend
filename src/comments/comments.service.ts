@@ -47,17 +47,24 @@ export class CommentsService {
   }
 
   async delete(commentId: string, userId: string): Promise<{ message: string }> {
-    validateId(commentId);
+    validateId(commentId); 
     
-    const comment = await this.commentModel.findById(commentId);
+    const comment = await this.commentModel.findById(commentId).populate('post');
     if (!comment) {
       throw new NotFoundException(`Comentário com id ${commentId} não encontrado.`);
     }
 
-    if (comment.autor.toString() !== userId) {
-      throw new UnauthorizedException('Você não tem permissão para deletar este comentário.');
+    if(!comment.post || comment.post.autor.toString() !== userId) {
+      throw new Error('Informações do post ou autor do post não disponíveis.');
     }
 
+    const CommentAuthor = comment.autor.toString() === userId;
+    const PostAuthor = comment.post.autor.toString() === userId;
+
+    if (!CommentAuthor && !PostAuthor) {
+      throw new UnauthorizedException('Você não tem permissão para deletar este comentário.');
+    }
+    
     await this.commentModel.findByIdAndDelete(commentId);
     return { message: 'Comentário deletado com sucesso.' };
   }
