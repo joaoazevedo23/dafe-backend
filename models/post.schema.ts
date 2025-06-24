@@ -24,10 +24,10 @@ export class Post {
   @Prop({ required: true, enum: ['aulas', 'diretores', 'alunos', 'atividades', 'extracurriculares'] })
   topico: string;
 
-  @Prop({ required: false, min: 0 })
+  @Prop({ required: false, min: 0, default: 0 })
   interacao: number;
 
-  @Prop({required: false, min: 0})
+  @Prop({required: false, min: 0, default: 0})
   commentsCount: number;
 
   @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Student', required: true})

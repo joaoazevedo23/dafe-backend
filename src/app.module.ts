@@ -13,7 +13,7 @@ import { LoginJwtModule } from './login-jwt/login-jwt.module';
 @Module({
 
   imports: [
-    MongooseModule.forRoot('mongodb+srv://joaoazevedo:jUg1yxE68t5vl9lK@poto.zqgwluj.mongodb.net/'),
+    MongooseModule.forRoot('mongodb+srv://joaoazevedo:wmLTX1sZtAMbWWI9@poto.zqgwluj.mongodb.net/'),
     PostModule,
     CommentsModule,
     StudentsModule,

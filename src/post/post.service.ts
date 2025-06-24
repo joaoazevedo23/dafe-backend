@@ -3,10 +3,10 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Post, PostSchema } from '../../models/post.schema'; // Certifique-se que o caminho está correto
+import { Post, PostSchema } from '../../models/post.schema';
 import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
-import { validateId } from 'src/utils/validate-id'; // Certifique-se que o caminho está correto
+import { validateId } from 'src/utils/validate-id';
 
 @Injectable()
 export class PostService {
@@ -69,6 +69,57 @@ export class PostService {
       throw new NotFoundException(`Post com id ${id} não encontrado após tentativa de atualização.`);
     }
     return postAtualizado;
+  }
+
+  async addInteracao(id: string): Promise<Post> {
+    validateId(id);
+    const post = await this.postModel.findById(id);
+
+    const updatePost = await this.postModel
+      .findByIdAndUpdate(id, { $inc: { interacao: 1 } }, { new: true })
+      .populate('autor', 'nome email usuario instituicao curso modulo')
+      .exec();
+
+    if (!updatePost) {
+      throw new NotFoundException(`Post com id ${id} não encontrado`);
+    }
+
+    return updatePost;
+  }
+
+  async incrementCommentsCount(postId: string): Promise<Post> {
+    validateId(postId);
+    const updatedPost = await this.postModel
+      .findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } }, { new: true })
+      .populate('autor', 'nome email usuario instituicao curso modulo')
+      .exec();
+
+    if (!updatedPost) {
+      console.warn(`Post com id ${postId} não encontrado ao tentar incrementar commentsCount.`);
+      throw new NotFoundException(`Post com id ${postId} não encontrado`);
+    }
+    return updatedPost;
+  }
+
+  async decrementCommentsCount(postId: string): Promise<Post> {
+    validateId(postId);
+    // Usamos $inc com -1 para decrementar o campo `commentsCount`
+    const updatedPost = await this.postModel
+      .findByIdAndUpdate(postId, { $inc: { commentsCount: -1 } }, { new: true })
+      .populate('autor', 'nome email usuario instituicao curso modulo')
+      .exec();
+
+    if (!updatedPost) {
+      console.warn(`Post com id ${postId} não encontrado ao tentar decrementar commentsCount.`);
+      throw new NotFoundException(`Post com id ${postId} não encontrado`);
+    }
+
+    if (updatedPost && updatedPost.commentsCount < 0) {
+
+      await this.postModel.findByIdAndUpdate(postId, { $set: { commentsCount: 0 } }).exec();
+      updatedPost.commentsCount = 0;
+    }
+    return updatedPost;
   }
 
   async delete(id: string, userId: string): Promise<{ message: string }> {

@@ -14,43 +14,48 @@ interface UserPayload {
 @UseGuards(JwtAuthGuard)
 @Controller('posts') //rota /posts
 export class PostController {
-    constructor(private readonly postService: PostService) { }
+  constructor(private readonly postService: PostService) { }
 
-    /* 
-        GET /posts -- get para puxar todos os posts (do fórum)
-        GET /posts/:id -- get para puxar um post selecionado (do fórum)
-        POST /posts -- post para lançar novos 
-        DELETE /posts/:id -- delete para deletar um post selecionado (do fórum)
-    */
+  /* 
+      GET /posts -- get para puxar todos os posts (do fórum)
+      GET /posts/:id -- get para puxar um post selecionado (do fórum)
+      POST /posts -- post para lançar novos 
+      DELETE /posts/:id -- delete para deletar um post selecionado (do fórum)
+  */
 
-    @Get() // /posts ou /posts?topico=alunos
-    findAll(@Query('topico') topico?: 'aulas' | 'diretores' | 'alunos' | 'atividades' | 'extracurriculares') {
-        return this.postService.findAll(topico);
-    }
+  @Get() // /posts ou /posts?topico=alunos
+  findAll(@Query('topico') topico?: 'aulas' | 'diretores' | 'alunos' | 'atividades' | 'extracurriculares') {
+    return this.postService.findAll(topico);
+  }
 
-    @Get(':id') // pegar só um
-    findOne(@Param('id') id: string) {
-        return this.postService.findOne(id)
-    }
+  @Get(':id') // pegar só um
+  findOne(@Param('id') id: string) {
+    return this.postService.findOne(id)
+  }
 
-    @Post() // mandar postagens
-  create(@Body() postDto: CreatePostDTO, @Req() req: Request) { 
+  @Post() // mandar postagens
+  create(@Body() postDto: CreatePostDTO, @Req() req: Request) {
     const user = req.user as UserPayload; // Pegamos o usuário do token
-    return this.postService.create(postDto, user.id); 
+    return this.postService.create(postDto, user.id);
   }
 
   @Patch(':id') // editar postagens
   update(
     @Param('id') id: string,
     @Body() postDto: UpdatePostDTO,
-    @Req() req: Request, 
+    @Req() req: Request,
   ) {
     const user = req.user as UserPayload;
     return this.postService.update(id, postDto, user.id); // Para verificar permissão
   }
 
+  @Patch(':id/interacao')
+  async addInteracao(@Param('id') id:string){
+    return this.postService.addInteracao(id);
+  }
+
   @Delete(':id') // deletar postagens
-  delete(@Param('id') id: string, @Req() req: Request) { 
+  delete(@Param('id') id: string, @Req() req: Request) {
     const user = req.user as UserPayload;
     return this.postService.delete(id, user.id); // Para verificar permissão
   }
