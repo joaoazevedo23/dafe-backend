@@ -105,7 +105,7 @@ export class LoginJwtService {
 
   async logout(refreshToken: string): Promise<void> {
     const result = await this.refreshTokenSchema.findOneAndUpdate(
-      { token: refreshToken, revoked: false },
+      { longToken: refreshToken, revoked: false },
       { $set: { revoked: true } },
       { new: true }
     ).exec();
