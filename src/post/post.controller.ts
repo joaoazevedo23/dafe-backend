@@ -24,8 +24,11 @@ export class PostController {
   */
 
   @Get() // /posts ou /posts?topico=alunos
-  findAll(@Query('topico') topico?: 'aulas' | 'diretores' | 'alunos' | 'atividades' | 'extracurriculares') {
-    return this.postService.findAll(topico);
+  findAll(
+    @Query('topico') topico?: 'aulas' | 'diretores' | 'alunos' | 'atividades' | 'extracurriculares',
+    @Query('autor') autor?: string
+  ) {
+    return this.postService.findAll(topico, autor);
   }
 
   @Get(':id') // pegar só um
@@ -50,7 +53,7 @@ export class PostController {
   }
 
   @Patch(':id/interacao')
-  async addInteracao(@Param('id') id:string){
+  async addInteracao(@Param('id') id: string) {
     return this.postService.addInteracao(id);
   }
 

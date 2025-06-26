@@ -14,14 +14,19 @@ export class PostService {
     @InjectModel(Post.name) private readonly postModel: Model<PostSchema>,
   ) { }
 
-  async findAll(topico?: string): Promise<Post[]> {
-    const query = topico ? { topico: topico } : {};
-    return this.postModel
-      .find(query)
-      .sort({ createdAt: -1 })
-      .populate('autor', 'nome email usuario instituicao curso modulo')
-      .exec();
-  }
+  async findAll(topico?: string, autor?: string): Promise<Post[]> {
+  const query: any = {};
+
+  if (topico) query.topico = topico;
+  if (autor) query.autor = autor;
+
+  return this.postModel
+    .find(query)
+    .sort({ createdAt: -1 })
+    .populate('autor', 'nome email usuario instituicao curso modulo')
+    .exec();
+}
+
 
   async findOne(id: string): Promise<Post> {
     validateId(id);
