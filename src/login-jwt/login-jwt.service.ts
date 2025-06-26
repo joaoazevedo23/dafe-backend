@@ -38,7 +38,7 @@ export class LoginJwtService {
       usuario: student.usuario,
       instituicao: student.instituicao
     };
-    const token = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const token = this.jwtService.sign(payload, { expiresIn: '1h' });
 
     const refreshTokenValue = crypto.randomBytes(64).toString('hex'); // Gera um refresh token aleatório
     const refreshTokenExpiresInMs = lembrar ? 30 * 24 * 60 * 60 * 1000 : 1 * 24 * 60 * 60 * 1000; // 30 dias ou 1 dia
@@ -86,7 +86,7 @@ export class LoginJwtService {
       instituicao: student.instituicao,
     };
 
-    const newToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const newToken = this.jwtService.sign(payload, { expiresIn: '1h' });
 
     // Gera um novo refresh token
     const newRefreshTokenValue = crypto.randomBytes(64).toString('hex');

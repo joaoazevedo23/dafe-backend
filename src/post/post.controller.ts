@@ -53,8 +53,10 @@ export class PostController {
   }
 
   @Patch(':id/interacao')
-  async addInteracao(@Param('id') id: string) {
-    return this.postService.addInteracao(id);
+  async addInteracao(@Param('id') postId: string, @Req() req: any) {
+    const userId = req.user.id
+
+    return this.postService.addInteracao(postId, userId);
   }
 
   @Delete(':id') // deletar postagens

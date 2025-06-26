@@ -1,6 +1,6 @@
 // src/posts/post.service.ts
 
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Post, PostSchema } from '../../models/post.schema';
@@ -15,17 +15,17 @@ export class PostService {
   ) { }
 
   async findAll(topico?: string, autor?: string): Promise<Post[]> {
-  const query: any = {};
+    const query: any = {};
 
-  if (topico) query.topico = topico;
-  if (autor) query.autor = autor;
+    if (topico) query.topico = topico;
+    if (autor) query.autor = autor;
 
-  return this.postModel
-    .find(query)
-    .sort({ createdAt: -1 })
-    .populate('autor', 'nome email usuario instituicao curso modulo')
-    .exec();
-}
+    return this.postModel
+      .find(query)
+      .sort({ createdAt: -1 })
+      .populate('autor', 'nome email usuario instituicao curso modulo')
+      .exec();
+  }
 
 
   async findOne(id: string): Promise<Post> {
@@ -76,17 +76,25 @@ export class PostService {
     return postAtualizado;
   }
 
-  async addInteracao(id: string): Promise<Post> {
-    validateId(id);
-    const post = await this.postModel.findById(id);
+  async addInteracao(postId: string, userId: string): Promise<Post> {
+    validateId(postId);
+    const post = await this.postModel.findById(postId);
+
+    if (!post) {
+      throw new NotFoundException(`Post com id ${postId} não encontrado`);
+    }
+
+    if (post.interactedBy.some(interactorId => interactorId.toString() === userId)) {
+      throw new BadRequestException(`Você já interagiu com este post.`);
+    }
 
     const updatePost = await this.postModel
-      .findByIdAndUpdate(id, { $inc: { interacao: 1 } }, { new: true })
+      .findByIdAndUpdate(postId, { $inc: { interacao: 1 }, $push: { interactedBy: userId } }, { new: true })
       .populate('autor', 'nome email usuario instituicao curso modulo')
       .exec();
 
     if (!updatePost) {
-      throw new NotFoundException(`Post com id ${id} não encontrado`);
+      throw new NotFoundException(`Post com id ${postId} não encontrado`);
     }
 
     return updatePost;
