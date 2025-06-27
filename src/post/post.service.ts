@@ -1,5 +1,3 @@
-// src/posts/post.service.ts
-
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -16,7 +14,6 @@ export class PostService {
 
   async findAll(topico?: string, autor?: string): Promise<Post[]> {
     const query: any = {};
-
     if (topico) query.topico = topico;
     if (autor) query.autor = autor;
 
@@ -26,7 +23,6 @@ export class PostService {
       .populate('autor', 'nome email usuario instituicao curso modulo')
       .exec();
   }
-
 
   async findOne(id: string): Promise<Post> {
     validateId(id);
@@ -46,31 +42,26 @@ export class PostService {
       autor: autorId,
     };
     const novoPost = new this.postModel(postCompleto);
-
-
     const postSalvo: PostSchema = await novoPost.save();
 
     // Chamamos findOne para retornar o post já populado
     return this.findOne(postSalvo._id.toString());
   }
+
   async update(id: string, updatePostDTO: UpdatePostDTO, userId: string): Promise<Post> {
     validateId(id);
     const postExistente = await this.postModel.findById(id);
-
     if (!postExistente) {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
     }
-
     if (postExistente.autor.toString() !== userId) {
       throw new UnauthorizedException('Você não tem permissão para editar este post.');
     }
-
     const postAtualizado = await this.postModel
       .findByIdAndUpdate(id, updatePostDTO, { new: true })
       .populate('autor', 'nome email usuario instituicao curso modulo')
       .exec();
-
-    if (!postAtualizado) { // Adicionando uma verificação caso o update não retorne um post
+    if (!postAtualizado) { 
       throw new NotFoundException(`Post com id ${id} não encontrado após tentativa de atualização.`);
     }
     return postAtualizado;
@@ -116,7 +107,7 @@ export class PostService {
 
   async decrementCommentsCount(postId: string): Promise<Post> {
     validateId(postId);
-    // Usamos $inc com -1 para decrementar o campo `commentsCount`
+    // Remover -1 de comentário
     const updatedPost = await this.postModel
       .findByIdAndUpdate(postId, { $inc: { commentsCount: -1 } }, { new: true })
       .populate('autor', 'nome email usuario instituicao curso modulo')
@@ -138,7 +129,6 @@ export class PostService {
   async delete(id: string, userId: string): Promise<{ message: string }> {
     validateId(id);
     const postExistente = await this.postModel.findById(id);
-
     if (!postExistente) {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
     }
@@ -146,9 +136,7 @@ export class PostService {
     if (postExistente.autor.toString() !== userId) {
       throw new UnauthorizedException('Você não tem permissão para deletar este post.');
     }
-
     await postExistente.deleteOne();
-
     return { message: `Post com id ${id} foi deletado com sucesso.` };
   }
 }

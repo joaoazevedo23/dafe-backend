@@ -30,7 +30,6 @@ export class StudentsService {
     }
 
     async findOne(id: string): Promise<Student> {
-
         validateId(id); // Valida o ID antes de fazer a busca
         const student = await this.studentSchema.findById(id).exec();
         if (!student) {
@@ -45,9 +44,7 @@ export class StudentsService {
     }
 
     async update(id: string, updateStudentsDTO: UpdateStudentsDTO): Promise<Student> {
-
         validateId(id); // Valida o ID antes de fazer a busca
-
         const student = await this.studentSchema.findByIdAndUpdate(id, updateStudentsDTO, { new: true }).exec();
         if (!student) {
             throw new NotFoundException(`Estudante com id: ${id} não encontrado`);
@@ -56,9 +53,7 @@ export class StudentsService {
     }
 
     async delete(id: string): Promise<{ message: string }> {
-
         validateId(id); // Valida o ID antes de fazer a busca
-
         const student = await this.studentSchema.findByIdAndDelete(id).exec();
         if (!student) {
             throw new NotFoundException(`Estudante com id ${id} não encontrado`);

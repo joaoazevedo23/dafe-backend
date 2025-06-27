@@ -28,23 +28,16 @@ export class CommentsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/post/:postId')
-  create(
-    @Param('postId') postId: string,
-    @Body() dto: CreateCommentDTO,
-    @Req() req: Request, 
-  ) {
-    
+  create(@Param('postId') postId: string, @Body() dto: CreateCommentDTO, @Req() req: Request,) 
+  {
     const user = req.user as UserPayload;
     return this.commentsService.create(dto, user.id, postId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':commentId')
-  delete(
-    @Param('commentId') commentId: string,
-    @Req() req: Request, 
-  ) {
-    
+  delete(@Param('commentId') commentId: string, @Req() req: Request,) 
+  {
     const user = req.user as UserPayload;
     return this.commentsService.delete(commentId, user.id);
   }

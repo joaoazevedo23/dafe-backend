@@ -14,19 +14,13 @@ export class CommentsService {
     private readonly postService: PostService,
   ) { }
 
-  async create(
-    dto: CreateCommentDTO,
-    autorId: string,
-    postId: string,
-  ): Promise<Comments> {
+  async create(dto: CreateCommentDTO, autorId: string, postId: string,): Promise<Comments> {
     validateId(postId);
-
     const novoComentario = new this.commentSchema({
       ...dto,
       autor: autorId,
       post: postId,
     });
-
 
     const comentarioSalvo = await novoComentario.save();
 
@@ -53,6 +47,7 @@ export class CommentsService {
   async delete(commentId: string, userId: string): Promise<{ message: string }> {
     validateId(commentId);
     const comment = await this.commentSchema.findById(commentId).populate('post');
+
     if (!comment) {
       throw new NotFoundException(`Comentário com id ${commentId} não encontrado.`);
     }
@@ -61,7 +56,7 @@ export class CommentsService {
 
       console.warn(`Post ${comment.post ? comment.post['_id'] : 'n/a'} não tem autor populado ou definido.`);
     }
-
+    
     const isCommentAuthor = comment.autor.toString() === userId;
     const isPostAuthor = comment.post && comment.post['autor'] ? comment.post['autor'].toString() === userId : false;
 

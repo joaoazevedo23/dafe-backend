@@ -12,22 +12,18 @@ import { RefreshToken, RefreshTokenSchema } from 'models/refreshToken.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Student.name, schema: StudentSchema },
-      { name: RefreshToken.name, schema: RefreshTokenSchema },
-    ]),
-    JwtModule.register({
-      secret: "segredo_shiiiu", 
-      signOptions: { expiresIn: '15m' },
-    }),
+    MongooseModule.forFeature([{ name: Student.name, schema: StudentSchema },{ name: RefreshToken.name, schema: RefreshTokenSchema },]),
+    JwtModule.register({secret: "segredo_shiiiu", signOptions: { expiresIn: '15m' },}),
     PassportModule,
     StudentsModule,
   ],
+
   providers: [
     LoginJwtService,
     EncryptService,
     JwtStrategy,
   ],
+  
   controllers: [LoginJwtController],
   exports: [
     LoginJwtService,

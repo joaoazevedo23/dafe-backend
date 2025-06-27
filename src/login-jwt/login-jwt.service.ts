@@ -40,7 +40,7 @@ export class LoginJwtService {
     };
     const token = this.jwtService.sign(payload, { expiresIn: '1h' });
 
-    const refreshTokenValue = crypto.randomBytes(64).toString('hex'); // Gera um refresh token aleatório
+    const refreshTokenValue = crypto.randomBytes(64).toString('hex'); 
     const refreshTokenExpiresInMs = lembrar ? 30 * 24 * 60 * 60 * 1000 : 1 * 24 * 60 * 60 * 1000; // 30 dias ou 1 dia
     const refreshTokenExpiresAt = new Date(Date.now() + refreshTokenExpiresInMs);
 
@@ -56,7 +56,6 @@ export class LoginJwtService {
 
   async refreshTokens(oldRefreshToken: string): Promise<{ token: string; refreshToken: string }> {
     const foundToken = await this.refreshTokenSchema.findOne({ longToken: oldRefreshToken, revoked: false }).exec();
-
     if (!foundToken || foundToken.expiresAt < new Date()) {
       // Se for encontrado e expirado, revogar (limpeza e segurança)
       if (foundToken && foundToken.expiresAt < new Date() && !foundToken.revoked) {
@@ -65,8 +64,7 @@ export class LoginJwtService {
       }
       throw new UnauthorizedException('Refresh token inválido ou expirado. Por favor, faça login novamente.');
     }
-
-    // ROTAÇÃO DE REFRESH TOKEN: Revoga o token antigo imediatamente
+    
     foundToken.revoked = true;
     await foundToken.save();
 

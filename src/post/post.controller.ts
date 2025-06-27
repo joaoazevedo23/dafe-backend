@@ -20,6 +20,8 @@ export class PostController {
       GET /posts -- get para puxar todos os posts (do fórum)
       GET /posts/:id -- get para puxar um post selecionado (do fórum)
       POST /posts -- post para lançar novos 
+      PATCH /posts/:id -- patch para editar um post selecionado (do fórum)
+      PATCH /posts/:id/interacao -- patch para adicionar interações (curtidas, comentários, etc.) em um post selecionado
       DELETE /posts/:id -- delete para deletar um post selecionado (do fórum)
   */
 
@@ -43,11 +45,8 @@ export class PostController {
   }
 
   @Patch(':id') // editar postagens
-  update(
-    @Param('id') id: string,
-    @Body() postDto: UpdatePostDTO,
-    @Req() req: Request,
-  ) {
+  update(@Param('id') id: string, @Body() postDto: UpdatePostDTO, @Req() req: Request,)
+ {
     const user = req.user as UserPayload;
     return this.postService.update(id, postDto, user.id); // Para verificar permissão
   }
@@ -55,7 +54,6 @@ export class PostController {
   @Patch(':id/interacao')
   async addInteracao(@Param('id') postId: string, @Req() req: any) {
     const userId = req.user.id
-
     return this.postService.addInteracao(postId, userId);
   }
 

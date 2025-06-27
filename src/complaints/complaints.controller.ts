@@ -11,6 +11,7 @@ export class ComplaintsController {
             GET /complaints
             GET /complaints/:id 
             POST /complaints  
+            PATCH /complaints/:id
             DELETE /complaints/:id 
         */
     
