@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose'; 
-import { Student } from './student.schema';
+import { User } from './user.schema';
 import {Comments} from './comments.schema';
 
 export type PostSchema = Post & Document;
@@ -34,7 +34,7 @@ export class Post {
   commentsCount: number;
 
   @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Student', required: true})
-  autor: Student | MongooseSchema.Types.ObjectId;
+  autor: User | MongooseSchema.Types.ObjectId;
 } 
 
 export const PostSchema = SchemaFactory.createForClass(Post);

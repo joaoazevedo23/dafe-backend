@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { StudentsService } from "src/students/students.service";
+import { UsersService } from "src/users/users.service";
 
 interface JwtPayload {
     id: string;
@@ -10,7 +10,7 @@ interface JwtPayload {
 
 @Injectable()// Analizar os dados e gerar o token
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(private readonly studentsService: StudentsService) {
+    constructor(private readonly studentsService: UsersService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,

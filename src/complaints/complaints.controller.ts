@@ -5,39 +5,40 @@ import { UpdateComplaintsDTO } from './dtos/update-complaints.dto';
 
 @Controller('complaints')
 export class ComplaintsController {
-    constructor(private readonly complaintsService: ComplaintsService) { }
-    
-        /* 
-            GET /complaints
-            GET /complaints/:id 
-            POST /complaints  
-            PATCH /complaints/:id
-            DELETE /complaints/:id 
-        */
-    
-        @Get() // /complaints
-        findAll(@Query('topico') topico?: 'Aulas' | 'Diretores' | 'Alunos' | 'Atividades' | 'Extracurriculares') {
-            return this.complaintsService.findAll(topico);
-        }
-    
-        @Get(':id') // pegar só um
-        findOne(@Param('id') id: string) {
-            return this.complaintsService.findOne(id)
-        }
-    
-        @Post() // mandar complaints
-        create(@Body() post: CreateComplaintsDTO) {
-            return this.complaintsService.create(post)
-        }
+  constructor(private readonly complaintsService: ComplaintsService) {}
 
-        @Patch(':id') // atualizar complaints
-        update(@Param('id') id: string, @Body() post: UpdateComplaintsDTO) {    
-            return this.complaintsService.update(id, post)
-        }
-    
-        @Delete(':id') // deletar complaints
-        delete(@Param('id') id: string) {
-            return this.complaintsService.delete(id)
-        }
+  /* GET /complaints      -> Público
+      GET /complaints/:id    -> Público
+      POST /complaints       -> Público
+      PATCH /complaints/:id  -> Público (Atenção com a segurança)
+      DELETE /complaints/:id -> Público (Atenção com a segurança)
+  */
 
+  @Get()
+  findAll(@Query('topico') topico?: 'Aulas' | 'Diretores' | 'Alunos' | 'Atividades' | 'Extracurriculares') {
+    return this.complaintsService.findAll(topico);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.complaintsService.findOne(id);
+  }
+
+  @Post()
+  create(@Body() createDto: CreateComplaintsDTO) {
+    // Nenhuma informação de usuário é necessária ou passada.
+    return this.complaintsService.create(createDto);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateDto: UpdateComplaintsDTO) {
+    // Qualquer pessoa pode chamar esta rota.
+    return this.complaintsService.update(id, updateDto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    // Qualquer pessoa pode chamar esta rota.
+    return this.complaintsService.delete(id);
+  }
 }

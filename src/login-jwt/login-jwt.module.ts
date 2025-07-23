@@ -4,18 +4,18 @@ import { LoginJwtController } from './login-jwt.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { EncryptService } from 'src/utils/encrypt/encrypt.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Student, StudentSchema } from 'models/student.schema';
+import { User, UserSchema } from 'models/user.schema';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { StudentsModule } from 'src/students/students.module';
+import { UsersModule } from 'src/users/users.module';
 import { RefreshToken, RefreshTokenSchema } from 'models/refreshToken.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Student.name, schema: StudentSchema },{ name: RefreshToken.name, schema: RefreshTokenSchema },]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema },{ name: RefreshToken.name, schema: RefreshTokenSchema },]),
     JwtModule.register({secret: "segredo_shiiiu", signOptions: { expiresIn: '15m' },}),
     PassportModule,
-    StudentsModule,
+    UsersModule,
   ],
 
   providers: [

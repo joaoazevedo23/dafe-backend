@@ -1,54 +1,62 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Complaints, ComplaintsSchema } from '../../models/complaints.schema';
 import { Model } from 'mongoose';
+import { Complaints, ComplaintsSchema } from '../../models/complaints.schema';
 import { CreateComplaintsDTO } from './dtos/create-complaints.dto';
+import { UpdateComplaintsDTO } from './dtos/update-complaints.dto';
 import { validateId } from 'src/utils/validate-id';
 
 @Injectable()
-
 export class ComplaintsService {
-
   constructor(
-    @InjectModel(Complaints.name) private readonly complaintsModel: Model<ComplaintsSchema>,
-  ) { }
+    // Correção de tipo para o documento do Mongoose
+    @InjectModel(Complaints.name)
+    private readonly complaintsModel: Model<ComplaintsSchema>,
+  ) {}
 
   async findAll(topico?: string): Promise<Complaints[]> {
-    if (topico) {
-      return this.complaintsModel.find({ topico: topico }).exec();
-    }
-    return this.complaintsModel.find().exec();
+    // Lógica de busca otimizada
+    const query = topico ? { topico: topico } : {};
+    return this.complaintsModel.find(query).sort({ createdAt: -1 }).exec();
   }
 
   async findOne(id: string): Promise<Complaints> {
-    const Complaints = await this.complaintsModel.findById(id).exec();
+    // Validação do ID antes da consulta ao banco
     validateId(id);
-    if (!Complaints) {
-      throw new NotFoundException(`Denúncia com id ${id} não encontrado`);
+    const complaint = await this.complaintsModel.findById(id).exec();
+
+    if (!complaint) {
+      throw new NotFoundException(`Denúncia com id ${id} não encontrada`);
     }
-    return Complaints;
+    return complaint;
   }
 
-  async create(createcomplts: CreateComplaintsDTO): Promise<Complaints> {
-    const novoComplaints = new this.complaintsModel(createcomplts);
-    return await novoComplaints.save();
+  async create(createDto: CreateComplaintsDTO): Promise<Complaints> {
+    const newComplaint = new this.complaintsModel(createDto);
+    return await newComplaint.save();
   }
 
-  async update(id: string, ComplaintsData: Partial<Complaints>): Promise<Complaints> {
+  async update(id: string, updateDto: UpdateComplaintsDTO): Promise<Complaints> {
+    // Validação do ID antes da consulta ao banco
     validateId(id);
-    const Complaints = await this.complaintsModel.findByIdAndUpdate(id, ComplaintsData, { new: true }).exec();
-    if (!Complaints) {
-      throw new NotFoundException(`Complaints com id ${id} não encontrado`);
+    const updatedComplaint = await this.complaintsModel
+      .findByIdAndUpdate(id, updateDto, { new: true })
+      .exec();
+
+    if (!updatedComplaint) {
+      throw new NotFoundException(`Denúncia com id ${id} não encontrada`);
     }
-    return Complaints;
+    return updatedComplaint;
   }
 
   async delete(id: string): Promise<{ message: string }> {
+    // Validação do ID antes da consulta ao banco
     validateId(id);
-    const Complaints = await this.complaintsModel.findByIdAndDelete(id).exec();
-    if (!Complaints) {
+    const deletedComplaint = await this.complaintsModel.findByIdAndDelete(id).exec();
+
+    if (!deletedComplaint) {
       throw new NotFoundException(`Denúncia com id ${id} não encontrado`);
     }
-    return { message: `Denúncia com id ${id} foi deletado com sucesso.` };
+    return { message: `Denúncia com id ${id} foi deletada com sucesso.` };
   }
 }
