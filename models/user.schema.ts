@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-// 1. Enum para os papéis de usuário (Roles)
-//    Define de forma clara e segura os tipos de usuário permitidos.
 export enum UserRole {
   STUDENT = 'student',
   PROFESSOR = 'professor',
@@ -10,12 +8,9 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
-// 2. Subdocumento para informações específicas do estudante
-//    Agrupa os campos que só pertencem a estudantes.
-@Schema({ _id: false }) // _id: false evita que o Mongoose crie um _id para este objeto aninhado
+@Schema({ _id: false }) 
+
 class StudentDetails {
-  @Prop({ required: true, trim: true })
-  instituicao: string;
 
   @Prop({
     required: true,
@@ -33,12 +28,13 @@ class StudentDetails {
   modulo: number;
 }
 
-export type UserDocument = User & Document;
+export type UserSchema = User & Document;
 
-// 3. Schema principal e unificado de Usuário
 @Schema({ timestamps: true }) // timestamps: true adiciona os campos createdAt e updatedAt
 export class User {
   // --- Campos Comuns a Todos os Usuários ---
+  @Prop({ required: true, trim: true })
+  instituicao: string;
 
   @Prop({ required: [true, 'O nome é obrigatório'], trim: true })
   nome: string;

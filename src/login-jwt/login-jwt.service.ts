@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { User, UserDocument, UserRole } from 'models/user.schema'; // Importando UserRole
+import { User, UserSchema, UserRole } from 'models/user.schema'; // Importando UserRole
 import { EncryptService } from 'src/utils/encrypt/encrypt.service';
 import { RefreshToken, RefreshTokenSchema } from 'models/refreshToken.schema';
 import * as crypto from 'crypto';
@@ -12,9 +12,9 @@ export class LoginJwtService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly encryptService: EncryptService,
-    @InjectModel(User.name) private readonly usersSchema: Model<UserDocument>,
+    @InjectModel(User.name) private readonly usersSchema: Model<UserSchema>,
     @InjectModel(RefreshToken.name)
-    private readonly refreshTokenSchema: Model<RefreshTokenSchema>,
+    private readonly refreshTokenSchema: Model<RefreshTokenSchema>
   ) {}
 
   async login(email: string, senha: string, lembrar: boolean): Promise<{ token: string; refreshToken: string }> {
@@ -34,12 +34,11 @@ export class LoginJwtService {
       email: user.email,
       nome: user.nome,
       usuario: user.usuario,
-      role: user.role, // ✨ Melhoria: Incluir a role é essencial para autorização
+      role: user.role, // Melhoria: Incluir a role é essencial para autorização
     };
 
     // Adiciona os detalhes do estudante apenas se o usuário tiver essa role
     if (user.role === UserRole.STUDENT && user.studentDetails) {
-      payload.instituicao = user.studentDetails.instituicao;
       payload.curso = user.studentDetails.curso;
       payload.modulo = user.studentDetails.modulo;
     }
@@ -79,7 +78,7 @@ export class LoginJwtService {
       throw new UnauthorizedException('Usuário associado ao refresh token não encontrado.');
     }
 
-    // ✅ Correção: Montando o payload condicionalmente (mesma lógica do login)
+    // Correção: Montando o payload condicionalmente (mesma lógica do login)
     const payload: { [key: string]: any } = {
       id: user._id,
       email: user.email,
@@ -89,7 +88,6 @@ export class LoginJwtService {
     };
 
     if (user.role === UserRole.STUDENT && user.studentDetails) {
-      payload.instituicao = user.studentDetails.instituicao;
       payload.curso = user.studentDetails.curso;
       payload.modulo = user.studentDetails.modulo;
     }

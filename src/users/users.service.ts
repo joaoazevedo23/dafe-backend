@@ -1,33 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../../models/user.schema'; // Importe UserDocument se o tiver
+import { User, UserSchema } from '../../models/user.schema'; 
 import { CreateUsersDTO } from './dtos/create-users.dto';
 import { UpdateUsersDTO } from './dtos/update-users.dto';
 import { validateId } from 'src/utils/validate-id';
 
 @Injectable()
 export class UsersService {
-    constructor(
-        // Correção 1: O tipo do modelo deve ser User (ou UserDocument), não UserSchema.
-        @InjectModel(User.name) private readonly userModel: Model<User>,
-    ) {}
+    constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
 
-    // Correção 2: Refatoração completa do método findAll.
-    async findAll(curso?: string, modulo?: number): Promise<User[]> {
-        // Objeto de query dinâmico para filtros
+    async findAll(curso?: string, modulo?: number, role?: string): Promise<User[]> {
         const query = {};
 
-        // Adiciona filtros apenas se eles forem fornecidos
-        // Usa a "dot notation" para acessar os campos aninhados em 'studentDetails'
         if (curso) {
             query['studentDetails.curso'] = curso;
         }
         if (modulo) {
             query['studentDetails.modulo'] = modulo;
         }
+        if(role){
+            query['role'] = role;
+        }
 
-        // Executa a busca com os filtros construídos dinamicamente
         return this.userModel.find(query).exec();
     }
 
@@ -42,7 +37,6 @@ export class UsersService {
     }
 
     async create(createUsersDTO: CreateUsersDTO): Promise<User> {
-        // Lembrete: Seu DTO deve refletir a nova estrutura com 'studentDetails'
         const newUser = new this.userModel(createUsersDTO);
         return await newUser.save();
     }
