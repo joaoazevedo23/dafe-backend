@@ -5,6 +5,7 @@ import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { CreateCommentDTO } from './dtos/create-comment.dto';
 import { UserRole } from 'models/user.schema';
 
+
 // Interface atualizada para refletir o payload completo do JWT
 interface UserPayload {
   id: string;

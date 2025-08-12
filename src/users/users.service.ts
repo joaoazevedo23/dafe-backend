@@ -38,7 +38,15 @@ export class UsersService {
 
     async create(createUsersDTO: CreateUsersDTO): Promise<User> {
         const newUser = new this.userModel(createUsersDTO);
-        return await newUser.save();
+        try {
+            return await newUser.save();
+        } catch (error) {
+            // Correção 4: Tratamento de erro para duplicidade de email ou usuário
+            if (error.code === 11000) {
+                throw new NotFoundException('Já existe um usuário com este email ou nome de usuário.');
+            }
+            throw new NotFoundException('Erro ao criar usuário: ' + error.message);
+        }
     }
 
     async update(id: string, updateUsersDTO: UpdateUsersDTO): Promise<User> {
