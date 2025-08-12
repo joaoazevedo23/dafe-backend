@@ -27,13 +27,13 @@ export class Post {
   @Prop({ required: false, min: 0, default: 0 })
   interacao: number;
   
-  @Prop({type: [{type: MongooseSchema.Types.ObjectId, ref: 'Student'}], default: []})
+  @Prop({type: [{type: MongooseSchema.Types.ObjectId, ref: 'User'}], default: []})
   interactedBy: Types.ObjectId[];
 
   @Prop({required: false, min: 0, default: 0})
   commentsCount: number;
 
-  @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Student', required: true})
+  @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User', required: true})
   autor: User | MongooseSchema.Types.ObjectId;
 } 
 
