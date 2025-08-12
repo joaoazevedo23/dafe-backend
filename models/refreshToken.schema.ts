@@ -9,7 +9,7 @@ export class RefreshToken{
     @Prop({ required: true, unique: true})
     longToken: string;
 
-    @Prop({ type: Types.ObjectId, ref: 'Student', required: true})
+    @Prop({ type: Types.ObjectId, ref: 'User', required: true})
     userId: Types.ObjectId
 
     @Prop({ required: true})

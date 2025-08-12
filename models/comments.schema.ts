@@ -15,7 +15,7 @@ export class Comments {
   @Prop({ default: Date.now })
   data: Date; 
   
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Student', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   autor: User;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Post', required: true })

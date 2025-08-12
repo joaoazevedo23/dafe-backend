@@ -10,7 +10,7 @@ interface JwtPayload {
 
 @Injectable()// Analizar os dados e gerar o token
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(private readonly studentsService: UsersService) {
+    constructor(private readonly usersService: UsersService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -19,10 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: JwtPayload) {
-        const student = await this.studentsService.findOne(payload.id);
-        if (!student) {
+        const user = await this.usersService.findOne(payload.id);
+        if (!user) {
             throw new UnauthorizedException('Token inválido');
         }
-        return student;
+        return user;
     }
 }       
