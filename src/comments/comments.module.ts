@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Comments, CommentsSchema } from '../../models/comments.schema';
 import { LoginJwtModule } from '../login-jwt/login-jwt.module';
 import { Post, PostSchema } from '../../models/post.schema';
-import { PostModule } from 'src/post/post.module';
+import { PostModule } from 'src/posts/post.module';
 
 // O Módulo dos comentários. Cada comentário pertence a um post e a um usuário.
 
