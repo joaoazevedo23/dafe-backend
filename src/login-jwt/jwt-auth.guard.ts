@@ -1,5 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable() // Verifica se o usuário está logado para acessar rotas protegidas.
-export class JwtAuthGuard extends AuthGuard('jwt') {}
+export class JwtAuthGuard extends AuthGuard('jwt') {
+
+    handleRequest(err, user, info) {
+        // Você pode inspecionar `info` ou `err` aqui se precisar de mais contexto
+        if (err || !user) {
+          throw err || new UnauthorizedException('Acesso não autorizado. Por favor, realize o login para continuar.');
+        }
+        return user;
+      }
+}

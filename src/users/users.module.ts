@@ -3,7 +3,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service'; 
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../../models/user.schema'; 
-import { Match } from 'src/utils/match.decorator';
+import { Match } from 'src/utils/decorators/match.decorator';
 import { EncryptService } from 'src/utils/encrypt/encrypt.service';
 
 @Module({

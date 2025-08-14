@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service'; 
 import { CreateUsersDTO } from './dtos/create-users.dto'; 
 import { UpdateUsersDTO } from './dtos/update-users.dto';
 import { EncryptService } from 'src/utils/encrypt/encrypt.service';
-import { User } from '../../models/user.schema'; 
+import { User, UserRole } from '../../models/user.schema'; 
+import { Roles } from 'src/utils/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
+import { RolesGuard } from 'src/utils/guards/roles.guard';
 
 @Controller('users') // Rota principal 'users'
 export class UsersController { 
@@ -47,6 +50,8 @@ export class UsersController {
     }
 
     @Delete(':id')
+    @Roles(UserRole.ADMIN) // Apenas administradores podem acessar
+    @UseGuards(JwtAuthGuard, RolesGuard) // Primeiro checa o login, depois a permissão
     async delete(@Param('id') id: string): Promise<{ message: string }> {
         return this.usersService.delete(id);
     }

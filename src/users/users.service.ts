@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { User, UserSchema } from '../../models/user.schema'; 
 import { CreateUsersDTO } from './dtos/create-users.dto';
 import { UpdateUsersDTO } from './dtos/update-users.dto';
-import { validateId } from 'src/utils/validate-id';
+import { validateId } from 'src/utils/decorators/validate-id';
 
 @Injectable()
 export class UsersService {

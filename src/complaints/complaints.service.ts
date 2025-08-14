@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Complaints, ComplaintsSchema } from '../../models/complaints.schema';
 import { CreateComplaintsDTO } from './dtos/create-complaints.dto';
 import { UpdateComplaintsDTO } from './dtos/update-complaints.dto';
-import { validateId } from 'src/utils/validate-id';
+import { validateId } from 'src/utils/decorators/validate-id';
 
 @Injectable()
 export class ComplaintsService {

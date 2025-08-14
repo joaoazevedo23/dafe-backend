@@ -31,7 +31,7 @@ class StudentDetails {
 
 export type UserSchema = User & Document;
 
-@Schema({ timestamps: true }) // timestamps: true adiciona os campos createdAt e updatedAt
+@Schema({ timestamps: true }) 
 export class User {
   // --- Campos Comuns a Todos os Usuários ---
   @Prop({ required: true, trim: true })
@@ -45,8 +45,8 @@ export class User {
 
   @Prop({
     required: [true, 'O email é obrigatório'],
-    unique: true,   // Garante que não haja emails duplicados
-    lowercase: true, // Armazena o email sempre em minúsculas
+    unique: true,   
+    lowercase: true, 
     trim: true,
   })
   email: string;
@@ -60,22 +60,20 @@ export class User {
   usuario: string;
 
   @Prop({
-    type: String, // O tipo no Mongoose é String
+    type: String, 
     required: true,
-    enum: UserRole, // Valida se o valor está dentro do nosso enum
-    default: UserRole.STUDENT, // Define um valor padrão se nenhum for fornecido
+    enum: UserRole,
+    default: UserRole.STUDENT, 
   })
-  role: UserRole; // O tipo no TypeScript é o nosso enum
+  role: UserRole; 
 
   // --- Campos Específicos de Cada Role ---
 
   @Prop({
     type: StudentDetails,
-    // Este campo só será obrigatório se o 'role' for 'student'.
-    // A validação pode ser feita na sua camada de serviço (lógica de negócio).
     required: false,
   })
-  studentDetails?: StudentDetails; // O '?' torna o campo opcional no TypeScript
+  studentDetails?: StudentDetails;
 
   // Futuramente, você pode adicionar outros detalhes aqui:
   // @Prop({ type: ProfessorDetails, required: false })

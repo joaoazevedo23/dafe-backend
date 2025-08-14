@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Post, PostSchema } from '../../models/post.schema';
 import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
-import { validateId } from 'src/utils/validate-id';
+import { validateId } from 'src/utils/decorators/validate-id';
 import { UserRole } from '../../models/user.schema';
 
 // Interface para o payload do usuário, espelhando a do controller

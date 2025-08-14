@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Comments, CommentsSchema } from './../../models/comments.schema';
 import { CreateCommentDTO } from './dtos/create-comment.dto';
-import { validateId } from 'src/utils/validate-id';
+import { validateId } from 'src/utils/decorators/validate-id';
 import { PostService } from '../post/post.service';
 import { UserRole } from '../../models/user.schema';
 

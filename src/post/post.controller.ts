@@ -5,6 +5,8 @@ import { UpdatePostDTO } from './dtos/update-post.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { Request } from 'express';
 import { UserRole } from 'models/user.schema';
+import { Roles } from 'src/utils/decorators/roles.decorator';
+import { RolesGuard } from 'src/utils/guards/roles.guard';
 
 // Interface atualizada para refletir o payload completo do JWT
 interface UserPayload {
@@ -46,6 +48,8 @@ export class PostController {
   }
 
   @Post() // mandar postagens
+  @Roles(UserRole.STUDENT) // Apenas  estudantes podem acessar
+  @UseGuards(JwtAuthGuard, RolesGuard) // Primeiro checa o login, depois a permissão
   create(@Body() postDto: CreatePostDTO, @Req() req: Request) {
     const user = req.user as UserPayload; // Pegamos o usuário do token
     return this.postService.create(postDto, user.id);
