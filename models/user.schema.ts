@@ -29,12 +29,21 @@ class StudentDetails {
   modulo: number;
 }
 
+class ProfessorDetails {
+
+  @Prop({ required: [true, 'A matrícula é obrigatória'], unique: true })
+  matricula: number;
+
+  @Prop({ required: true, enum: ["Matutino", "Vespertino", "Noturno"] })
+  periodo: string;
+}
+
 export type UserSchema = User & Document;
 
 @Schema({ timestamps: true }) 
 export class User {
   // --- Campos Comuns a Todos os Usuários ---
-  @Prop({ required: true, trim: true })
+  @Prop({ required: true, trim: true, enum: ["Etec de Guarulhos"]})
   instituicao: string;
 
   @Prop({ required: [true, 'O nome é obrigatório'], trim: true })
@@ -75,8 +84,11 @@ export class User {
   })
   studentDetails?: StudentDetails;
 
-  // @Prop({ type: ProfessorDetails, required: false })
-  // professorDetails?: ProfessorDetails;
+  @Prop({ 
+    type: ProfessorDetails,
+    required: false 
+  })
+  professorDetails?: ProfessorDetails;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
