@@ -8,15 +8,15 @@ import { UserRole } from 'models/user.schema';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 
-// Interface atualizada para refletir o payload completo do JWT
 interface UserPayload {
   id: string;
   nome: string;
   email: string;
   usuario: string;
-  role: UserRole; // Usando o Enum importado para consistência
-  // Campos opcionais que podem vir no payload para estudantes
-  instituicao?: string;
+  role: UserRole; 
+  instituicao: string;
+
+  // Campos adicionais para a role student
   curso?: string;
   modulo?: number;
 }

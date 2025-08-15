@@ -6,12 +6,7 @@ export type FormsSchema = Forms & Document;
 
 @Schema()
 export class Forms {
-  _id: Types.ObjectId;
-  @Prop({ required: true })
-  titulo: string;
-
-  @Prop({ required: true, minlength: 5 })
-  conteudo: string;
+ 
 } 
 
 export const FormsSchema = SchemaFactory.createForClass(Forms);

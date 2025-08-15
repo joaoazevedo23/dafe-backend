@@ -20,9 +20,9 @@ export class CommentsController {
     return this.commentsService.findByPost(postId);
   }
 
-  @Get('/aluno/:alunoId')
-  findByAluno(@Param('alunoId') alunoId: string) {
-    return this.commentsService.findByAluno(alunoId);
+  @Get('/user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.commentsService.findByUser(userId);
   }
 
   @UseGuards(JwtAuthGuard)

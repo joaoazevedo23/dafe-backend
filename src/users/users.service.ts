@@ -30,7 +30,6 @@ export class UsersService {
         validateId(id);
         const user = await this.userModel.findById(id).exec();
         if (!user) {
-            // Correção 3: Mensagem de erro generalizada
             throw new NotFoundException(`Usuário com id: ${id} não encontrado`);
         }
         return user;
@@ -41,7 +40,6 @@ export class UsersService {
         try {
             return await newUser.save();
         } catch (error) {
-            // Correção 4: Tratamento de erro para duplicidade de email ou usuário
             if (error.code === 11000) {
                 throw new NotFoundException('Já existe um usuário com este email ou nome de usuário.');
             }

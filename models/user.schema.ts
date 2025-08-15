@@ -75,7 +75,6 @@ export class User {
   })
   studentDetails?: StudentDetails;
 
-  // Futuramente, você pode adicionar outros detalhes aqui:
   // @Prop({ type: ProfessorDetails, required: false })
   // professorDetails?: ProfessorDetails;
 }

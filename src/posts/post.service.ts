@@ -16,11 +16,9 @@ interface UserPayload {
 @Injectable()
 export class PostService {
   constructor(
-    // Correção: O tipo do modelo deve ser PostDocument (ou Post)
     @InjectModel(Post.name) private readonly postModel: Model<PostSchema>,
   ) {}
 
-  // Correção: String de populate atualizada para o novo schema de User
   private readonly userPopulateFields = 'nome email usuario role studentDetails';
 
   async findAll(topico?: string, autor?: string): Promise<Post[]> {
@@ -31,7 +29,7 @@ export class PostService {
     return this.postModel
       .find(query)
       .sort({ createdAt: -1 })
-      .populate('autor', this.userPopulateFields) // Usando a string corrigida
+      .populate('autor', this.userPopulateFields) 
       .exec();
   }
 
@@ -39,7 +37,7 @@ export class PostService {
     validateId(id);
     const post = await this.postModel
       .findById(id)
-      .populate('autor', this.userPopulateFields) // Usando a string corrigida
+      .populate('autor', this.userPopulateFields) 
       .exec();
     if (!post) {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
@@ -58,7 +56,6 @@ export class PostService {
     return this.findOne(postSalvo._id.toString());
   }
 
-  // Correção: Assinatura do método e lógica de permissão atualizadas
   async update(id: string, updatePostDTO: UpdatePostDTO, user: UserPayload): Promise<Post> {
     validateId(id);
     const postExistente = await this.postModel.findById(id);
@@ -73,7 +70,7 @@ export class PostService {
 
     const postAtualizado = await this.postModel
       .findByIdAndUpdate(id, updatePostDTO, { new: true })
-      .populate('autor', this.userPopulateFields) // Usando a string corrigida
+      .populate('autor', this.userPopulateFields)
       .exec();
 
     if (!postAtualizado) {
@@ -96,7 +93,7 @@ export class PostService {
 
     const updatePost = await this.postModel
       .findByIdAndUpdate(postId, { $inc: { interacao: 1 }, $push: { interactedBy: userId } }, { new: true })
-      .populate('autor', this.userPopulateFields) // Usando a string corrigida
+      .populate('autor', this.userPopulateFields)
       .exec();
 
     if (!updatePost) {
@@ -110,7 +107,7 @@ export class PostService {
     validateId(postId);
     const updatedPost = await this.postModel
       .findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } }, { new: true })
-      .populate('autor', this.userPopulateFields) // Usando a string corrigida
+      .populate('autor', this.userPopulateFields) 
       .exec();
 
     if (!updatedPost) {
@@ -123,7 +120,7 @@ export class PostService {
     validateId(postId);
     const updatedPost = await this.postModel
       .findByIdAndUpdate(postId, { $inc: { commentsCount: -1 } }, { new: true })
-      .populate('autor', this.userPopulateFields) // Usando a string corrigida
+      .populate('autor', this.userPopulateFields) 
       .exec();
 
     if (!updatedPost) {
@@ -137,7 +134,7 @@ export class PostService {
     return updatedPost;
   }
 
-  // Correção: Assinatura do método e lógica de permissão atualizadas
+  
   async delete(id: string, user: UserPayload): Promise<{ message: string }> {
     validateId(id);
     const postExistente = await this.postModel.findById(id);
@@ -145,7 +142,7 @@ export class PostService {
       throw new NotFoundException(`Post com id ${id} não encontrado`);
     }
 
-    // Lógica de permissão: Permite se o usuário for o autor OU se for um admin
+    
     if (postExistente.autor.toString() !== user.id && user.role !== UserRole.ADMIN) {
       throw new ForbiddenException('Você não tem permissão para deletar este post.');
     }
