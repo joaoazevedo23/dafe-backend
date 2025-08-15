@@ -24,13 +24,16 @@ export class UsersController {
         DELETE /users/:id -- delete para deletar um usuário
     */
 
+    
     @Get()
+    @UseGuards(JwtAuthGuard)
     async findAll(@Query('modulo') modulo?: string, @Query('curso') curso?: string, @Query('role') role?: string): Promise<User[]> {
         const moduloAsNumber = modulo ? Number(modulo) : undefined;
         return this.usersService.findAll(curso, moduloAsNumber, role);
     }
 
     @Get(':id')
+    @UseGuards(JwtAuthGuard)
     async findOne(@Param('id') id: string): Promise<User> {
         return this.usersService.findOne(id);
     }
@@ -42,6 +45,7 @@ export class UsersController {
     }
 
     @Patch(':id')
+    @UseGuards(JwtAuthGuard)
     async update(@Param('id') id: string, @Body() updateUserDto: UpdateUsersDTO): Promise<User> {
         if (updateUserDto.senha) {
             updateUserDto.senha = await this.encryptService.encrypt(updateUserDto.senha);

@@ -28,16 +28,15 @@ export class LoginJwtService {
       throw new UnauthorizedException('Senha incorreta');
     }
 
-    // Correção: Montando o payload condicionalmente
     const payload: { [key: string]: any } = {
       id: user._id,
       email: user.email,
       nome: user.nome,
       usuario: user.usuario,
-      role: user.role, // Melhoria: Incluir a role é essencial para autorização
+      instituicao: user.instituicao,
+      role: user.role,
     };
 
-    // Adiciona os detalhes do estudante apenas se o usuário tiver essa role
     if (user.role === UserRole.STUDENT && user.studentDetails) {
       payload.curso = user.studentDetails.curso;
       payload.modulo = user.studentDetails.modulo;
@@ -45,7 +44,6 @@ export class LoginJwtService {
 
     const token = this.jwtService.sign(payload, { expiresIn: '1h' });
 
-    // O restante do método permanece o mesmo...
     const refreshTokenValue = crypto.randomBytes(64).toString('hex');
     const refreshTokenExpiresInMs = lembrar ? 30 * 24 * 60 * 60 * 1000 : 1 * 24 * 60 * 60 * 1000;
     const refreshTokenExpiresAt = new Date(Date.now() + refreshTokenExpiresInMs);
@@ -78,12 +76,12 @@ export class LoginJwtService {
       throw new UnauthorizedException('Usuário associado ao refresh token não encontrado.');
     }
 
-    // Correção: Montando o payload condicionalmente (mesma lógica do login)
     const payload: { [key: string]: any } = {
       id: user._id,
       email: user.email,
       nome: user.nome,
       usuario: user.usuario,
+      instituicao: user.instituicao,
       role: user.role,
     };
 
@@ -94,7 +92,6 @@ export class LoginJwtService {
 
     const newToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     
-    // O restante do método permanece o mesmo...
     const newRefreshTokenValue = crypto.randomBytes(64).toString('hex');
     const newRefreshTokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
@@ -110,7 +107,6 @@ export class LoginJwtService {
   }
 
   async logout(refreshToken: string): Promise<void> {
-    // Nenhuma alteração necessária aqui
     const result = await this.refreshTokenSchema.findOneAndUpdate(
       { longToken: refreshToken, revoked: false },
       { $set: { revoked: true } },

@@ -7,7 +7,6 @@ import { validateId } from 'src/utils/decorators/validate-id';
 import { PostService } from '../posts/post.service';
 import { UserRole } from '../../models/user.schema';
 
-// Interface para o payload do usuário, garantindo consistência
 interface UserPayload {
   id: string;
   role: UserRole;
@@ -17,7 +16,7 @@ interface UserPayload {
 export class CommentsService {
   constructor(
     @InjectModel(Comments.name)
-    private readonly commentModel: Model<CommentsSchema>, // Correção de tipo
+    private readonly commentModel: Model<CommentsSchema>, 
     private readonly postService: PostService,
   ) {}
 
@@ -35,7 +34,6 @@ export class CommentsService {
     const comentarioSalvo = await novoComentario.save();
     await this.postService.incrementCommentsCount(postId);
 
-    // Usando .populate() no documento salvo para retornar os dados do autor
     return comentarioSalvo.populate('autor', this.userPopulateFields);
   }
 
@@ -47,7 +45,6 @@ export class CommentsService {
       .sort({ createdAt: 'desc' });
   }
 
-  // ✅ Método renomeado de findByAluno para findByUser
   async findByUser(userId: string): Promise<Comments[]> {
     validateId(userId);
     return this.commentModel
@@ -56,10 +53,8 @@ export class CommentsService {
       .sort({ createdAt: 'desc' });
   }
 
-  // ✅ Assinatura e lógica do método delete atualizadas
   async delete(commentId: string, user: UserPayload): Promise<{ message: string }> {
     validateId(commentId);
-    // Populamos o autor do post para a verificação de permissão
     const comment = await this.commentModel.findById(commentId).populate({
       path: 'post',
       select: 'autor',
@@ -70,9 +65,7 @@ export class CommentsService {
     }
 
     const isCommentAuthor = comment.autor.toString() === user.id;
-    // O autor do post também pode deletar comentários no seu post
     const isPostAuthor = comment.post?.autor.toString() === user.id;
-    // Um admin pode deletar qualquer comentário
     const isAdmin = user.role === UserRole.ADMIN;
 
     if (!isCommentAuthor && !isPostAuthor && !isAdmin) {

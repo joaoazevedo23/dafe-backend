@@ -6,7 +6,6 @@ import { CreateCommentDTO } from './dtos/create-comment.dto';
 import { UserRole } from 'models/user.schema';
 
 
-// Interface atualizada para refletir o payload completo do JWT
 interface UserPayload {
   id: string;
   nome: string;
@@ -15,6 +14,7 @@ interface UserPayload {
   role: UserRole;
 }
 
+@UseGuards(JwtAuthGuard)
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
@@ -24,10 +24,8 @@ export class CommentsController {
     return this.commentsService.findByPost(postId);
   }
 
-  // ✅ Rota e parâmetro renomeados para refletir a entidade 'User'
   @Get('/user/:userId')
   findByUser(@Param('userId') userId: string) {
-    // Assumindo que o método no serviço também será renomeado para findByUser
     return this.commentsService.findByUser(userId);
   }
 
@@ -42,7 +40,6 @@ export class CommentsController {
   @Delete(':commentId')
   delete(@Param('commentId') commentId: string, @Req() req: Request) {
     const user = req.user as UserPayload;
-    // ✅ Passando o usuário inteiro para o serviço ter mais contexto de permissão
     return this.commentsService.delete(commentId, user);
   }
 }
