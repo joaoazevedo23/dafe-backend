@@ -6,9 +6,21 @@ export type NewsSchema = News & Document;
 
 @Schema()
 export class News {
- //Aqui será inserida a estrutura das news
+ _id: Types.ObjectId;
+  @Prop({ required: true })
+  titulo: string;
+
+  @Prop({ required: true, minlength: 5 })
+  conteudo: string;
+
+  @Prop({ required: true, minlength: 5 })
+  descricao: string;
+
+  @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User', required: true})
+  autor: User | MongooseSchema.Types.ObjectId;
 } 
 
 export const NewsSchema = SchemaFactory.createForClass(News);
 
 //titulo, descrição e conteúdo
+//Ver com o zambão se as notícias vão te comentarios, espero que não :(, ou interações

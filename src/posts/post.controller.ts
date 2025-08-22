@@ -19,6 +19,10 @@ interface UserPayload {
   // Campos adicionais para a role student
   curso?: string;
   modulo?: number;
+
+  // Campos adicionais para a role professor
+  matricula?: number;
+  periodo?: string;
 }
 
 @UseGuards(JwtAuthGuard)
