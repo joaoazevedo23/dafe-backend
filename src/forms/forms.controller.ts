@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { FormsService } from './forms.service';
-import { CreateFormDto } from './dtos/create-form.dto';
-import { UpdateFormDto } from './dtos/update-form.dto';
+import { CreateFormDto } from './dto/create-form.dto';
+import { UpdateFormDto } from './dto/update-form.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { UserRole } from 'models/user.schema';
 import { Roles } from 'src/utils/decorators/roles.decorator';
