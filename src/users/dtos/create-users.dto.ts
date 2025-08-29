@@ -8,18 +8,22 @@ import { ProfessorDetailsDto } from './professor-details.dto';
     @IsString()
     @IsNotEmpty({ message: 'O nome é obrigatório' })
     nome: string;
-  
+
     @IsString()
-    @IsNotEmpty({ message: 'A senha é obrigatória' })
-    senha: string;
-  
+    @IsNotEmpty({ message: 'O nome de usuário é obrigatório' })
+    usuario: string;
+
     @IsEmail({}, { message: 'Forneça um email válido' })
     @IsNotEmpty({ message: 'O email é obrigatório' })
     email: string;
   
     @IsString()
-    @IsNotEmpty({ message: 'O nome de usuário é obrigatório' })
-    usuario: string;
+    @IsNotEmpty({ message: 'A senha é obrigatória' })
+    senha: string;
+
+    @IsString()
+    @IsNotEmpty({ message: 'As senhas devem ser iguais' })
+    confirmarSenha: string;
 
     @IsString({ message: 'A instituição deve ser um texto' })
     @IsNotEmpty({ message: 'A instituição é obrigatória' })
