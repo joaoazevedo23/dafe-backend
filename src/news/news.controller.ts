@@ -21,6 +21,7 @@ interface UserPayload {
   periodo?: string;
 }
 
+@UseGuards(JwtAuthGuard)
 @Controller('news')
 export class NewsController {
     constructor(private readonly newsService: NewsService) {}
