@@ -42,6 +42,11 @@ export class LoginJwtService {
       payload.modulo = user.studentDetails.modulo;
     }
 
+    if (user.role === UserRole.PROFESSOR && user.professorDetails) {
+      payload.periodo = user.professorDetails.periodo;
+      payload.matricula = user.professorDetails.matricula;
+    }
+
     const token = this.jwtService.sign(payload, { expiresIn: '1h' });
 
     const refreshTokenValue = crypto.randomBytes(64).toString('hex');
@@ -88,6 +93,11 @@ export class LoginJwtService {
     if (user.role === UserRole.STUDENT && user.studentDetails) {
       payload.curso = user.studentDetails.curso;
       payload.modulo = user.studentDetails.modulo;
+    }
+
+    if (user.role === UserRole.PROFESSOR && user.professorDetails) {
+      payload.periodo = user.professorDetails.periodo;
+      payload.matricula = user.professorDetails.matricula;
     }
 
     const newToken = this.jwtService.sign(payload, { expiresIn: '1h' });

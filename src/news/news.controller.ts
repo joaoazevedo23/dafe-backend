@@ -1,11 +1,9 @@
 import {Controller, HttpStatus, Get, Post, Put, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
 import { Request } from 'express';
-
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
 import { UpdateNewsDTO } from './dtos/update-news.dto';
-
-import { UserRole } from '../../models/user.schema'; // Caminho corrigido
+import { UserRole } from '../../models/user.schema'; 
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
@@ -46,7 +44,6 @@ export class NewsController {
     @HttpCode(HttpStatus.CREATED) // Retorna 201 Created
     create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
         const user = req.user as UserPayload;
-        // CORREÇÃO: Passar a instância do DTO, não a classe.
         return this.newsService.create(createNewsDTO, user.id);
     }
 
