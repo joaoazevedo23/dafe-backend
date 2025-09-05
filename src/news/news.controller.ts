@@ -1,4 +1,4 @@
-import {Controller, HttpStatus, Get, Post, Put, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
+import {Controller, HttpStatus, Get, Post, Patch, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
 import { Request } from 'express';
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
@@ -40,7 +40,7 @@ export class NewsController {
 
     // Rota: POST /news
     @Post()
-    @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
+    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
     @UseGuards(RolesGuard)
     @HttpCode(HttpStatus.CREATED) // Retorna 201 Created
     create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
@@ -48,9 +48,9 @@ export class NewsController {
         return this.newsService.create(createNewsDTO, user.id);
     }
 
-    // Rota: PUT /news/:id
-    @Put(':id')
-    @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
+    // Rota: Patch /news/:id
+    @Patch(':id')
+    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
     @UseGuards(RolesGuard)
     update(@Param('id') id: string, @Body() updateNewsDTO: UpdateNewsDTO, @Req() req: Request) {
         const user = req.user as UserPayload;
@@ -59,7 +59,7 @@ export class NewsController {
 
     // Rota: DELETE /news/:id
     @Delete(':id')
-    @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
+    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
     @UseGuards(RolesGuard)
     @HttpCode(HttpStatus.OK)
     delete(@Param('id') id: string, @Req() req: Request) {
