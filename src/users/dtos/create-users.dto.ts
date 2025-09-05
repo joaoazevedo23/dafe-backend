@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { UserRole } from '../../../models/user.schema';
 import { StudentDetailsDto } from './student-details.dto';
 import { ProfessorDetailsDto } from './professor-details.dto';
+import { Match } from 'src/utils/decorators/match.decorator';
   
   export class CreateUsersDTO {
     @IsString()
@@ -22,7 +23,8 @@ import { ProfessorDetailsDto } from './professor-details.dto';
     senha: string;
 
     @IsString()
-    @IsNotEmpty({ message: 'As senhas devem ser iguais' })
+    @IsNotEmpty({ message: 'A confirmação da senha é obrigatória' })
+    @Match('senha', { message: 'As senhas não coincidem' })
     confirmarSenha: string;
 
     @IsString({ message: 'A instituição deve ser um texto' })

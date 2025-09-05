@@ -41,7 +41,7 @@ export class NewsController {
     // Rota: POST /news
     @Post()
     @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    @UseGuards(RolesGuard)
     @HttpCode(HttpStatus.CREATED) // Retorna 201 Created
     create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
         const user = req.user as UserPayload;
@@ -51,7 +51,7 @@ export class NewsController {
     // Rota: PUT /news/:id
     @Put(':id')
     @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    @UseGuards(RolesGuard)
     update(@Param('id') id: string, @Body() updateNewsDTO: UpdateNewsDTO, @Req() req: Request) {
         const user = req.user as UserPayload;
         return this.newsService.update(id, updateNewsDTO, user.id);
@@ -60,7 +60,7 @@ export class NewsController {
     // Rota: DELETE /news/:id
     @Delete(':id')
     @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    @UseGuards(RolesGuard)
     @HttpCode(HttpStatus.OK)
     delete(@Param('id') id: string, @Req() req: Request) {
         const user = req.user as UserPayload;
