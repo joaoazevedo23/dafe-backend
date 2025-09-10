@@ -21,6 +21,3 @@ export class News {
 }
 
 export const NewsSchema = SchemaFactory.createForClass(News);
-
-//titulo, descrição e conteúdo
-//Ver com o zambão se as notícias vão te comentarios, espero que não :(, ou interações

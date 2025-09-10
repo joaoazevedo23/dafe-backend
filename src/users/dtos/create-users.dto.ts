@@ -3,23 +3,29 @@ import { Type } from 'class-transformer';
 import { UserRole } from '../../../models/user.schema';
 import { StudentDetailsDto } from './student-details.dto';
 import { ProfessorDetailsDto } from './professor-details.dto';
+import { Match } from 'src/utils/decorators/match.decorator';
   
   export class CreateUsersDTO {
     @IsString()
     @IsNotEmpty({ message: 'O nome é obrigatório' })
     nome: string;
-  
+
     @IsString()
-    @IsNotEmpty({ message: 'A senha é obrigatória' })
-    senha: string;
-  
+    @IsNotEmpty({ message: 'O nome de usuário é obrigatório' })
+    usuario: string;
+
     @IsEmail({}, { message: 'Forneça um email válido' })
     @IsNotEmpty({ message: 'O email é obrigatório' })
     email: string;
   
     @IsString()
-    @IsNotEmpty({ message: 'O nome de usuário é obrigatório' })
-    usuario: string;
+    @IsNotEmpty({ message: 'A senha é obrigatória' })
+    senha: string;
+
+    @IsString()
+    @IsNotEmpty({ message: 'A confirmação da senha é obrigatória' })
+    @Match('senha', { message: 'As senhas não coincidem' })
+    confirmarSenha: string;
 
     @IsString({ message: 'A instituição deve ser um texto' })
     @IsNotEmpty({ message: 'A instituição é obrigatória' })

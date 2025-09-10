@@ -1,11 +1,9 @@
-import {Controller, HttpStatus, Get, Post, Put, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
+import {Controller, HttpStatus, Get, Post, Patch, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
 import { Request } from 'express';
-
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
 import { UpdateNewsDTO } from './dtos/update-news.dto';
-
-import { UserRole } from '../../models/user.schema'; // Caminho corrigido
+import { UserRole } from '../../models/user.schema'; 
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
@@ -23,6 +21,7 @@ interface UserPayload {
   periodo?: string;
 }
 
+@UseGuards(JwtAuthGuard)
 @Controller('news')
 export class NewsController {
     constructor(private readonly newsService: NewsService) {}
@@ -41,19 +40,18 @@ export class NewsController {
 
     // Rota: POST /news
     @Post()
-    @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
+    @UseGuards(RolesGuard)
     @HttpCode(HttpStatus.CREATED) // Retorna 201 Created
     create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
         const user = req.user as UserPayload;
-        // CORREÇÃO: Passar a instância do DTO, não a classe.
         return this.newsService.create(createNewsDTO, user.id);
     }
 
-    // Rota: PUT /news/:id
-    @Put(':id')
-    @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    // Rota: Patch /news/:id
+    @Patch(':id')
+    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
+    @UseGuards(RolesGuard)
     update(@Param('id') id: string, @Body() updateNewsDTO: UpdateNewsDTO, @Req() req: Request) {
         const user = req.user as UserPayload;
         return this.newsService.update(id, updateNewsDTO, user.id);
@@ -61,8 +59,8 @@ export class NewsController {
 
     // Rota: DELETE /news/:id
     @Delete(':id')
-    @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
+    @UseGuards(RolesGuard)
     @HttpCode(HttpStatus.OK)
     delete(@Param('id') id: string, @Req() req: Request) {
         const user = req.user as UserPayload;

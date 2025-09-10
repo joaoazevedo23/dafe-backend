@@ -53,10 +53,10 @@ export class CommentsService {
       .sort({ createdAt: 'desc' });
   }
 
-  async delete(commentId: string, user: UserPayload): Promise<{ message: string }> {
+  async delete(commentId: string, user): Promise<{ message: string }> {
     validateId(commentId);
     const comment = await this.commentModel.findById(commentId).populate({
-      path: 'post',
+      path: 'post', 
       select: 'autor',
     });
 
