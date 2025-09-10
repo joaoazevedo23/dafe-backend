@@ -10,6 +10,7 @@ import { EncryptService } from './utils/encrypt/encrypt.service';
 import { LoginJwtModule } from './login-jwt/login-jwt.module';
 import { FormsModule } from './forms/forms.module';
 import { NewsModule } from './news/news.module';
+import { AnswerModule } from './answer/answer.module';
 
 
 @Module({
@@ -22,7 +23,8 @@ import { NewsModule } from './news/news.module';
     ComplaintsModule,
     LoginJwtModule,
     FormsModule,
-    NewsModule
+    NewsModule,
+    AnswerModule
   ],
 
   controllers: [AppController],
