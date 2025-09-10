@@ -9,19 +9,13 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
-@Schema({ _id: false }) 
+@Schema({ _id: false })
 
 class StudentDetails {
 
   @Prop({
     required: true,
-    enum: [
-      'Desenvolvimento de Sistemas',
-      'Administração',
-      'Logística',
-      'Marketing',
-      'Gestão de Recursos Humanos',
-    ],
+    enum: ['Desenvolvimento de Sistemas', 'Administração', 'Logística', 'Marketing', 'Gestão de Recursos Humanos'],
   })
   curso: string;
 
@@ -40,25 +34,12 @@ class ProfessorDetails {
 
 export type UserSchema = User & Document;
 
-@Schema({ timestamps: true }) 
+@Schema({ timestamps: true })
 export class User {
-  // --- Campos Comuns a Todos os Usuários ---
-  @Prop({ required: true, trim: true, enum: ["Etec de Guarulhos"]})
-  instituicao: string;
+  // Campos Gerais de Todos os Usuários
 
   @Prop({ required: [true, 'O nome é obrigatório'], trim: true })
   nome: string;
-
-  @Prop({ required: [true, 'A senha é obrigatória'] })
-  senha: string;
-
-  @Prop({
-    required: [true, 'O email é obrigatório'],
-    unique: true,   
-    lowercase: true, 
-    trim: true,
-  })
-  email: string;
 
   @Prop({
     required: [true, 'O nome de usuário é obrigatório'],
@@ -69,14 +50,28 @@ export class User {
   usuario: string;
 
   @Prop({
-    type: String, 
+    required: [true, 'O email é obrigatório'],
+    unique: true,
+    lowercase: true,
+    trim: true,
+  })
+  email: string;
+
+  @Prop({ required: [true, 'A senha é obrigatória'] })
+  senha: string;
+
+  @Prop({ required: true, trim: true, enum: ["Etec de Guarulhos"] })
+  instituicao: string;
+
+  @Prop({
+    type: String,
     required: true,
     enum: UserRole,
-    default: UserRole.STUDENT, 
+    default: UserRole.STUDENT,
   })
-  role: UserRole; 
+  role: UserRole;
 
-  // --- Campos Específicos de Cada Role ---
+  // Campos Específicos de Cada Role
 
   @Prop({
     type: StudentDetails,
@@ -84,9 +79,9 @@ export class User {
   })
   studentDetails?: StudentDetails;
 
-  @Prop({ 
+  @Prop({
     type: ProfessorDetails,
-    required: false 
+    required: false
   })
   professorDetails?: ProfessorDetails;
 }
