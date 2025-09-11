@@ -1,101 +1,107 @@
 # 📚 DAFE – API de Feedback Escolar e Fóruns de Conversa
 
-Esta é a API do projeto **DAFE**, uma aplicação voltada para o **feedback escolar** e **fóruns de conversa entre alunos**. Desenvolvida com **NestJS** e conectada a um banco de dados **MongoDB Atlas**, a API oferece rotas para registro de estudantes, criação de fóruns de discussão (posts), envio de denúncias e, em breve, permitirá comentários em posts e envio de formulários de feedback escolar.
+Esta é a **API do projeto DAFE**, uma aplicação voltada para o feedback escolar e fóruns de conversa entre alunos. Desenvolvida com **NestJS** e conectada a um banco de dados **MongoDB Atlas**, a API oferece um conjunto robusto de funcionalidades para:
+
+- Registro de usuários
+- Criação de posts e notícias
+- Envio de denúncias
+- Gerenciamento de formulários de feedback
 
 ---
 
-## ⚙️ Tecnologias utilizadas
+## ⚙️ Tecnologias Utilizadas
 
-* [NestJS](https://nestjs.com/) – Framework para Node.js
-* [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) – Banco de dados na nuvem
-* [Mongoose](https://mongoosejs.com/) – ODM para MongoDB
-* [JWT (JSON Web Token)](https://jwt.io/) – Autenticação e autorização
-* [Thunder Client](https://www.thunderclient.com/) – Cliente HTTP para testes (usado para simular os envios)
-
----
-
-## 📌 Funcionalidades atuais
-
-### ✅ Implementadas - Funcionando
-
-* **Autenticação com JWT**: atualmente protegendo as rotas de criação e acesso aos **posts** (fóruns).
-* **`/students`**: registro de estudantes. Necessário se cadastrar aqui para acessar as outras funcionalidades protegidas.
-* **`/posts`**: criação e visualização de fóruns de conversa entre estudantes (autenticado via JWT).
-* **`/complaints`**: envio de denúncias relacionadas ao ambiente escolar.
-
-### ⚠️ Em desenvolvimento
-
-* **`/comments`**: comentários em posts (ainda não implementado).
-* **`/feedback-forms`**: formulários para feedback escolar (em progresso).
-* Integração completa com JWT para proteger mais rotas além dos posts.
+- **NestJS** – Framework para Node.js
+- **MongoDB Atlas** – Banco de dados na nuvem
+- **Mongoose** – ODM para MongoDB
+- **JWT (JSON Web Token)** – Autenticação e autorização
+- **Thunder Client** – Cliente HTTP para testes de API
 
 ---
 
-## 🛠️ Como utilizar
+## 📌 Funcionalidades
 
-### 1. Clone o repositório
+### ✅ Implementadas – Funcionando
+
+- **Autenticação com JWT**  
+  Proteção completa das rotas, incluindo login e autenticação com token.
+
+- **Gerenciamento de Usuários** `/users`  
+  Registro de usuários com suporte a roles: `student`, `professor`, `manager`, `admin`.
+
+- **Fóruns de Conversa** `/posts`  
+  Criação, visualização, atualização e exclusão de posts.
+
+- **Notícias** `/news`  
+  Criação e gestão de notícias institucionais.
+
+- **Comentários** `/comments`  
+  Sistema de comentários nos posts.
+
+- **Formulários de Feedback** `/forms` e `/answers`  
+  Criação de formulários e envio de respostas.
+
+- **Denúncias** `/complaints`  
+  Envio de denúncias relacionadas ao ambiente escolar.
+
+### ⚠️ Em Desenvolvimento
+
+- [ ] Suporte para **upload de imagens** em posts e notícias.
+- [ ] Funcionalidade "**Esqueci minha senha**" com envio de e-mail para recuperação.
+- [ ] **Documentação completa** dos endpoints com exemplos de payloads e respostas.
+
+---
+
+## 🛠️ Como Utilizar
 
 ```bash
+# 1. Clone o repositório
 git clone https://github.com/joaoazevedo23/dafe-backend
-```
 
-### 2. Instale as dependências
-
-```bash
+# 2. Instale as dependências
 npm install
-```
 
-### 3. Adicione o Mongo DB (Compass) 
+# 3. Configure o Banco de Dados
+# Crie seu cluster no MongoDB Atlas e adicione a string de conexão no arquivo `.env` ou de configuração.
 
-Abra o arquivo:
-```
-dafe-backend/src/app.module.ts
-```
-E insira a conexão com o banco local. Estamos vendo como permitir que mais users acessem o banco online Atlas
-
-### 4. Execute o projeto
-
-```bash
+# 4. Execute o projeto
 npm run start:dev
 ```
 
----
+## 🔐 Autenticação e Acesso
 
-## 🔐 Autenticação
+Para acessar rotas protegidas da API, siga os passos abaixo:
 
-Para acessar rotas protegidas (como `/posts`), siga os passos:
+1. **Registre um usuário**  
+Envie uma requisição `POST` para o endpoint:
+```bash
+POST/user
+```
+   
+2. **Faça login**  
+Envie uma requisição `POST` para o endpoint:
+```bash
+POST /login-jwt
+```
 
-1. Registre um estudante com uma requisição `POST` em `/students`.
-2. Faça o login com uma requisição `POST` em `/login-jwt`.
-3. Envie o token no cabeçalho das requisições protegidas:
+Isso retornará um token JWT.
 
-```http
+3. **Use o token nas rotas protegidas**  
+Inclua o token JWT no cabeçalho das suas requisições:
+```bash
 Authorization: Bearer seu_token_jwt
 ```
 
-> ⚠️ Atualmente, **apenas a rota de posts está protegida** por autenticação JWT.
+---
+
+## 📋 Próximos Passos
+
+- [ ] Adicionar suporte a imagens em posts e notícias.
+- [ ] Implementar recuperação de senha via e-mail.
+- [ ] Criar documentação completa dos endpoints da API.
 
 ---
 
-## 🧪 Testes com Thunder Client
+## ❓ Dúvidas ou Sugestões?
 
-Para simular o envio de formulários e testar rotas, utilizei o **Thunder Client**. Recomendo os seguintes passos:
-
-* Registre um estudante (`POST /students`)
-* Copie o token JWT da resposta
-* Use esse token no header das próximas requisições protegidas (`Authorization: Bearer <token>`)
-
----
-
-## 📋 To-do (Próximos passos)
-
-* [ ] Implementar e proteger a rota `/comments`
-* [ ] Desenvolver e conectar os formulários de feedback escolar
-* [ ] Expandir autenticação JWT para outras rotas
-* [ ] Documentar endpoints
-
----
-
-## ❓ Dúvidas?
-
-Se quiser perguntar algo, estou disponível para ajudar. Ainda estou finalizando algumas partes do projeto, mas posso esclarecer qualquer ponto que não esteja claro no momento.
+Se precisar de ajuda ou tiver alguma sugestão, sinta-se à vontade para entrar em contato!
