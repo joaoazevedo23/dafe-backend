@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsIn, MinLength, IsOptional, IsNumber, Min } from 'class-validator';
+import {z} from 'zod';
 
 export class CreatePostDTO{
 
@@ -26,6 +27,19 @@ export class CreatePostDTO{
     @IsOptional()
     @IsNumber()
     @Min(0)
-    commentsCount?: number
+    commentsCount?: number;
 
+    @IsOptional()
+    @IsString()
+    imageUrl?: string;
 }
+
+export const CreatePostSchema = z.object({
+    titulo: z.string(),
+    conteudo: z.string(),
+    descricao: z.string(),
+    topico: z.string(),
+    interacao: z.number().optional(),
+    commentsCount: z.number().optional(),
+    imageUrl: z.string().url().optional(),
+})
