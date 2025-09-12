@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Post, PostSchema } from '../../models/post.schema';
 import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
-import { validateId } from 'src/utils/decorators/validate-id';
+import { validateId, isValidObjectId } from 'src/utils/decorators/validate-id';
 import { UserRole } from '../../models/user.schema';
 
 // Interface para o payload do usuário, espelhando a do controller
@@ -29,19 +29,30 @@ export class PostService {
     return this.postModel
       .find(query)
       .sort({ createdAt: -1 })
-      .populate('autor', this.userPopulateFields) 
+      .populate('autor', this.userPopulateFields)
       .exec();
   }
 
-  async findOne(id: string): Promise<Post> {
-    validateId(id);
-    const post = await this.postModel
-      .findById(id)
-      .populate('autor', this.userPopulateFields) 
-      .exec();
-    if (!post) {
-      throw new NotFoundException(`Post com id ${id} não encontrado`);
+  async findOne(idOrSlug: string): Promise<Post> {
+    let post;
+
+    if (isValidObjectId(idOrSlug)) {
+      validateId(idOrSlug);
+      post = await this.postModel
+        .findById(idOrSlug)
+        .populate('autor', this.userPopulateFields)
+        .exec();
+    } else {
+      post = await this.postModel
+        .findOne({ slug: idOrSlug })
+        .populate('autor', this.userPopulateFields)
+        .exec();
     }
+
+    if (!post) {
+      throw new NotFoundException(`Post com identificador "${idOrSlug}" não encontrado`);
+    }
+
     return post;
   }
 
@@ -56,58 +67,99 @@ export class PostService {
     return this.findOne(postSalvo._id.toString());
   }
 
-  async update(id: string, updatePostDTO: UpdatePostDTO, user: UserPayload): Promise<Post> {
-    validateId(id);
-    const postExistente = await this.postModel.findById(id);
-    if (!postExistente) {
-      throw new NotFoundException(`Post com id ${id} não encontrado`);
+  async update(idOrSlug: string, updatePostDTO: UpdatePostDTO, user: UserPayload): Promise<Post> {
+    let postExistente;
+
+    if (isValidObjectId(idOrSlug)) {
+      validateId(idOrSlug);
+      postExistente = await this.postModel.findById(idOrSlug);
+    } else {
+      postExistente = await this.postModel.findOne({ slug: idOrSlug });
     }
 
-    // Lógica de permissão: Permite se o usuário for o autor OU se for um admin
+    if (!postExistente) {
+      throw new NotFoundException(`Post com identificador "${idOrSlug}" não encontrado`);
+    }
+
     if (postExistente.autor.toString() !== user.id && user.role !== UserRole.ADMIN) {
       throw new ForbiddenException('Você não tem permissão para editar este post.');
     }
 
-    const postAtualizado = await this.postModel
-      .findByIdAndUpdate(id, updatePostDTO, { new: true })
-      .populate('autor', this.userPopulateFields)
-      .exec();
+    let postAtualizado;
+
+    if (isValidObjectId(idOrSlug)) {
+      postAtualizado = await this.postModel
+        .findByIdAndUpdate(idOrSlug, updatePostDTO, { new: true })
+        .populate('autor', this.userPopulateFields)
+        .exec();
+    } else {
+      postAtualizado = await this.postModel
+        .findOneAndUpdate({ slug: idOrSlug }, updatePostDTO, { new: true })
+        .populate('autor', this.userPopulateFields)
+        .exec();
+    }
 
     if (!postAtualizado) {
-      throw new NotFoundException(`Post com id ${id} não encontrado após tentativa de atualização.`);
+      throw new NotFoundException(`Post com identificador "${idOrSlug}" não encontrado após tentativa de atualização.`);
     }
+
     return postAtualizado;
   }
 
-  async addInteracao(postId: string, userId: string): Promise<Post> {
-    validateId(postId);
-    const post = await this.postModel.findById(postId);
+  async addInteracao(postIdOrSlug: string, userId: string): Promise<Post> {
+    let post;
+
+    if (isValidObjectId(postIdOrSlug)) {
+      validateId(postIdOrSlug);
+      post = await this.postModel.findById(postIdOrSlug);
+    } else {
+      post = await this.postModel.findOne({ slug: postIdOrSlug });
+    }
 
     if (!post) {
-      throw new NotFoundException(`Post com id ${postId} não encontrado`);
+      throw new NotFoundException(`Post com identificador "${postIdOrSlug}" não encontrado`);
     }
 
     if (post.interactedBy.some((interactorId) => interactorId.toString() === userId)) {
       throw new BadRequestException(`Você já interagiu com este post.`);
     }
 
-    const updatePost = await this.postModel
-      .findByIdAndUpdate(postId, { $inc: { interacao: 1 }, $push: { interactedBy: userId } }, { new: true })
-      .populate('autor', this.userPopulateFields)
-      .exec();
+    let updatedPost;
 
-    if (!updatePost) {
-      throw new NotFoundException(`Post com id ${postId} não encontrado`);
+    if (isValidObjectId(postIdOrSlug)) {
+      updatedPost = await this.postModel
+        .findByIdAndUpdate(
+          postIdOrSlug,
+          { $inc: { interacao: 1 }, $push: { interactedBy: userId } },
+          { new: true },
+        )
+        .populate('autor', this.userPopulateFields)
+        .exec();
+    } else {
+      updatedPost = await this.postModel
+        .findOneAndUpdate(
+          { slug: postIdOrSlug },
+          { $inc: { interacao: 1 }, $push: { interactedBy: userId } },
+          { new: true },
+        )
+        .populate('autor', this.userPopulateFields)
+        .exec();
     }
 
-    return updatePost;
+    if (!updatedPost) {
+      throw new NotFoundException(`Post com identificador "${postIdOrSlug}" não encontrado`);
+    }
+
+    return updatedPost;
   }
+
+  // Mantém incrementCommentsCount e decrementCommentsCount iguais, pois recebem id válido e fazem findByIdAndUpdate
 
   async incrementCommentsCount(postId: string): Promise<Post> {
     validateId(postId);
     const updatedPost = await this.postModel
       .findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } }, { new: true })
-      .populate('autor', this.userPopulateFields) 
+      .populate('autor', this.userPopulateFields)
       .exec();
 
     if (!updatedPost) {
@@ -120,7 +172,7 @@ export class PostService {
     validateId(postId);
     const updatedPost = await this.postModel
       .findByIdAndUpdate(postId, { $inc: { commentsCount: -1 } }, { new: true })
-      .populate('autor', this.userPopulateFields) 
+      .populate('autor', this.userPopulateFields)
       .exec();
 
     if (!updatedPost) {
@@ -134,20 +186,26 @@ export class PostService {
     return updatedPost;
   }
 
-  
-  async delete(id: string, user: UserPayload): Promise<{ message: string }> {
-    validateId(id);
-    const postExistente = await this.postModel.findById(id);
-    if (!postExistente) {
-      throw new NotFoundException(`Post com id ${id} não encontrado`);
+  async delete(idOrSlug: string, user: UserPayload): Promise<{ message: string }> {
+    let postExistente;
+
+    if (isValidObjectId(idOrSlug)) {
+      validateId(idOrSlug);
+      postExistente = await this.postModel.findById(idOrSlug);
+    } else {
+      postExistente = await this.postModel.findOne({ slug: idOrSlug });
     }
 
-    
+    if (!postExistente) {
+      throw new NotFoundException(`Post com identificador "${idOrSlug}" não encontrado`);
+    }
+
     if (postExistente.autor.toString() !== user.id && user.role !== UserRole.ADMIN) {
       throw new ForbiddenException('Você não tem permissão para deletar este post.');
     }
 
     await postExistente.deleteOne();
-    return { message: `Post com id ${id} foi deletado com sucesso.` };
+
+    return { message: `Post com identificador "${idOrSlug}" foi deletado com sucesso.` };
   }
 }

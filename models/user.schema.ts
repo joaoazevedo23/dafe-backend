@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import slug from 'slug';
 
 
 export enum UserRole {
@@ -84,6 +85,16 @@ export class User {
     required: false
   })
   professorDetails?: ProfessorDetails;
+
+  @Prop({ unique: true }) /* Campo slug */
+  slug: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('usuario')) {
+    this.slug = slug(this.usuario, { lower: true });
+  }
+  next();
+});

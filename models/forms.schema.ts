@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 import { Document, Types } from 'mongoose';
-
+import slug from 'slug';
 
 export type FormsDocument = Forms & Document;
 
@@ -49,8 +49,8 @@ export class PerguntaDissertativa extends Pergunta {
 export const PerguntaDissertativaSchema = SchemaFactory.createForClass(PerguntaDissertativa);
 
 // Adiciona os discriminadores no schema pai (PerguntaSchema)
-PerguntaSchema.discriminator('MÚLTIPLA_ESCOLHA', PerguntaMultiplaEscolhaSchema);
-PerguntaSchema.discriminator('ESCOLHA_ÚNICA', PerguntaEscolhaUnicaSchema);
+PerguntaSchema.discriminator('MULTIPLA_ESCOLHA', PerguntaMultiplaEscolhaSchema);
+PerguntaSchema.discriminator('ESCOLHA_UNICA', PerguntaEscolhaUnicaSchema);
 PerguntaSchema.discriminator('DISSERTATIVA', PerguntaDissertativaSchema);
 
 @Schema({ timestamps: true })
@@ -65,5 +65,15 @@ export class Forms {
 
   @Prop({ type: [PerguntaSchema] })
   perguntas: Pergunta[];
+
+  @Prop({ unique: true }) /* Campo slug */
+  slug: string;
 }
 export const FormsSchema = SchemaFactory.createForClass(Forms);
+
+FormsSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('formTitulo')) {
+    this.slug = slug(this.formTitulo, { lower: true });
+  }
+  next();
+});

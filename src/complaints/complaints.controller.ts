@@ -22,9 +22,9 @@ export class ComplaintsController {
     return this.complaintsService.findAll(topico);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.complaintsService.findOne(id);
+  @Get(':idOrSlug')
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.complaintsService.findOne(idOrSlug);
   }
 
   @Post()
@@ -33,15 +33,15 @@ export class ComplaintsController {
     return this.complaintsService.create(createDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDto: UpdateComplaintsDTO) {
+  @Patch(':idOrSlug')
+  update(@Param('id') idOrSlug: string, @Body() updateDto: UpdateComplaintsDTO) {
     // Qualquer pessoa pode chamar esta rota.
-    return this.complaintsService.update(id, updateDto);
+    return this.complaintsService.update(idOrSlug, updateDto);
   }
 
-  @Delete(':id')
-  delete(@Param('id') id: string) {
+  @Delete(':idOrSlug')
+  delete(@Param('idOrSlug') idOrSlug: string) {
     // Qualquer pessoa pode chamar esta rota.
-    return this.complaintsService.delete(id);
+    return this.complaintsService.delete(idOrSlug);
   }
 }

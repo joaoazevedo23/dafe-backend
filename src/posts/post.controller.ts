@@ -26,14 +26,6 @@ interface UserPayload {
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  /* GET /posts -- get para puxar todos os posts (do fórum)
-      GET /posts/:id -- get para puxar um post selecionado (do fórum)
-      POST /posts -- post para lançar novos 
-      PATCH /posts/:id -- patch para editar um post selecionado (do fórum)
-      PATCH /posts/:id/interacao -- patch para adicionar interações (curtidas, comentários, etc.) em um post selecionado
-      DELETE /posts/:id -- delete para deletar um post selecionado (do fórum)
-  */
-
   @Get() // /posts ou /posts?topico=alunos
   findAll(
     @Query('topico') topico?: 'aulas' | 'diretores' | 'alunos' | 'atividades' | 'extracurriculares',
@@ -42,36 +34,34 @@ export class PostController {
     return this.postService.findAll(topico, autor);
   }
 
-  @Get(':id') // pegar só um
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(id);
+  @Get(':idOrSlug') // pegar só um post pelo id ou slug
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.postService.findOne(idOrSlug);
   }
 
-  @Post() // mandar postagens
-  @Roles(UserRole.STUDENT) // Apenas  estudantes podem acessar
-  @UseGuards(JwtAuthGuard, RolesGuard) // Primeiro checa o login, depois a permissão
+  @Post() // criar novo post
+  @Roles(UserRole.STUDENT, UserRole.PROFESSOR) // Apenas estudantes
+  @UseGuards(JwtAuthGuard, RolesGuard)
   create(@Body() postDto: CreatePostDTO, @Req() req: Request) {
-    const user = req.user as UserPayload; // Pegamos o usuário do token
+    const user = req.user as UserPayload;
     return this.postService.create(postDto, user.id);
   }
 
-  @Patch(':id') // editar postagens
-  update(@Param('id') id: string, @Body() postDto: UpdatePostDTO, @Req() req: Request) {
+  @Patch(':idOrSlug') // editar post pelo id ou slug
+  update(@Param('idOrSlug') idOrSlug: string, @Body() postDto: UpdatePostDTO, @Req() req: Request) {
     const user = req.user as UserPayload;
-    // Passa o usuário inteiro para o serviço ter mais contexto de permissão
-    return this.postService.update(id, postDto, user);
+    return this.postService.update(idOrSlug, postDto, user);
   }
 
-  @Patch(':id/interacao')
-  addInteracao(@Param('id') postId: string, @Req() req: Request) {
+  @Patch(':idOrSlug/interacao') // adicionar interação (curtida, etc)
+  addInteracao(@Param('idOrSlug') idOrSlug: string, @Req() req: Request) {
     const user = req.user as UserPayload;
-    return this.postService.addInteracao(postId, user.id);
+    return this.postService.addInteracao(idOrSlug, user.id);
   }
 
-  @Delete(':id') // deletar postagens
-  delete(@Param('id') id: string, @Req() req: Request) {
+  @Delete(':idOrSlug') // deletar post pelo id ou slug
+  delete(@Param('idOrSlug') idOrSlug: string, @Req() req: Request) {
     const user = req.user as UserPayload;
-    // Passa o usuário inteiro para o serviço ter mais contexto de permissão
-    return this.postService.delete(id, user);
+    return this.postService.delete(idOrSlug, user);
   }
 }
