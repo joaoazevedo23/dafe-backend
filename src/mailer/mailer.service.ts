@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
@@ -11,7 +10,7 @@ export class MailerService {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('MAIL_HOST'),
       port: this.configService.get<number>('MAIL_PORT'),
-      secure: false, // true para 465, false para outras portas
+      secure: false,
       auth: {
         user: this.configService.get<string>('MAIL_USER'),
         pass: this.configService.get<string>('MAIL_PASS'),
@@ -19,9 +18,17 @@ export class MailerService {
     });
   }
 
-  async sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  async sendMail({
+    to,
+    subject,
+    html,
+  }: {
+    to: string;
+    subject: string;
+    html: string;
+  }) {
     await this.transporter.sendMail({
-      from: '"DAFE App" <nao-responda@dafe.com>',
+      from: '"DAFE App" <nao-responda@dafeapp.com>',
       to,
       subject,
       html,
