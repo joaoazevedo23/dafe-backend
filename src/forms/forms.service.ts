@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Forms, FormsDocument } from '../../models/forms.schema'
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateFormDto } from './create.form.dro';
+import { CreateFormDto } from './create.form.dto';
+import { UpdateFormDto } from './update.form.dto';
 
 @Injectable()
 export class FormsService {
@@ -24,6 +25,18 @@ export class FormsService {
   async create(CreateFormDto: CreateFormDto): Promise<Forms> {
     const novoFormulario = new this.formsModel(CreateFormDto);
     return novoFormulario.save();
+  }
+
+  async update(id: string, UpdateFormDto: UpdateFormDto): Promise<Forms> {
+    const formsUpdated = await this.formsModel
+    .findByIdAndUpdate(id, UpdateFormDto, { new: true })
+    .exec();
+
+    if (!formsUpdated) {
+      throw new NotFoundException(`Formulário com ID "${id}" não encontrado.`);
+    }
+
+    return formsUpdated;
   }
 
 }

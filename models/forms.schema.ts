@@ -1,6 +1,6 @@
 import { Options } from "@nestjs/common";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Schema as MogooseSchema, Types } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 // opções das perguntas
 @Schema({ _id: false }) // para nao criar IDs para cada opção
@@ -36,7 +36,7 @@ export class Question extends Document {
     @Prop({ type: [OptionSchema], required: false })
     opcoes?: Option[];
 
-    @Prop({ required: false })
+    @Prop({ required: false, type: MongooseSchema.Types.Mixed })
     resposta?: string | number;
 }
 export const QuestionSchema = SchemaFactory.createForClass(Question);
