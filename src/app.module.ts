@@ -11,6 +11,9 @@ import { LoginJwtModule } from './login-jwt/login-jwt.module';
 import { FormsModule } from './forms/forms.module';
 import { NewsModule } from './news/news.module';
 import { AnswerModule } from './answer/answer.module';
+import { MailerService } from './mailer/mailer.service';
+import { MailerResolver } from './mailer/mailer.resolver';
+import { MailerModule } from './mailer/mailer.module';
 
 
 @Module({
@@ -24,10 +27,11 @@ import { AnswerModule } from './answer/answer.module';
     LoginJwtModule,
     FormsModule,
     NewsModule,
-    AnswerModule
+    AnswerModule,
+    MailerModule
   ],
 
   controllers: [AppController],
-  providers: [AppService, EncryptService],
+  providers: [AppService, EncryptService, MailerService, MailerResolver],
 })
 export class AppModule { }
