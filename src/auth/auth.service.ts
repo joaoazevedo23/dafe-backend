@@ -1,9 +1,16 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '../mailer/mailer.service';
-// import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/users.service';
+import { EncryptService } from '../utils/encrypt/encrypt.service';
+// Corrigindo a importação e o tipo
+import { User } from '../../models/user.schema';
+import { Document } from 'mongoose';
 
-// Interface para definir a estrutura do nosso payload do JWT
+type UserDocument = User & Document;
+
 interface JwtPayload {
   email: string;
 }
@@ -13,12 +20,15 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-    // private readonly usersService: UsersService,
+    private readonly usersService: UsersService,
+    private readonly encryptService: EncryptService,
   ) {}
 
   async requestPasswordReset(email: string): Promise<void> {
-    const user = { email, name: 'Usuário DAFE' }; // Placeholder para teste
+    const user: UserDocument = await this.usersService.findbyEmail(email);
+
     if (!user) {
+      console.log(`Tentativa de redefinição para e-mail não cadastrado: ${email}`);
       return;
     }
 
@@ -32,31 +42,30 @@ export class AuthService {
       subject: 'Redefinição de Senha - DAFE',
       html: `
         <h2>Redefinição de Senha</h2>
-        <p>Olá, ${user.name}!</p>
-        <p>Recebemos uma solicitação para redefinir sua senha. Clique no link abaixo para criar uma nova:</p>
+        <p>Olá, ${user.nome}!</p>
+        <p>Clique no link abaixo para criar uma nova senha:</p>
         <a href="${resetUrl}" target="_blank">Redefinir Senha</a>
-        <p>Este link é válido por 10 minutos.</p>
-        <p>Se você não fez esta solicitação, por favor, ignore este e-mail.</p>
+        <p>Este link é válido por 15 minutos.</p>
       `,
     });
   }
 
-  // O método agora é síncrono, pois não há operações 'await' ainda.
-  // Quando você adicionar a lógica de banco de dados, pode voltar a torná-lo 'async'.
-  resetPassword(token: string, newPassword: string): void {
+  async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
-      // Usamos a interface JwtPayload para dar um tipo seguro ao retorno do verify
       const payload = this.jwtService.verify<JwtPayload>(token);
-      const userEmail = payload.email;
+      const user = await this.usersService.findbyEmail(payload.email);
 
-      // Lógica de banco de dados viria aqui. Exemplo:
-      // const user = await this.usersService.findByEmail(userEmail);
-      // const hashedPassword = await bcrypt.hash(newPassword, 10);
-      // await this.usersService.updatePassword(user.id, hashedPassword);
+      if (!user) {
+        throw new NotFoundException('Usuário não encontrado.');
+      }
 
-      console.log(`Senha do usuário ${userEmail} seria redefinida para: ${newPassword}`);
+      const hashedPassword = await this.encryptService.encrypt(newPassword);
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      await this.usersService.update(user._id.toString(), {
+        senha: hashedPassword,
+      });
     } catch {
-      // O erro é ignorado de propósito (regra no-unused-vars)
       throw new Error('Token inválido ou expirado. Por favor, solicite a redefinição novamente.');
     }
   }
