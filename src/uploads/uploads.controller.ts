@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFile, HttpException, HttpStatus } from '@nestjs/common';
+/* import { Controller, Post, UseInterceptors, UploadedFile, HttpException, HttpStatus } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadsService } from './uploads.service';
 import { UploadSchema } from '../../models/uploads.schema'; // Certifique-se de que o caminho está correto
@@ -25,3 +25,4 @@ export class UploadsController {
       return {url: filePath};
   }
 }
+ */

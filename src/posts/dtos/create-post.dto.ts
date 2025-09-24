@@ -1,5 +1,4 @@
-import { IsString, IsNotEmpty, IsIn, MinLength, IsOptional, IsNumber, Min } from 'class-validator';
-import {z} from 'zod';
+import { IsString, IsNotEmpty, IsIn, MinLength, IsOptional, IsNumber, Min, IsUrl } from 'class-validator';
 
 export class CreatePostDTO{
 
@@ -30,16 +29,6 @@ export class CreatePostDTO{
     commentsCount?: number;
 
     @IsOptional()
-    @IsString()
-    imageUrl?: string;
+    @IsUrl({}, { message: 'A URL da imagem deve ser válida.' })
+    imageHash?: string;
 }
-
-export const CreatePostSchema = z.object({
-    titulo: z.string(),
-    conteudo: z.string(),
-    descricao: z.string(),
-    topico: z.string(),
-    interacao: z.number().optional(),
-    commentsCount: z.number().optional(),
-    imageUrl: z.string().url().optional(),
-})

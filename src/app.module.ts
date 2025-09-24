@@ -11,8 +11,7 @@ import { LoginJwtModule } from './login-jwt/login-jwt.module';
 import { FormsModule } from './forms/forms.module';
 import { NewsModule } from './news/news.module';
 import { AnswerModule } from './answer/answer.module';
-import { UploadsModule } from './uploads/uploads.module';
-
+/* import { UploadsModule } from './uploads/uploads.module';*/
 
 @Module({
 
@@ -26,7 +25,6 @@ import { UploadsModule } from './uploads/uploads.module';
     FormsModule,
     NewsModule,
     AnswerModule,
-    UploadsModule
   ],
 
   controllers: [AppController],

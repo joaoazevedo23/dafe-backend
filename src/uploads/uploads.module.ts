@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+/* import { Module } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
 import { UploadsController } from './uploads.controller';
 
@@ -7,3 +7,4 @@ import { UploadsController } from './uploads.controller';
   controllers: [UploadsController]
 })
 export class UploadsModule {}
+ */

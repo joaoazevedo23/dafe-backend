@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose'; 
 import { User } from './user.schema';
-import {z} from 'zod';
 import slug from 'slug';
 
 export type PostSchema = Post & Document;
@@ -38,9 +37,9 @@ export class Post {
   autor: User | MongooseSchema.Types.ObjectId;
 
   @Prop({required: false})
-  imageUrl?: string;
+  imageHash?: string;
 
-  @Prop({ unique: true }) /* Campo slug */
+  @Prop({ unique: true })
   slug: string;
 } 
 

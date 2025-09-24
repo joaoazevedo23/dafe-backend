@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+/* import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { extname, join } from 'path';
 import { promises as fs } from 'fs';
 
@@ -25,4 +25,4 @@ export class UploadsService {
         
         return `/uploads/${fileName}`;
     }
-}
+} */
