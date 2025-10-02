@@ -18,7 +18,6 @@ import { UserRole } from 'models/user.schema';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 
-// Definindo o tipo do payload do usuário que vem no token
 interface UserPayload {
   id: string;
   role: UserRole;
@@ -30,7 +29,7 @@ export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
   @Post()
-  @Roles(UserRole.PROFESSOR, UserRole.MANAGER) // Apenas professores ou gestores criam forms
+  @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
   @UseGuards(RolesGuard)
   create(@Body() createFormDto: CreateFormDto) {
     return this.formsService.create(createFormDto);
@@ -41,28 +40,29 @@ export class FormsController {
     return this.formsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.formsService.findOne(id);
+  // Alterar para idOrSlug
+  @Get(':idOrSlug')
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.formsService.findOne(idOrSlug);
   }
 
-  @Patch(':id')
+  @Patch(':idOrSlug')
   @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
   @UseGuards(RolesGuard)
   update(
-    @Param('id') id: string,
+    @Param('idOrSlug') idOrSlug: string,
     @Body() updateFormDto: UpdateFormDto,
     @Req() req: Request,
   ) {
     const user = req.user as UserPayload;
-    return this.formsService.update(id, updateFormDto, user);
+    return this.formsService.update(idOrSlug, updateFormDto, user);
   }
 
-  @Delete(':id')
+  @Delete(':idOrSlug')
   @Roles(UserRole.PROFESSOR, UserRole.MANAGER)
   @UseGuards(RolesGuard)
-  remove(@Param('id') id: string, @Req() req: Request) {
+  remove(@Param('idOrSlug') idOrSlug: string, @Req() req: Request) {
     const user = req.user as UserPayload;
-    return this.formsService.remove(id, user);
+    return this.formsService.remove(idOrSlug, user);
   }
 }

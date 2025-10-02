@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose'; 
 import { User } from './user.schema';
+import slug from 'slug';
 
 export type PostSchema = Post & Document;
 
@@ -34,6 +35,12 @@ export class Post {
 
   @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User', required: true})
   autor: User | MongooseSchema.Types.ObjectId;
+
+  @Prop({required: false})
+  imageHash?: string;
+
+  @Prop({ unique: true })
+  slug: string;
 } 
 
 export const PostSchema = SchemaFactory.createForClass(Post);
@@ -42,4 +49,11 @@ PostSchema.pre('deleteOne', { document:true, query: false}, async function(next)
 await this.model('Comments').deleteMany({ post: this._id });
 console.log(`Post com id ${this._id} deletado, removendo comentários associados.`);
 next();
+});
+
+PostSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('titulo')) {
+    this.slug = slug(this.titulo, { lower: true });
+  }
+  next();
 });

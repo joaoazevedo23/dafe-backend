@@ -1,10 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserSchema } from '../../models/user.schema'; 
+import { Model, isValidObjectId } from 'mongoose';
+import { User } from '../../models/user.schema'; 
 import { CreateUsersDTO } from './dtos/create-users.dto';
 import { UpdateUsersDTO } from './dtos/update-users.dto';
-import { validateId } from 'src/utils/decorators/validate-id';
 
 @Injectable()
 export class UsersService {
@@ -26,19 +25,25 @@ export class UsersService {
         return this.userModel.find(query).exec();
     }
 
-    async findOne(id: string): Promise<User> {
-        validateId(id);
-        const user = await this.userModel.findById(id).exec();
+    async findOne(idOrSlug: string): Promise<User> {
+        let user: User | null;
+
+        if (isValidObjectId(idOrSlug)) {
+            user = await this.userModel.findById(idOrSlug).exec();
+        } else {
+            user = await this.userModel.findOne({ slug: idOrSlug }).exec();
+        }
+
         if (!user) {
-            throw new NotFoundException(`Usuário com id: ${id} não encontrado`);
+            throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
         }
         return user;
     }
 
     async create(createUsersDTO: CreateUsersDTO): Promise<User> {
-        const newUser = new this.userModel(createUsersDTO);
         try {
-            return await newUser.save();
+            const createdUser = await this.userModel.create(createUsersDTO);
+            return createdUser;
         } catch (error) {
             if (error.code === 11000) {
                 throw new NotFoundException('Já existe um usuário com este email ou nome de usuário.');
@@ -47,21 +52,33 @@ export class UsersService {
         }
     }
 
-    async update(id: string, updateUsersDTO: UpdateUsersDTO): Promise<User> {
-        validateId(id);
-        const user = await this.userModel.findByIdAndUpdate(id, updateUsersDTO, { new: true }).exec();
+    async update(idOrSlug: string, updateUsersDTO: UpdateUsersDTO): Promise<User> {
+        let user: User | null;
+
+        if (isValidObjectId(idOrSlug)) {
+            user = await this.userModel.findByIdAndUpdate(idOrSlug, updateUsersDTO, { new: true }).exec();
+        } else {
+            user = await this.userModel.findOneAndUpdate({ slug: idOrSlug }, updateUsersDTO, { new: true }).exec();
+        }
+
         if (!user) {
-            throw new NotFoundException(`Usuário com id: ${id} não encontrado`);
+            throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
         }
         return user;
     }
 
-    async delete(id: string): Promise<{ message: string }> {
-        validateId(id);
-        const user = await this.userModel.findByIdAndDelete(id).exec();
-        if (!user) {
-            throw new NotFoundException(`Usuário com id: ${id} não encontrado`);
+    async delete(idOrSlug: string): Promise<{ message: string }> {
+        let user: User | null;
+
+        if (isValidObjectId(idOrSlug)) {
+            user = await this.userModel.findByIdAndDelete(idOrSlug).exec();
+        } else {
+            user = await this.userModel.findOneAndDelete({ slug: idOrSlug }).exec();
         }
-        return { message: `Usuário com id: ${id} deletado com sucesso` };
+
+        if (!user) {
+            throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
+        }
+        return { message: `Usuário com id ou slug "${idOrSlug}" deletado com sucesso` };
     }
 }

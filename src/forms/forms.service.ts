@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Forms, FormsDocument } from '../../models/forms.schema';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
-import { validateId } from '../utils/decorators/validate-id';
+import { validateId, isValidObjectId  } from '../utils/decorators/validate-id';
 import { UserRole } from 'models/user.schema';
 
 interface UserPayload {
@@ -27,48 +27,64 @@ export class FormsService {
     return this.formsModel.find().exec();
   }
 
-  async findOne(id: string): Promise<Forms> {
-    validateId(id);
-    const form = await this.formsModel.findById(id).exec();
+  async findOne(idOrSlug: string): Promise<Forms> {
+    let form;
+
+    if (isValidObjectId(idOrSlug)) {
+      // Se for id válido, usa findById (com validação estrita)
+      validateId(idOrSlug);
+      form = await this.formsModel.findById(idOrSlug).exec();
+    } else {
+      // Senão, procura pelo slug
+      form = await this.formsModel.findOne({ slug: idOrSlug }).exec();
+    }
 
     if (!form) {
-      throw new NotFoundException(`Formulário com ID "${id}" não encontrado.`);
+      throw new NotFoundException(`Formulário com identificador "${idOrSlug}" não encontrado.`);
     }
     return form;
   }
 
-  async update(id: string, updateFormDto: UpdateFormDto, user: UserPayload): Promise<Forms> {
-    validateId(id);
+  async update(idOrSlug: string, updateFormDto: UpdateFormDto, user: UserPayload): Promise<Forms> {
+    let updatedForm;
 
-    // Adicionando lógica de permissão (ex: somente professores/managers podem editar)
+    // Permissão
     if (user.role !== UserRole.PROFESSOR && user.role !== UserRole.MANAGER) {
-        throw new NotFoundException('Você não tem permissão para editar este formulário.');
+      throw new NotFoundException('Você não tem permissão para editar este formulário.');
     }
 
-    const updatedForm = await this.formsModel
-      .findByIdAndUpdate(id, updateFormDto as import('mongoose').UpdateQuery<FormsDocument>, { new: true })
-      .exec();
+    if (isValidObjectId(idOrSlug)) {
+      validateId(idOrSlug);
+      updatedForm = await this.formsModel.findByIdAndUpdate(idOrSlug, updateFormDto, { new: true }).exec();
+    } else {
+      updatedForm = await this.formsModel.findOneAndUpdate({ slug: idOrSlug }, updateFormDto, { new: true }).exec();
+    }
 
     if (!updatedForm) {
-      throw new NotFoundException(`Formulário com ID "${id}" não encontrado.`);
+      throw new NotFoundException(`Formulário com identificador "${idOrSlug}" não encontrado.`);
     }
     return updatedForm;
   }
 
-  async remove(id: string, user: UserPayload): Promise<{ message: string }> {
-    validateId(id);
-
-    // Adicionando lógica de permissão
+  async remove(idOrSlug: string, user: UserPayload): Promise<{ message: string }> {
+    // Permissão
     if (user.role !== UserRole.PROFESSOR && user.role !== UserRole.MANAGER) {
-        throw new NotFoundException('Você não tem permissão para deletar este formulário.');
+      throw new NotFoundException('Você não tem permissão para deletar este formulário.');
     }
-    
-    const result = await this.formsModel.deleteOne({ _id: id }).exec();
+
+    let result;
+
+    if (isValidObjectId(idOrSlug)) {
+      validateId(idOrSlug);
+      result = await this.formsModel.deleteOne({ _id: idOrSlug }).exec();
+    } else {
+      result = await this.formsModel.deleteOne({ slug: idOrSlug }).exec();
+    }
 
     if (result.deletedCount === 0) {
-      throw new NotFoundException(`Formulário com ID "${id}" não encontrado.`);
+      throw new NotFoundException(`Formulário com identificador "${idOrSlug}" não encontrado.`);
     }
 
-    return { message: `Formulário com ID "${id}" deletado com sucesso.` };
+    return { message: `Formulário com identificador "${idOrSlug}" deletado com sucesso.` };
   }
 }

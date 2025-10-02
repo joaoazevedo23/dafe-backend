@@ -1,9 +1,22 @@
-import {Controller, HttpStatus, Get, Post, Patch, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
+import {
+  Controller,
+  HttpStatus,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Query,
+  Body,
+  HttpCode,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
 import { UpdateNewsDTO } from './dtos/update-news.dto';
-import { UserRole } from '../../models/user.schema'; 
+import { UserRole } from '../../models/user.schema';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
@@ -13,7 +26,7 @@ interface UserPayload {
   nome: string;
   email: string;
   usuario: string;
-  role: UserRole; 
+  role: UserRole;
   instituicao: string;
   curso?: string;
   modulo?: number;
@@ -24,46 +37,41 @@ interface UserPayload {
 @UseGuards(JwtAuthGuard)
 @Controller('news')
 export class NewsController {
-    constructor(private readonly newsService: NewsService) {}
+  constructor(private readonly newsService: NewsService) {}
 
-    // Rota: GET /news
-    @Get()
-    findAll(@Query('autor') autor?: string) {
-        return this.newsService.findAll(autor);
-    }
+  @Get()
+  findAll(@Query('autor') autor?: string) {
+    return this.newsService.findAll(autor);
+  }
 
-    // Rota: GET /news/:id
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.newsService.findOne(id);
-    }
+  @Get(':idOrSlug')
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.newsService.findOne(idOrSlug);
+  }
 
-    // Rota: POST /news
-    @Post()
-    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
-    @UseGuards(RolesGuard)
-    @HttpCode(HttpStatus.CREATED) // Retorna 201 Created
-    create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
-        const user = req.user as UserPayload;
-        return this.newsService.create(createNewsDTO, user.id);
-    }
+  @Post()
+  @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
+  @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
+    const user = req.user as UserPayload;
+    return this.newsService.create(createNewsDTO, user.id);
+  }
 
-    // Rota: Patch /news/:id
-    @Patch(':id')
-    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
-    @UseGuards(RolesGuard)
-    update(@Param('id') id: string, @Body() updateNewsDTO: UpdateNewsDTO, @Req() req: Request) {
-        const user = req.user as UserPayload;
-        return this.newsService.update(id, updateNewsDTO, user.id);
-    }
+  @Patch(':idOrSlug')
+  @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
+  @UseGuards(RolesGuard)
+  update(@Param('idOrSlug') idOrSlug: string, @Body() updateNewsDTO: UpdateNewsDTO, @Req() req: Request) {
+    const user = req.user as UserPayload;
+    return this.newsService.update(idOrSlug, updateNewsDTO, user.id);
+  }
 
-    // Rota: DELETE /news/:id
-    @Delete(':id')
-    @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
-    @UseGuards(RolesGuard)
-    @HttpCode(HttpStatus.OK)
-    delete(@Param('id') id: string, @Req() req: Request) {
-        const user = req.user as UserPayload;
-        return this.newsService.delete(id, user.id);
-    }
+  @Delete(':idOrSlug')
+  @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
+  @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  delete(@Param('idOrSlug') idOrSlug: string, @Req() req: Request) {
+    const user = req.user as UserPayload;
+    return this.newsService.delete(idOrSlug, user.id);
+  }
 }
