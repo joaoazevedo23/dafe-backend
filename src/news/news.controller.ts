@@ -1,17 +1,4 @@
-import {
-  Controller,
-  HttpStatus,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Param,
-  Query,
-  Body,
-  HttpCode,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import {Controller, HttpStatus, Get, Post, Patch, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
 import { Request } from 'express';
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
