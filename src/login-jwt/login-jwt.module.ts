@@ -9,11 +9,26 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { RefreshToken, RefreshTokenSchema } from 'models/refreshToken.schema';
+import { ConfigModule, ConfigService } from '@nestjs/config'; 
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema },{ name: RefreshToken.name, schema: RefreshTokenSchema },]),
-    JwtModule.register({secret: "segredo_shiiiu", signOptions: { expiresIn: '15m' },}),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: RefreshToken.name, schema: RefreshTokenSchema },
+    ]),
+
+    JwtModule.registerAsync({
+      imports: [ConfigModule], 
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'), 
+        signOptions: { 
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '15m', 
+        },
+      }),
+      inject: [ConfigService], 
+    }),
+    
     PassportModule,
     UsersModule,
   ],
@@ -21,7 +36,7 @@ import { RefreshToken, RefreshTokenSchema } from 'models/refreshToken.schema';
   providers: [
     LoginJwtService,
     EncryptService,
-    JwtStrategy,
+    JwtStrategy, 
   ],
   
   controllers: [LoginJwtController],

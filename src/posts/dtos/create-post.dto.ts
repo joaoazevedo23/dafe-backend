@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsIn, MinLength, IsOptional, IsNumber, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsIn, MinLength, IsOptional, IsNumber, Min, IsUrl } from 'class-validator';
 
 export class CreatePostDTO{
 
@@ -26,6 +26,9 @@ export class CreatePostDTO{
     @IsOptional()
     @IsNumber()
     @Min(0)
-    commentsCount?: number
+    commentsCount?: number;
 
+    @IsOptional()
+    @IsUrl({}, { message: 'A URL da imagem deve ser válida.' })
+    imageHash?: string;
 }

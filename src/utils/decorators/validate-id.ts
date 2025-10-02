@@ -7,3 +7,7 @@ export function validateId(id: string): void{
         throw new NotFoundException(`Id "${id}" não encontrado`);
     }
 }
+
+export function isValidObjectId(id: string): boolean {
+  return Types.ObjectId.isValid(id);
+}

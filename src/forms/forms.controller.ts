@@ -17,9 +17,10 @@ export class FormsController {
     return this.formsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.formsService.findOne(id);
+  // Alterar para idOrSlug
+  @Get(':idOrSlug')
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.formsService.findOne(idOrSlug);
   }
 
   @Delete(':id')

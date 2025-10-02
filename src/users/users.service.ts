@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { User } from '../../models/user.schema';
 import { Document } from 'mongoose';
 type UserDocument = User & Document;
@@ -36,7 +36,7 @@ export class UsersService {
         validateId(id);
         const user = await this.userModel.findById(id).exec();
         if (!user) {
-            throw new NotFoundException(`Usuário com id: ${id} não encontrado`);
+            throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
         }
         return user;
     }
@@ -61,17 +61,23 @@ export class UsersService {
         validateId(id);
         const user = await this.userModel.findByIdAndUpdate(id, updateUsersDTO, { new: true }).exec();
         if (!user) {
-            throw new NotFoundException(`Usuário com id: ${id} não encontrado`);
+            throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
         }
         return user;
     }
 
-    async delete(id: string): Promise<{ message: string }> {
-        validateId(id);
-        const user = await this.userModel.findByIdAndDelete(id).exec();
-        if (!user) {
-            throw new NotFoundException(`Usuário com id: ${id} não encontrado`);
+    async delete(idOrSlug: string): Promise<{ message: string }> {
+        let user: User | null;
+
+        if (isValidObjectId(idOrSlug)) {
+            user = await this.userModel.findByIdAndDelete(idOrSlug).exec();
+        } else {
+            user = await this.userModel.findOneAndDelete({ slug: idOrSlug }).exec();
         }
-        return { message: `Usuário com id: ${id} deletado com sucesso` };
+
+        if (!user) {
+            throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
+        }
+        return { message: `Usuário com id ou slug "${idOrSlug}" deletado com sucesso` };
     }
 }
