@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -6,19 +7,19 @@ import { PostModule } from './posts/post.module';
 import { CommentsModule } from './comments/comments.module';
 import { UsersModule } from './users/users.module';
 import { ComplaintsModule } from './complaints/complaints.module';
-import { EncryptService } from './utils/encrypt/encrypt.service';
 import { LoginJwtModule } from './login-jwt/login-jwt.module';
 import { FormsModule } from './forms/forms.module';
 import { NewsModule } from './news/news.module';
-import { AnswerModule } from './answer/answer.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { ConfigModule } from '@nestjs/config';
+import { ResponseModule } from './response/response.module';
+import { MailerModule } from './mailer/mailer.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-
   imports: [
-    ConfigModule.forRoot({isGlobal: true, }), 
-    MongooseModule.forRoot('mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net/'), //'mongodb://localhost:27017' e mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net/
+    ConfigModule.forRoot({
+      isGlobal: true, 
+    }),
+    MongooseModule.forRoot('mongodb://localhost:27017'), 
     PostModule,
     CommentsModule,
     UsersModule,
@@ -26,11 +27,11 @@ import { ConfigModule } from '@nestjs/config';
     LoginJwtModule,
     FormsModule,
     NewsModule,
-    AnswerModule,
-    CloudinaryModule,
+    ResponseModule,
+    MailerModule, 
+    AuthModule, 
   ],
-
   controllers: [AppController],
-  providers: [AppService, EncryptService],
+  providers: [AppService], 
 })
-export class AppModule { }
+export class AppModule {}

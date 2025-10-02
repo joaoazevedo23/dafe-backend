@@ -37,6 +37,7 @@ export type UserSchema = User & Document;
 
 @Schema({ timestamps: true })
 export class User {
+  [x: string]: any;
   // Campos Gerais de Todos os Usuários
 
   @Prop({ required: [true, 'O nome é obrigatório'], trim: true })

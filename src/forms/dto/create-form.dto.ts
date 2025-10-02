@@ -1,15 +1,54 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+// src/forms/dto/create-form.dto.ts
+import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class OptionDto {
+  @IsString()
+  label: string;
+
+  @IsOptional()
+  @IsBoolean()
+  checked?: boolean;
+}
+
+class QuestionDto {
+  @IsEnum(['MÚLTIPLA_ESCOLHA', 'ESCOLHA_ÚNICA', 'DISSERTATIVA'])
+  tipo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  titulo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  enunciado: string;
+
+  @IsOptional()
+  @IsBoolean()
+  obrigatoria?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => OptionDto)
+  opcoes?: OptionDto[];
+
+  @IsOptional()
+  resposta?: string | number;
+}
 
 export class CreateFormDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(255)
   formTitulo: string;
 
   @IsString()
   @IsNotEmpty()
   formDesc: string;
 
- 
-  // pode expandir isso se o front-end enviar a estrutura completa de uma vez.
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => QuestionDto)
+  perguntas?: QuestionDto[];
 }
