@@ -19,7 +19,7 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true, 
     }),
-    MongooseModule.forRoot('mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net'), 
+    MongooseModule.forRoot('mongodb://localhost:27017'), 
     PostModule,
     CommentsModule,
     UsersModule,
