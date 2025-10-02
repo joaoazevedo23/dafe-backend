@@ -5,14 +5,33 @@ import { Response, ResponseDocument } from '../../models/response.schema';
 
 @Injectable()
 export class ResponseService {
-  constructor(@InjectModel(Response.name) private responseModel: Model<ResponseDocument>) {}
+  constructor(@InjectModel(Response.name) private responseModel: Model<ResponseDocument>) { }
 
-  async create(formId: string, usuario: string, respostas: (string | number | number[])[], data: { usuario: string; respostas: (number | number[] | string)[]; }) {
+  private readonly userPopulateFields = 'nome email usuario role instituicao';
+
+  async create(formId: string, autorId: string, respostas: (number | number[] | string)[]) {
     const response = new this.responseModel({
       form: new Types.ObjectId(formId),
-      usuario: data.usuario,
-      respostas: data.respostas.map(r => r ?? []), // evita null
+      autor: autorId, 
+      respostas: respostas.map(r => r ?? []),
     });
-    return response.save();
+
+    const responseSalva = await response.save();
+
+    return this.findOne((responseSalva._id as any).toString());
+  }
+
+  async findOne(id: string) {
+    return this.responseModel
+      .findById(id)
+      .populate('autor', this.userPopulateFields)
+      .exec();
+  }
+
+  async findAll(formId: string) {
+    return this.responseModel
+      .find({ form: formId })
+      .populate('autor', this.userPopulateFields)
+      .exec();
   }
 }
