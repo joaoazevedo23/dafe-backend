@@ -13,7 +13,6 @@ import { NewsModule } from './news/news.module';
 import { ResponseModule } from './response/response.module';
 import { MailerModule } from './mailer/mailer.module';
 import { AuthModule } from './auth/auth.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -31,7 +30,6 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     ResponseModule,
     MailerModule, 
     AuthModule, 
-    CloudinaryModule
   ],
   controllers: [AppController],
   providers: [AppService], 
