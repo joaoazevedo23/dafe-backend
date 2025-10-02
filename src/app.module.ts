@@ -10,7 +10,7 @@ import { ComplaintsModule } from './complaints/complaints.module';
 import { LoginJwtModule } from './login-jwt/login-jwt.module';
 import { FormsModule } from './forms/forms.module';
 import { NewsModule } from './news/news.module';
-import { AnswerModule } from './answer/answer.module';
+import { ResponseModule } from './response/response.module';
 import { MailerModule } from './mailer/mailer.module';
 import { AuthModule } from './auth/auth.module';
 
@@ -19,7 +19,7 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true, 
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/dafe-db'), 
+    MongooseModule.forRoot('mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net'), 
     PostModule,
     CommentsModule,
     UsersModule,
@@ -27,7 +27,7 @@ import { AuthModule } from './auth/auth.module';
     LoginJwtModule,
     FormsModule,
     NewsModule,
-    AnswerModule,
+    ResponseModule,
     MailerModule, 
     AuthModule, 
   ],

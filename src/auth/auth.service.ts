@@ -1,15 +1,13 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '../mailer/mailer.service';
 import { UsersService } from '../users/users.service';
 import { EncryptService } from '../utils/encrypt/encrypt.service';
-// Corrigindo a importação e o tipo
-import { User } from '../../models/user.schema';
-import { Document } from 'mongoose';
-
-type UserDocument = User & Document;
 
 interface JwtPayload {
   email: string;
@@ -25,7 +23,7 @@ export class AuthService {
   ) {}
 
   async requestPasswordReset(email: string): Promise<void> {
-    const user: UserDocument = await this.usersService.findbyEmail(email);
+    const user = await this.usersService.findByEmail(email);
 
     if (!user) {
       console.log(`Tentativa de redefinição para e-mail não cadastrado: ${email}`);
@@ -53,7 +51,7 @@ export class AuthService {
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
       const payload = this.jwtService.verify<JwtPayload>(token);
-      const user = await this.usersService.findbyEmail(payload.email);
+      const user = await this.usersService.findByEmail(payload.email);
 
       if (!user) {
         throw new NotFoundException('Usuário não encontrado.');
@@ -61,8 +59,7 @@ export class AuthService {
 
       const hashedPassword = await this.encryptService.encrypt(newPassword);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-      await this.usersService.update(user._id.toString(), {
+      await this.usersService.update((user._id as string).toString(), {
         senha: hashedPassword,
       });
     } catch {

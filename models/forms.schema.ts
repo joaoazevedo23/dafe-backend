@@ -1,69 +1,49 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+// src/forms/schemas/form.schema.ts
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
-import { Document, Types } from 'mongoose';
-
-
-export type FormsDocument = Forms & Document;
+export type FormDocument = Form & Document;
 
 @Schema()
-export class Opcao {
+export class Option {
   @Prop({ required: true })
   label: string;
 
-  @Prop()
-  checked?: boolean;
+  @Prop({ default: false })
+  checked?: boolean; 
 }
-export const OpcaoSchema = SchemaFactory.createForClass(Opcao);
 
-@Schema({ discriminatorKey: 'tipo', _id: false })
-export class Pergunta {
+@Schema()
+export class Question {
+  @Prop({ required: true, enum: ['MÚLTIPLA_ESCOLHA', 'ESCOLHA_ÚNICA', 'DISSERTATIVA'] })
+  tipo: string;
+
   @Prop({ required: true })
   titulo: string;
 
   @Prop({ required: true })
   enunciado: string;
 
-  @Prop({ required: true, default: false })
+  @Prop({ default: false })
   obrigatoria: boolean;
-}
-export const PerguntaSchema = SchemaFactory.createForClass(Pergunta);
 
-@Schema()
-export class PerguntaMultiplaEscolha extends Pergunta {
-  @Prop({ required: true, type: [OpcaoSchema] })
-  opcoes: Opcao[];
-}
-export const PerguntaMultiplaEscolhaSchema = SchemaFactory.createForClass(PerguntaMultiplaEscolha);
+  @Prop({ type: [{ label: String, checked: Boolean }], required: false })
+  opcoes?: Option[];
 
-@Schema()
-export class PerguntaEscolhaUnica extends Pergunta {
-  @Prop({ required: true, type: [OpcaoSchema] })
-  opcoes: Opcao[];
+  @Prop({ type: MongooseSchema.Types.Mixed })
+  resposta?: string | number | string[];
 }
-export const PerguntaEscolhaUnicaSchema = SchemaFactory.createForClass(PerguntaEscolhaUnica);
-
-@Schema()
-export class PerguntaDissertativa extends Pergunta {
-  // Apenas a estrutura base é necessária
-}
-export const PerguntaDissertativaSchema = SchemaFactory.createForClass(PerguntaDissertativa);
-
-// Adiciona os discriminadores no schema pai (PerguntaSchema)
-PerguntaSchema.discriminator('MÚLTIPLA_ESCOLHA', PerguntaMultiplaEscolhaSchema);
-PerguntaSchema.discriminator('ESCOLHA_ÚNICA', PerguntaEscolhaUnicaSchema);
-PerguntaSchema.discriminator('DISSERTATIVA', PerguntaDissertativaSchema);
 
 @Schema({ timestamps: true })
-export class Forms {
-  _id: Types.ObjectId;
-  
-  @Prop({ required: true, minlength: 3 })
+export class Form {
+  @Prop({ required: true })
   formTitulo: string;
 
-  @Prop({ required: true, minlength: 3 })
+  @Prop({ required: true })
   formDesc: string;
 
-  @Prop({ type: [PerguntaSchema] })
-  perguntas: Pergunta[];
+  @Prop({ type: [Question], default: [] })
+  perguntas: Question[];
 }
-export const FormsSchema = SchemaFactory.createForClass(Forms);
+
+export const FormSchema = SchemaFactory.createForClass(Form);
