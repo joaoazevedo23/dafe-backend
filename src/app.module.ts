@@ -11,12 +11,14 @@ import { LoginJwtModule } from './login-jwt/login-jwt.module';
 import { FormsModule } from './forms/forms.module';
 import { NewsModule } from './news/news.module';
 import { AnswerModule } from './answer/answer.module';
-/* import { UploadsModule } from './uploads/uploads.module';*/
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
 
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017'), //'mongodb://localhost:27017' e mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net/
+    ConfigModule.forRoot({isGlobal: true, }), 
+    MongooseModule.forRoot('mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net/'), //'mongodb://localhost:27017' e mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net/
     PostModule,
     CommentsModule,
     UsersModule,
@@ -25,6 +27,7 @@ import { AnswerModule } from './answer/answer.module';
     FormsModule,
     NewsModule,
     AnswerModule,
+    CloudinaryModule,
   ],
 
   controllers: [AppController],

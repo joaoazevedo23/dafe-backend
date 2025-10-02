@@ -6,6 +6,7 @@ import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
 import { validateId, isValidObjectId } from 'src/utils/decorators/validate-id';
 import { UserRole } from '../../models/user.schema';
+import { CloudinaryService } from '../cloudinary/cloudinary.service'; // Importar CloudinaryService
 
 // Interface para o payload do usuário, espelhando a do controller
 interface UserPayload {
@@ -13,10 +14,16 @@ interface UserPayload {
   role: UserRole;
 }
 
+// Tipo Multer.File do Express simplificado
+interface File {
+    buffer: Buffer; // Tipo simplificado
+}
+
 @Injectable()
 export class PostService {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostSchema>,
+    private readonly cloudinaryService: CloudinaryService, // Injetar CloudinaryService
   ) {}
 
   private readonly userPopulateFields = 'nome email usuario role studentDetails';
@@ -56,11 +63,23 @@ export class PostService {
     return post;
   }
 
-  async create(createPostDto: CreatePostDTO, autorId: string): Promise<Post> {
+  async create(createPostDto: CreatePostDTO, autorId: string, file?: File): Promise<Post> {
+    let imageUrl: string | undefined;
+    if (file) {
+      const uploadResult = await this.cloudinaryService.uploadImage(file as any); 
+      imageUrl = uploadResult.secure_url; 
+    }
+    
+    if (createPostDto.imageHash && !imageUrl) {
+        imageUrl = createPostDto.imageHash;
+    }
+
     const postCompleto = {
       ...createPostDto,
       autor: autorId,
+      imageHash: imageUrl, 
     };
+    
     const novoPost = new this.postModel(postCompleto);
     const postSalvo = await novoPost.save();
 
@@ -152,8 +171,6 @@ export class PostService {
 
     return updatedPost;
   }
-
-  // Mantém incrementCommentsCount e decrementCommentsCount iguais, pois recebem id válido e fazem findByIdAndUpdate
 
   async incrementCommentsCount(postId: string): Promise<Post> {
     validateId(postId);

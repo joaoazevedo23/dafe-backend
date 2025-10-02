@@ -1,4 +1,4 @@
-import { Body, Req, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Req, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
@@ -7,6 +7,7 @@ import { Request } from 'express';
 import { UserRole } from 'models/user.schema';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 interface UserPayload {
   id: string;
@@ -39,12 +40,17 @@ export class PostController {
     return this.postService.findOne(idOrSlug);
   }
 
-  @Post() // criar novo post
-  @Roles(UserRole.STUDENT, UserRole.PROFESSOR) // Apenas estudantes
+  @Post() 
+  @Roles(UserRole.STUDENT, UserRole.PROFESSOR) 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  create(@Body() postDto: CreatePostDTO, @Req() req: Request) {
+  @UseInterceptors(FileInterceptor('image')) 
+  create(
+    @Body() postDto: CreatePostDTO, 
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File, 
+  ) {
     const user = req.user as UserPayload;
-    return this.postService.create(postDto, user.id);
+    return this.postService.create(postDto, user.id, file); 
   }
 
   @Patch(':idOrSlug') // editar post pelo id ou slug
