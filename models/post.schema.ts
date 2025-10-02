@@ -2,7 +2,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose'; 
 import { User } from './user.schema';
-import slug from 'slug';
+import slugify from 'slugify';
+
 
 export type PostSchema = Post & Document;
 
@@ -41,7 +42,7 @@ export class Post {
   imageHash?: string;
 
   @Prop({ unique: true })
-  slug: string;
+  slugify: string;
 } 
 
 export const PostSchema = SchemaFactory.createForClass(Post);
@@ -54,7 +55,7 @@ next();
 
 PostSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('titulo')) {
-    this.slug = slug(this.titulo, { lower: true });
+    this.slugify = slugify(this.titulo, { lower: true });
   }
   next();
 });

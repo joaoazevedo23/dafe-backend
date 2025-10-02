@@ -1,6 +1,7 @@
 // src/forms/schemas/form.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 export type FormDocument = Form & Document;
 
@@ -10,7 +11,7 @@ export class Option {
   label: string;
 
   @Prop({ default: false })
-  checked?: boolean; 
+  checked?: boolean;
 }
 
 @Schema()
@@ -44,6 +45,9 @@ export class Form {
 
   @Prop({ type: [Question], default: [] })
   perguntas: Question[];
+
+  @Prop({ unique: true, default: () => uuidv4() })
+  slug: string;
 }
 
 export const FormSchema = SchemaFactory.createForClass(Form);

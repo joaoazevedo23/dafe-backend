@@ -20,7 +20,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     ConfigModule.forRoot({
       isGlobal: true, 
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017'), 
+    MongooseModule.forRoot('mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net/'), 
     PostModule,
     CommentsModule,
     UsersModule,

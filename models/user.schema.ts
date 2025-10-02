@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import slug from 'slug';
+import slugify from 'slugify';
 
 
 export enum UserRole {
@@ -95,7 +95,7 @@ export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('usuario')) {
-    this.slug = slug(this.usuario, { lower: true });
+    this.slugify = slugify(this.usuario, { lower: true });
   }
   next();
 });
