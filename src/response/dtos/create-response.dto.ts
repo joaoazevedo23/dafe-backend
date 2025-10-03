@@ -1,4 +1,4 @@
 export class CreateResponseDto {
   autor: string;
-  responses: (number | number[] | string)[];
+  respostas: (number | number[] | string)[];
 }

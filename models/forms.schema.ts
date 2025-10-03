@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from 'models/user.schema'; 
+import { ResponseDocument } from './response.schema';
 
 export type FormDocument = Form & Document;
 
@@ -54,3 +55,9 @@ export class Form {
 }
 
 export const FormSchema = SchemaFactory.createForClass(Form);
+
+FormSchema.pre('deleteOne', { document: true, query: false }, async function(next) {
+    await this.model('Response').deleteMany({ form: this._id }); 
+    console.log(`Form com id ${this._id} deletado, removendo as respostas associadas.`);
+    next();
+});

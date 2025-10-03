@@ -41,7 +41,7 @@ export class FormsService {
     return form;
   }
 
-  async remove(id: string): Promise<void> {
+  async deleteOne(id: string): Promise<void> {
     const result = await this.formModel.findByIdAndDelete(id).exec();
     if (!result) throw new NotFoundException(`Formulário com id ${id} não encontrado`);
   }

@@ -14,7 +14,7 @@ export class Response {
   autor: Types.ObjectId; 
 
   @Prop({ type: [MongooseSchema.Types.Mixed], required: true })
-  responses: (number | number[] | string)[];
+  respostas: (number | number[] | string)[];
 }
 
 export const ResponseSchema = SchemaFactory.createForClass(Response);

@@ -45,7 +45,7 @@ export class FormsController {
   @Delete(':id')
   @Roles(UserRole.MANAGER, UserRole.ADMIN)
   @UseGuards(RolesGuard)
-  remove(@Param('id') id: string) {
-    return this.formsService.remove(id);
+  deleteOne(@Param('id') id: string) {
+    return this.formsService.deleteOne(id);
   }
 }

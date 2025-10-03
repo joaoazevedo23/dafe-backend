@@ -9,15 +9,15 @@ export class ResponseService {
 
   private readonly userPopulateFields = 'nome email usuario role instituicao';
 
-  async create(formId: string, autorId: string, responses: (number | number[] | string)[]) {
+  async create(formId: string, autorId: string, respostas: (number | number[] | string)[]) {
     const response = new this.responseModel({
       form: new Types.ObjectId(formId),
       autor: autorId, 
-      responses: responses.map(r => r ?? []),
+      respostas: respostas.map(r => r ?? []),
     });
 
-    const responseSalva = await response.save();
-    return this.findOne((responseSalva._id as any).toString());
+    const respostasalva = await response.save();
+    return this.findOne((respostasalva._id as any).toString());
   }
 
   async findOne(id: string) {

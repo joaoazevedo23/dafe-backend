@@ -22,7 +22,7 @@ export class ResponseController {
   ) {
     const user = req.user as UserPayload;
 
-    return this.responseService.create(formId, user.id, body.responses);
+    return this.responseService.create(formId, user.id, body.respostas);
   }
 
   @Get(':formId/responses') 
