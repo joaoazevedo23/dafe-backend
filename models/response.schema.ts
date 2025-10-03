@@ -1,18 +1,19 @@
-// src/models/response.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types, Schema as MongooseSchema } from 'mongoose';
+import { User } from './user.schema';
+import { Form } from './forms.schema';
 
 export type ResponseDocument = Response & Document;
 
 @Schema({ timestamps: true })
 export class Response {
-  @Prop({ type: Types.ObjectId, ref: 'Form', required: true })
+  @Prop({ type: Types.ObjectId, ref: Form.name, required: true })
   form: Types.ObjectId;
 
-  @Prop({ required: true })
-  usuario: string;
+  @Prop({ type: Types.ObjectId, ref: User.name, required: true })
+  autor: Types.ObjectId; 
 
-  @Prop({ type: [MongooseSchema.Types.Mixed], required: true }) 
+  @Prop({ type: [MongooseSchema.Types.Mixed], required: true })
   respostas: (number | number[] | string)[];
 }
 

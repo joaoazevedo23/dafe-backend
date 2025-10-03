@@ -37,7 +37,7 @@ export class NewsController {
   }
 
   @Post()
-  @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
+  @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN)
   @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
@@ -46,7 +46,6 @@ export class NewsController {
   }
 
   @Patch(':idOrSlug')
-  @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
   @UseGuards(RolesGuard)
   update(@Param('idOrSlug') idOrSlug: string, @Body() updateNewsDTO: UpdateNewsDTO, @Req() req: Request) {
     const user = req.user as UserPayload;
@@ -54,7 +53,7 @@ export class NewsController {
   }
 
   @Delete(':idOrSlug')
-  @Roles(UserRole.PROFESSOR, UserRole.STUDENT, UserRole.MANAGER)
+  @Roles(UserRole.MANAGER, UserRole.ADMIN)
   @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.OK)
   delete(@Param('idOrSlug') idOrSlug: string, @Req() req: Request) {

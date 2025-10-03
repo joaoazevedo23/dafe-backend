@@ -17,7 +17,6 @@ export class ResponseService {
     });
 
     const responseSalva = await response.save();
-
     return this.findOne((responseSalva._id as any).toString());
   }
 
