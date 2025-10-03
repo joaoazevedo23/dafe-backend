@@ -1,6 +1,6 @@
 import { Controller, Post, Param, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { ResponseService } from './response.service';
-import { CreateResponseDto } from './dto/create-response.dto';
+import { CreateResponseDto } from './dtos/create-response.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard'; 
 import { Request } from 'express';
 
@@ -22,7 +22,7 @@ export class ResponseController {
   ) {
     const user = req.user as UserPayload;
 
-    return this.responseService.create(formId, user.id, body.respostas);
+    return this.responseService.create(formId, user.id, body.responses);
   }
 
   @Get(':formId/responses') 

@@ -9,11 +9,11 @@ export class ResponseService {
 
   private readonly userPopulateFields = 'nome email usuario role instituicao';
 
-  async create(formId: string, autorId: string, respostas: (number | number[] | string)[]) {
+  async create(formId: string, autorId: string, responses: (number | number[] | string)[]) {
     const response = new this.responseModel({
       form: new Types.ObjectId(formId),
       autor: autorId, 
-      respostas: respostas.map(r => r ?? []),
+      responses: responses.map(r => r ?? []),
     });
 
     const responseSalva = await response.save();
@@ -29,7 +29,7 @@ export class ResponseService {
 
   async findAll(formId: string) {
     return this.responseModel
-      .find({ form: formId })
+      .find({ form: new Types.ObjectId(formId) })
       .populate('autor', this.userPopulateFields)
       .exec();
   }
