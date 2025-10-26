@@ -69,15 +69,12 @@ export class PostService {
       const uploadResult = await this.cloudinaryService.uploadImage(file as any); 
       imageUrl = uploadResult.secure_url; 
     }
-    
-    if (createPostDto.imageHash && !imageUrl) {
-        imageUrl = createPostDto.imageHash;
-    }
 
     const postCompleto = {
       ...createPostDto,
       autor: autorId,
-      imageHash: imageUrl, 
+      imageUrl: imageUrl,
+      imageHash: createPostDto.imageHash, 
     };
     
     const novoPost = new this.postModel(postCompleto);

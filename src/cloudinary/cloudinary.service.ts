@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
-import toStream from 'buffer-to-stream'; // Usaremos 'buffer-to-stream' para pipe
+import * as toStream from 'buffer-to-stream';
 
 // Tipo Multer.File do Express simplificado
 interface File {
@@ -16,7 +16,6 @@ interface File {
 @Injectable()
 export class CloudinaryService {
   constructor(private configService: ConfigService) {
-    // Configura o Cloudinary usando variáveis de ambiente
     v2.config({
       cloud_name: this.configService.get<string>('CLOUDINARY_CLOUD_NAME'),
       api_key: this.configService.get<string>('CLOUDINARY_API_KEY'),

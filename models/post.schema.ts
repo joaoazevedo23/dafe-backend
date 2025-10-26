@@ -37,6 +37,9 @@ export class Post {
 
   @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User', required: true})
   autor: User | MongooseSchema.Types.ObjectId;
+  
+  @Prop({required: false})
+  imageUrl?: string;
 
   @Prop({required: false})
   imageHash?: string;
