@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { UsersService } from "src/users/users.service";
-import { ConfigService } from "@nestjs/config"; // Importação Corrigida (C maiúsculo)
+import { ConfigService } from "@nestjs/config";
 
 interface JwtPayload {
     id: string;

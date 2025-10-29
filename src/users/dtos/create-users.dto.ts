@@ -4,6 +4,7 @@ import { UserRole } from '../../../models/user.schema';
 import { StudentDetailsDto } from './student-details.dto';
 import { ProfessorDetailsDto } from './professor-details.dto';
 import { Match } from 'src/utils/decorators/match.decorator';
+import { IsOptional, MinLength } from 'class-validator';
   
   export class CreateUsersDTO {
     @IsString()
@@ -34,6 +35,11 @@ import { Match } from 'src/utils/decorators/match.decorator';
     @IsEnum(UserRole, { message: 'O tipo de usuário (role) não é válido' })
     @IsNotEmpty({ message: 'O tipo de usuário (role) é obrigatório' })
     role: UserRole;
+
+    @IsOptional()
+    @IsString() 
+    @MinLength(32)
+    imageHash?: string;
   
     // Validação para o objeto aninhado studentDetails
     @ValidateIf((o) => o.role === UserRole.STUDENT) 

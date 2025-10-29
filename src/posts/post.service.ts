@@ -6,17 +6,15 @@ import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
 import { validateId, isValidObjectId } from 'src/utils/decorators/validate-id';
 import { UserRole } from '../../models/user.schema';
-import { CloudinaryService } from '../cloudinary/cloudinary.service'; // Importar CloudinaryService
+import { CloudinaryService } from '../cloudinary/cloudinary.service'; 
 
-// Interface para o payload do usuário, espelhando a do controller
 interface UserPayload {
   id: string;
   role: UserRole;
 }
 
-// Tipo Multer.File do Express simplificado
 interface File {
-    buffer: Buffer; // Tipo simplificado
+    buffer: Buffer; 
 }
 
 @Injectable()

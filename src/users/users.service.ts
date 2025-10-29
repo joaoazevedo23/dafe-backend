@@ -4,10 +4,16 @@ import { Model, isValidObjectId } from 'mongoose';
 import { User } from '../../models/user.schema'; 
 import { CreateUsersDTO } from './dtos/create-users.dto';
 import { UpdateUsersDTO } from './dtos/update-users.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service'; 
+
+interface File {
+    buffer: Buffer; 
+}
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
+    constructor(@InjectModel(User.name) private readonly userModel: Model<User>,
+    private readonly cloudinaryService: CloudinaryService,) {}
 
     async findAll(curso?: string, modulo?: number, role?: string): Promise<User[]> {
         const query = {};
@@ -44,9 +50,21 @@ export class UsersService {
         return this.userModel.findOne({ email }).exec();
     }
 
-    async create(createUsersDTO: CreateUsersDTO): Promise<User> {
+    async create(createUsersDTO: CreateUsersDTO, file?: File): Promise<User> {
+        let imageUrl: string | undefined;
+        if (file) {
+            const uploadResult = await this.cloudinaryService.uploadImage(file as any); 
+            imageUrl = uploadResult.secure_url; 
+        }
+
+        const UsersCompleto = {
+        ...createUsersDTO,
+        imageUrl: imageUrl,
+        imageHash: createUsersDTO.imageHash, 
+        };
+
         try {
-            const createdUser = await this.userModel.create(createUsersDTO);
+            const createdUser = await this.userModel.create(UsersCompleto);
             return createdUser;
         } catch (error) {
             if (error.code === 11000) {

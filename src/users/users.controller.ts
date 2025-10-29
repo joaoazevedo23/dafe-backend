@@ -7,6 +7,9 @@ import { User, UserRole } from '../../models/user.schema';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
+import { UploadedFile } from '@nestjs/common/decorators';
+import { UseInterceptors } from '@nestjs/common/decorators/core/use-interceptors.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController { 
@@ -33,9 +36,11 @@ export class UsersController {
     }
 
     @Post()
-    async create(@Body() createUserDto: CreateUsersDTO): Promise<User> {
+    @UseInterceptors(FileInterceptor('image')) 
+    
+    async create(@Body() createUserDto: CreateUsersDTO, @UploadedFile() file: Express.Multer.File, ): Promise<User> {
         createUserDto.senha = await this.encryptService.encrypt(createUserDto.senha);
-        return this.usersService.create(createUserDto);
+        return this.usersService.create(createUserDto, file);
     }
 
     @Patch(':idOrSlug')

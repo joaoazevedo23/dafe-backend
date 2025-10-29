@@ -29,7 +29,7 @@ export class CreatePostDTO{
     commentsCount?: number;
 
     @IsOptional()
-    @IsString() // mudança da regra "isUrl" para "isString"
+    @IsString() 
     @MinLength(32)
     imageHash?: string;
 }

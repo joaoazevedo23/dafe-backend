@@ -43,7 +43,7 @@ export class CloudinaryService {
           resolve(result);
         },
       );
-      // ... restante do código:
+      
       toStream(file.buffer).pipe(upload);
     });
   }
