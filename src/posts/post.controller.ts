@@ -1,4 +1,4 @@
-import { Body, Req, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Body, Req, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, UploadedFile, HttpCode } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
@@ -39,6 +39,7 @@ export class PostController {
   findOne(@Param('idOrSlug') idOrSlug: string) {
     return this.postService.findOne(idOrSlug);
   }
+  
 
   @Post() 
   @Roles(UserRole.STUDENT, UserRole.PROFESSOR) 

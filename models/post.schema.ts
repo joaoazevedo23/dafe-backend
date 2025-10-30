@@ -8,7 +8,7 @@ import slugify from 'slugify';
 export type PostSchema = Post & Document;
 
 
-@Schema()
+@Schema( {timestamps: true })
 export class Post {
   _id: Types.ObjectId;
   @Prop({ required: true })
@@ -41,7 +41,7 @@ export class Post {
   @Prop({required: false})
   imageUrl?: string;
 
-  @Prop({required: false})
+  @Prop({required: false, index: true})
   imageHash?: string;
 
   @Prop({ unique: true })
