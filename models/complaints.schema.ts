@@ -18,8 +18,15 @@ export class Complaints {
   @Prop({ required: [true, 'Adicione o conteudo da denúncia']})
   conteudo: string;
 
-  @Prop({ unique: true }) /* Campo slugify */
+  @Prop({ unique: true }) /* slug */
   slugify: string;
+
+  @Prop({ /* Campo de destino */
+    type: String,
+    enum: ['professor', 'manager', 'admin'],
+    required: true,
+  })
+  destinoRole: string;
 }
 
 export const ComplaintsSchema = SchemaFactory.createForClass(Complaints);

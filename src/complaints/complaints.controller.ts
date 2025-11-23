@@ -3,23 +3,33 @@ import { ComplaintsService } from './complaints.service';
 import { CreateComplaintsDTO } from './dtos/create-complaints.dto';
 import { UpdateComplaintsDTO } from './dtos/update-complaints.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
-
+import { User, UserRole } from '../../models/user.schema';
+import { GetUserRole } from 'src/utils/decorators/get-user-role.decorator';
 
 @UseGuards(JwtAuthGuard)
 @Controller('complaints')
 export class ComplaintsController {
-  constructor(private readonly complaintsService: ComplaintsService) {}
+  constructor(private readonly complaintsService: ComplaintsService) { }
 
   /* GET /complaints      -> Público
       GET /complaints/:id    -> Público
       POST /complaints       -> Público
-      PATCH /complaints/:id  -> Público (Atenção com a segurança)
-      DELETE /complaints/:id -> Público (Atenção com a segurança)
+      PATCH /complaints/:id  -> Público 
+      DELETE /complaints/:id -> Público 
   */
 
   @Get()
-  findAll(@Query('topico') topico?: 'Aulas' | 'Diretores' | 'Alunos' | 'Atividades' | 'Extracurriculares') {
-    return this.complaintsService.findAll(topico);
+  findAll(
+    @GetUserRole() userRole: UserRole,
+    @Query('topico') topico?: 'Aulas' | 'Diretores' | 'Alunos' | 'Atividades' | 'Extracurriculares',
+  ) {
+
+    let destinoFilter: UserRole | undefined = undefined;
+    if (userRole !== UserRole.ADMIN) {
+      destinoFilter = userRole;
+    }
+
+    return this.complaintsService.findAll(topico, destinoFilter);
   }
 
   @Get(':idOrSlug')
@@ -29,19 +39,23 @@ export class ComplaintsController {
 
   @Post()
   create(@Body() createDto: CreateComplaintsDTO) {
-    // Nenhuma informação de usuário é necessária ou passada.
     return this.complaintsService.create(createDto);
   }
 
   @Patch(':idOrSlug')
-  update(@Param('id') idOrSlug: string, @Body() updateDto: UpdateComplaintsDTO) {
-    // Qualquer pessoa pode chamar esta rota.
-    return this.complaintsService.update(idOrSlug, updateDto);
+  update(
+    @GetUserRole() userRole: UserRole, 
+    @Param('idOrSlug') idOrSlug: string,
+    @Body() updateDto: UpdateComplaintsDTO
+  ) {
+    return this.complaintsService.update(idOrSlug, updateDto, userRole);
   }
 
   @Delete(':idOrSlug')
-  delete(@Param('idOrSlug') idOrSlug: string) {
-    // Qualquer pessoa pode chamar esta rota.
-    return this.complaintsService.delete(idOrSlug);
+  delete(
+    @GetUserRole() userRole: UserRole, 
+    @Param('idOrSlug') idOrSlug: string
+  ) {
+    return this.complaintsService.delete(idOrSlug, userRole);
   }
 }
