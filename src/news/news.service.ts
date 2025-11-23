@@ -8,118 +8,130 @@ import { validateId, isValidObjectId } from 'src/utils/decorators/validate-id';
 
 @Injectable()
 export class NewsService {
-  constructor(
-    @InjectModel(News.name) private readonly newsModel: Model<NewsSchema>,
-  ) {}
+    constructor(
+        @InjectModel(News.name) private readonly newsModel: Model<NewsSchema>,
+    ) {}
 
-  async findAll(autorId?: string): Promise<News[]> {
-    const query: any = {};
-    if (autorId) {
-      query.autor = autorId;
-    }
-    return this.newsModel
-      .find(query)
-      .sort({ createdAt: -1 }) // Ordena pelas mais recentes
-      .populate('autor', 'nome usuario instituicao role')
-      .exec();
-  }
+    async findAll(autorId?: string, cursoUser?: string, moduloUser?: number): Promise<News[]> {
+        const query: any = {};
+        
+        if (autorId) {
+            query.autor = autorId;
+        }
 
-  async findOne(idOrSlug: string): Promise<News> {
-    let news;
+        if (cursoUser && moduloUser) {
+            query.$or = [
+                { cursoDestino: { $in: [null, undefined] }, moduloDestino: { $in: [null, undefined] } },
+                {
+                    cursoDestino: cursoUser,
+                    moduloDestino: moduloUser,
+                },
+            ];
+        }
 
-    if (isValidObjectId(idOrSlug)) {
-      validateId(idOrSlug);
-      news = await this.newsModel
-        .findById(idOrSlug)
-        .populate('autor', 'nome usuario instituicao role')
-        .exec();
-    } else {
-      news = await this.newsModel
-        .findOne({ slug: idOrSlug })  // buscando pelo slug
-        .populate('autor', 'nome usuario instituicao role')
-        .exec();
+        return this.newsModel
+            .find(query)
+            .sort({ createdAt: -1 })
+            .populate('autor', 'nome usuario instituicao role')
+            .exec();
     }
 
-    if (!news) {
-      throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
-    }
-    return news;
-  }
+    async findOne(idOrSlug: string): Promise<News> {
+        let news;
 
-  async create(createNewsDTO: CreateNewsDTO, autorId: string): Promise<News> {
-    const newsCompleta = {
-      ...createNewsDTO,
-      autor: autorId,
-    };
-    const novaNoticia = new this.newsModel(newsCompleta);
-    const noticiaSalva = await novaNoticia.save();
+        if (isValidObjectId(idOrSlug)) {
+            validateId(idOrSlug);
+            news = await this.newsModel
+                .findById(idOrSlug)
+                .populate('autor', 'nome usuario instituicao role')
+                .exec();
+        } else {
+            news = await this.newsModel
+                .findOne({ slug: idOrSlug })
+                .populate('autor', 'nome usuario instituicao role')
+                .exec();
+        }
 
-    return this.findOne(noticiaSalva._id.toString());
-  }
-
-  async update(idOrSlug: string, updateNewsDTO: UpdateNewsDTO, userId: string): Promise<News> {
-    let noticiaExistente;
-
-    if (isValidObjectId(idOrSlug)) {
-      validateId(idOrSlug);
-      noticiaExistente = await this.newsModel.findById(idOrSlug).exec();
-    } else {
-      noticiaExistente = await this.newsModel.findOne({ slug: idOrSlug }).exec();
+        if (!news) {
+            throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
+        }
+        return news;
     }
 
-    if (!noticiaExistente) {
-      throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
+    async create(createNewsDTO: CreateNewsDTO, autorId: string): Promise<News> {
+        const newsCompleta = {
+            ...createNewsDTO,
+            autor: autorId,
+        };
+        const novaNoticia = new this.newsModel(newsCompleta);
+        const noticiaSalva = await novaNoticia.save();
+
+        return this.findOne(noticiaSalva._id.toString());
     }
 
-    if (noticiaExistente.autor.toString() !== userId) {
-      throw new UnauthorizedException('Você não tem permissão para editar esta notícia.');
+    async update(idOrSlug: string, updateNewsDTO: UpdateNewsDTO, userId: string): Promise<News> {
+        let noticiaExistente;
+
+        if (isValidObjectId(idOrSlug)) {
+            validateId(idOrSlug);
+            noticiaExistente = await this.newsModel.findById(idOrSlug).exec();
+        } else {
+            noticiaExistente = await this.newsModel.findOne({ slug: idOrSlug }).exec();
+        }
+
+        if (!noticiaExistente) {
+            throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
+        }
+
+        if (noticiaExistente.autor.toString() !== userId) {
+            throw new UnauthorizedException('Você não tem permissão para editar esta notícia.');
+        }
+
+        let noticiaAtualizada;
+
+        if (isValidObjectId(idOrSlug)) {
+            noticiaAtualizada = await this.newsModel
+                .findByIdAndUpdate(idOrSlug, updateNewsDTO, { new: true })
+                .populate('autor', 'nome usuario instituicao role')
+                .exec();
+        } else {
+            noticiaAtualizada = await this.newsModel
+                .findOneAndUpdate({ slug: idOrSlug }, updateNewsDTO, { new: true })
+                .populate('autor', 'nome usuario instituicao role')
+                .exec();
+        }
+
+        if (!noticiaAtualizada) {
+            throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada após a atualização.`);
+        }
+
+        return noticiaAtualizada;
     }
 
-    let noticiaAtualizada;
+    async delete(idOrSlug: string, userId: string): Promise<{ message: string }> {
+        let noticiaExistente;
 
-    if (isValidObjectId(idOrSlug)) {
-      noticiaAtualizada = await this.newsModel
-        .findByIdAndUpdate(idOrSlug, updateNewsDTO, { new: true })
-        .populate('autor', 'nome usuario instituicao role')
-        .exec();
-    } else {
-      noticiaAtualizada = await this.newsModel
-        .findOneAndUpdate({ slug: idOrSlug }, updateNewsDTO, { new: true })
-        .populate('autor', 'nome usuario instituicao role')
-        .exec();
+        if (isValidObjectId(idOrSlug)) {
+            validateId(idOrSlug);
+            noticiaExistente = await this.newsModel.findById(idOrSlug).exec();
+        } else {
+            noticiaExistente = await this.newsModel.findOne({ slug: idOrSlug }).exec();
+        }
+
+        if (!noticiaExistente) {
+            throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
+        }
+
+        if (noticiaExistente.autor.toString() !== userId) {
+            throw new UnauthorizedException('Você não tem permissão para deletar esta notícia.');
+        }
+
+        if (isValidObjectId(idOrSlug)) {
+            await this.newsModel.deleteOne({ _id: idOrSlug }).exec();
+        } else {
+            await this.newsModel.deleteOne({ slug: idOrSlug }).exec();
+        }
+
+        return { message: `Notícia com identificador "${idOrSlug}" foi deletada com sucesso.` };
     }
-
-    if (!noticiaAtualizada) {
-      throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada após a atualização.`);
-    }
-
-    return noticiaAtualizada;
-  }
-
-  async delete(idOrSlug: string, userId: string): Promise<{ message: string }> {
-    let noticiaExistente;
-
-    if (isValidObjectId(idOrSlug)) {
-      validateId(idOrSlug);
-      noticiaExistente = await this.newsModel.findById(idOrSlug).exec();
-    } else {
-      noticiaExistente = await this.newsModel.findOne({ slug: idOrSlug }).exec();
-    }
-
-    if (!noticiaExistente) {
-      throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
-    }
-
-    if (noticiaExistente.autor.toString() !== userId) {
-      throw new UnauthorizedException('Você não tem permissão para deletar esta notícia.');
-    }
-
-    if (isValidObjectId(idOrSlug)) {
-      await this.newsModel.deleteOne({ _id: idOrSlug }).exec();
-    } else {
-      await this.newsModel.deleteOne({ slug: idOrSlug }).exec();
-    }
-
-    return { message: `Notícia com identificador "${idOrSlug}" foi deletada com sucesso.` };
-  }
 }
