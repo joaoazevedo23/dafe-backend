@@ -1,4 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { 
+    Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, 
+    UseInterceptors, UploadedFile 
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service'; 
 import { CreateUsersDTO } from './dtos/create-users.dto'; 
 import { UpdateUsersDTO } from './dtos/update-users.dto';
@@ -7,9 +11,6 @@ import { User, UserRole } from '../../models/user.schema';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
-import { UploadedFile } from '@nestjs/common/decorators';
-import { UseInterceptors } from '@nestjs/common/decorators/core/use-interceptors.decorator';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController { 
@@ -45,14 +46,16 @@ export class UsersController {
 
     @Patch(':idOrSlug')
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('image'))
     async update(
       @Param('idOrSlug') idOrSlug: string, 
-      @Body() updateUserDto: UpdateUsersDTO
+      @Body() updateUserDto: UpdateUsersDTO,
+      @UploadedFile() file: Express.Multer.File
     ): Promise<User> {
         if (updateUserDto.senha) {
             updateUserDto.senha = await this.encryptService.encrypt(updateUserDto.senha);
         }
-        return this.usersService.update(idOrSlug, updateUserDto);
+        return this.usersService.update(idOrSlug, updateUserDto, file);
     }
 
     @Delete(':idOrSlug')

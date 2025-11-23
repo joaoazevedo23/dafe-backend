@@ -35,6 +35,7 @@ export class LoginJwtService {
       usuario: user.usuario,
       instituicao: user.instituicao,
       role: user.role,
+      imageUrl: user.imageUrl,
     };
 
     if (user.role === UserRole.STUDENT && user.studentDetails) {
@@ -88,6 +89,7 @@ export class LoginJwtService {
       usuario: user.usuario,
       instituicao: user.instituicao,
       role: user.role,
+      imageUrl: user.imageUrl,
     };
 
     if (user.role === UserRole.STUDENT && user.studentDetails) {

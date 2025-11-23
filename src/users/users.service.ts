@@ -74,7 +74,17 @@ export class UsersService {
         }
     }
 
-    async update(idOrSlug: string, updateUsersDTO: UpdateUsersDTO): Promise<User> {
+    async update(idOrSlug: string, updateUsersDTO: UpdateUsersDTO, file?: File): Promise<User> {
+
+        if (file) {
+            try {
+                const uploadResult = await this.cloudinaryService.uploadImage(file as any);
+                updateUsersDTO.imageUrl = uploadResult.secure_url;
+            } catch (error) {
+                throw new Error(`Falha no upload para o Cloudinary: ${error.message}`)
+            }
+        }
+
         let user: User | null;
 
         if (isValidObjectId(idOrSlug)) {
