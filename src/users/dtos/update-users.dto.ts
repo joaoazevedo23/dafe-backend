@@ -12,7 +12,6 @@ export class UpdateUsersDTO extends PartialType(CreateUsersDTO) {
     imageHash?: string;
 
     @IsOptional()
-    @IsUrl()
     @MinLength(8) 
     senha?: string;
 }
