@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { LoginJwtService } from './login-jwt.service';
 import { LoginJwtController } from './login-jwt.controller';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt'; // Importe JwtModuleOptions
 import { EncryptService } from 'src/utils/encrypt/encrypt.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'models/user.schema';
@@ -9,7 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { RefreshToken, RefreshTokenSchema } from 'models/refreshToken.schema';
-import { ConfigModule, ConfigService } from '@nestjs/config'; 
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -19,16 +19,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ]),
 
     JwtModule.registerAsync({
-      imports: [ConfigModule], 
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'), 
-        signOptions: { 
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '15m', 
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '15m' as any,
         },
       }),
-      inject: [ConfigService], 
     }),
-    
+
     PassportModule,
     UsersModule,
   ],
@@ -36,9 +36,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   providers: [
     LoginJwtService,
     EncryptService,
-    JwtStrategy, 
+    JwtStrategy,
   ],
-  
+
   controllers: [LoginJwtController],
   exports: [
     LoginJwtService,
@@ -46,4 +46,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     PassportModule,
   ],
 })
-export class LoginJwtModule {}
+export class LoginJwtModule { }

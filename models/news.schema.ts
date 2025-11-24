@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Schema as MongooseSchema, Types } from 'mongoose';
+import { Schema as MongooseSchema, Types, Document } from 'mongoose';
 import { User } from './user.schema';
 import slugify from 'slugify';
 
@@ -8,7 +8,7 @@ export type NewsSchema = News & Document;
 
 @Schema()
 export class News extends Document {
-  _id: Types.ObjectId;
+  declare _id: Types.ObjectId;
   @Prop({ required: true })
   titulo: string;
 
