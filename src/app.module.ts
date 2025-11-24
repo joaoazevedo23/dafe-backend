@@ -14,6 +14,7 @@ import { ResponseModule } from './response/response.module';
 import { MailerModule } from './mailer/mailer.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ResponsesModule } from './responses/responses.module';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     ResponseModule,
     MailerModule, 
     AuthModule, 
-    CloudinaryModule
+    CloudinaryModule, ResponsesModule
   ],
   controllers: [AppController],
   providers: [AppService], 

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from 'models/user.schema'; 
 import { ResponseDocument } from './response.schema';
@@ -17,6 +17,8 @@ export class Option {
 
 @Schema()
 export class Question {
+  declare _id: Types.ObjectId;
+
   @Prop({ required: true, enum: ['MÚLTIPLA_ESCOLHA', 'ESCOLHA_ÚNICA', 'DISSERTATIVA'] })
   tipo: string;
 

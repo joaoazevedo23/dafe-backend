@@ -6,7 +6,7 @@ import { Roles } from 'src/utils/decorators/roles.decorator';
 import { UserRole } from 'models/user.schema';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 
-interface UserPayload {
+export interface UserPayload {
   id: string;
   nome: string;
   email: string;
