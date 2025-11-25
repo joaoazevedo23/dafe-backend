@@ -37,8 +37,8 @@ export class NewsController {
             curso = user.curso;
             modulo = user.modulo;
         }
-        
-        return this.newsService.findAll(autor, curso, modulo);
+
+        return this.newsService.findAll(autor, user.role, curso, modulo);
     }
 
     @Get(':idOrSlug')

@@ -1,12 +1,32 @@
+// src/login-jwt/jwt.strategy.ts
+
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { UsersService } from "src/users/users.service";
 import { ConfigService } from "@nestjs/config";
+import { UserRole } from "models/user.schema";
 
 interface JwtPayload {
     id: string;
     email: string;
+    role: UserRole;
+    curso?: string;
+    modulo?: number;
+    nome: string;
+    usuario: string;
+    instituicao: string;
+}
+
+interface UserPayload {
+    id: string;
+    email: string;
+    role: UserRole;
+    curso?: string;
+    modulo?: number;
+    nome: string;
+    usuario: string;
+    instituicao: string;
 }
 
 @Injectable()
@@ -28,11 +48,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         });
     }
 
-    async validate(payload: JwtPayload) {
-        const user = await this.usersService.findOne(payload.id);
-        if (!user) {
-            throw new UnauthorizedException('Token inválido');
-        }
-        return user;
+    async validate(payload: JwtPayload): Promise<UserPayload> {
+        return {
+            id: payload.id,
+            email: payload.email,
+            role: payload.role,
+            curso: payload.curso,
+            modulo: payload.modulo,
+            nome: payload.nome,
+            usuario: payload.usuario,
+            instituicao: payload.instituicao,
+        } as UserPayload;
     }
 }

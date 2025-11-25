@@ -1,40 +1,58 @@
-import { Injectable, NotFoundException, UnauthorizedException,} from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { News, NewsSchema } from '../../models/news.schema';
 import { CreateNewsDTO } from './dtos/create-news.dto';
 import { UpdateNewsDTO } from './dtos/update-news.dto';
 import { validateId, isValidObjectId } from 'src/utils/decorators/validate-id';
+import { UserRole } from 'models/user.schema';
 
 @Injectable()
 export class NewsService {
     constructor(
         @InjectModel(News.name) private readonly newsModel: Model<NewsSchema>,
-    ) {}
+    ) { }
 
-    async findAll(autorId?: string, cursoUser?: string, moduloUser?: number): Promise<News[]> {
-        const query: any = {};
+    async findAll( autorId?: string, userRole?: UserRole, cursoUser?: string, moduloUser?: number): Promise<News[]> {
+    const conditions: any[] = [];
+
+    if (userRole === UserRole.STUDENT && cursoUser && moduloUser) {
         
-        if (autorId) {
-            query.autor = autorId;
-        }
-
-        if (cursoUser && moduloUser) {
-            query.$or = [
-                { cursoDestino: { $in: [null, undefined] }, moduloDestino: { $in: [null, undefined] } },
-                {
-                    cursoDestino: cursoUser,
-                    moduloDestino: moduloUser,
+        const studentVisibilityFilter = {
+            $or: [
+                { 
+                    $and: [
+                        { cursoDestino: { $exists: false } },
+                        { moduloDestino: { $exists: false } }
+                    ]
                 },
-            ];
-        }
+                {
+                    cursoDestino: cursoUser, 
+                    moduloDestino: moduloUser, 
+                },
+            ],
+        } as any; 
+        
+        conditions.push(studentVisibilityFilter);
 
-        return this.newsModel
-            .find(query)
-            .sort({ createdAt: -1 })
-            .populate('autor', 'nome usuario instituicao role')
-            .exec();
+    } 
+    
+    if (autorId) {
+        conditions.push({ autor: autorId });
     }
+
+    let finalQuery: any = {};
+    
+    if (conditions.length > 0) {
+        finalQuery = { $and: conditions };
+    }
+    
+    return this.newsModel
+        .find(finalQuery)
+        .sort({ createdAt: -1 })
+        .populate('autor', 'nome usuario instituicao role')
+        .exec();
+}
 
     async findOne(idOrSlug: string): Promise<News> {
         let news;
