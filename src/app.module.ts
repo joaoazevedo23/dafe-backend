@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import { PostModule } from './posts/post.module';
 import { CommentsModule } from './comments/comments.module';
 import { UsersModule } from './users/users.module';
@@ -18,9 +18,17 @@ import { ResponsesModule } from './responses/responses.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
-    MongooseModule.forRoot('mongodb+srv://joaoazevedo:AFQ2qEWmgwWhpaXw@poto.zqgwluj.mongodb.net/'), 
+
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService): Promise<MongooseModuleOptions> => ({
+        uri: configService.get<string>('MONGO_URI')!,
+      }),
+      inject: [ConfigService],
+    }),
+
     PostModule,
     CommentsModule,
     UsersModule,
@@ -28,12 +36,12 @@ import { ResponsesModule } from './responses/responses.module';
     LoginJwtModule,
     FormsModule,
     NewsModule,
-    MailerModule, 
-    AuthModule, 
-    CloudinaryModule, 
+    MailerModule,
+    AuthModule,
+    CloudinaryModule,
     ResponsesModule
   ],
   controllers: [AppController],
-  providers: [AppService], 
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
