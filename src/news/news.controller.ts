@@ -1,4 +1,4 @@
-import {Controller, HttpStatus, Get, Post, Patch, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
+import { Controller, HttpStatus, Get, Post, Patch, Delete, Param, Query, Body, HttpCode, Req, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { Request } from 'express';
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
@@ -7,6 +7,7 @@ import { UserRole } from '../../models/user.schema';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 interface UserPayload {
     id: string;
@@ -24,12 +25,12 @@ interface UserPayload {
 @UseGuards(JwtAuthGuard)
 @Controller('news')
 export class NewsController {
-    constructor(private readonly newsService: NewsService) {}
+    constructor(private readonly newsService: NewsService) { }
 
     @Get()
     findAll(@Req() req: Request, @Query('autor') autor?: string) {
         const user = req.user as UserPayload;
-        
+
         let curso: string | undefined = undefined;
         let modulo: number | undefined = undefined;
 
@@ -46,20 +47,33 @@ export class NewsController {
         return this.newsService.findOne(idOrSlug);
     }
 
+    // Rota para Criação: Recebe o arquivo e injeta no service
     @Post()
     @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN)
     @UseGuards(RolesGuard)
+    @UseInterceptors(FileInterceptor('image'))
     @HttpCode(HttpStatus.CREATED)
-    create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
+    create(
+        @Body() createNewsDTO: CreateNewsDTO,
+        @Req() req: Request,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
         const user = req.user as UserPayload;
-        return this.newsService.create(createNewsDTO, user.id);
+        return this.newsService.create(createNewsDTO, user.id, file);
     }
 
+    // Rota para Atualização: Recebe o arquivo e injeta no service
     @Patch(':idOrSlug')
     @UseGuards(RolesGuard)
-    update(@Param('idOrSlug') idOrSlug: string, @Body() updateNewsDTO: UpdateNewsDTO, @Req() req: Request) {
+    @UseInterceptors(FileInterceptor('image'))
+    update(
+        @Param('idOrSlug') idOrSlug: string,
+        @Body() updateNewsDTO: UpdateNewsDTO,
+        @Req() req: Request,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
         const user = req.user as UserPayload;
-        return this.newsService.update(idOrSlug, updateNewsDTO, user.id);
+        return this.newsService.update(idOrSlug, updateNewsDTO, user.id, file);
     }
 
     @Delete(':idOrSlug')

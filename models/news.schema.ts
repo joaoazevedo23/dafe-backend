@@ -35,6 +35,12 @@ export class News extends Document {
 
   @Prop({ unique: true }) /* Campo slugify */
   slugify: string;
+
+  @Prop({ required: false })
+  imageUrl?: string; // URL da imagem do Cloudinary
+
+  @Prop({ required: false })
+  imageHash?: string;
 }
 
 export const NewsSchema = SchemaFactory.createForClass(News);

@@ -11,11 +11,11 @@ import { UserPayload } from 'src/forms/forms.controller';
 export class ComplaintsService {
 
   private readonly destinoRoleMap: { [key: string]: string } = {
-    Aulas: 'professor',
-    Diretores: 'admin',
-    Alunos: 'manager',
-    Atividades: 'professor',
-    Extracurriculares: 'manager',
+    Alunos: 'professor',
+    Professores: 'manager',
+    Funcionários: 'manager',
+    Coordenação: 'admin',
+    Direção: 'admin',
   };
 
   constructor(@InjectModel(Complaints.name) private readonly complaintsModel: Model<ComplaintsSchema>) { }

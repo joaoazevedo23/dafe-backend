@@ -14,7 +14,7 @@ interface UserPayload {
   nome: string;
   email: string;
   usuario: string;
-  role: UserRole; 
+  role: UserRole;
   instituicao: string;
   curso?: string;
   modulo?: number;
@@ -25,7 +25,7 @@ interface UserPayload {
 @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
   @Get() // /posts ou /posts?topico=alunos
   findAll(
@@ -39,24 +39,30 @@ export class PostController {
   findOne(@Param('idOrSlug') idOrSlug: string) {
     return this.postService.findOne(idOrSlug);
   }
-  
 
-  @Post() 
-  @Roles(UserRole.STUDENT, UserRole.PROFESSOR) 
+  @Post()
+  @Roles(UserRole.STUDENT, UserRole.PROFESSOR)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseInterceptors(FileInterceptor('image')) 
+  @UseInterceptors(FileInterceptor('image'))
   create(
-    @Body() postDto: CreatePostDTO, 
+    @Body() postDto: CreatePostDTO,
     @Req() req: Request,
-    @UploadedFile() file: Express.Multer.File, 
+    @UploadedFile() file: Express.Multer.File,
   ) {
     const user = req.user as UserPayload;
-    return this.postService.create(postDto, user.id, file); 
+    return this.postService.create(postDto, user.id, file);
   }
 
   @Patch(':idOrSlug') // editar post pelo id ou slug
-  update(@Param('idOrSlug') idOrSlug: string, @Body() postDto: UpdatePostDTO, @Req() req: Request) {
+  @UseInterceptors(FileInterceptor('image')) // Adicionado interceptor para PATCH
+  update(
+    @Param('idOrSlug') idOrSlug: string,
+    @Body() postDto: UpdatePostDTO,
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File, // Adicionado file para o update
+  ) {
     const user = req.user as UserPayload;
+    // O service agora precisa receber o 'file' para lidar com o upload na atualização
     return this.postService.update(idOrSlug, postDto, user);
   }
 

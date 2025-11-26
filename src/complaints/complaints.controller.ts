@@ -24,7 +24,7 @@ export class ComplaintsController {
   @Get()
   findAll(
     @GetUserRole() userRole: UserRole,
-    @Query('topico') topico?: 'Aulas' | 'Diretores' | 'Alunos' | 'Atividades' | 'Extracurriculares',
+    @Query('topico') topico?: 'Alunos' | 'Professores' | 'Funcionários' | 'Coordenação' | 'Direção',
     @Query('status') status?: ComplaintStatus
   ) {
 

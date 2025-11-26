@@ -26,4 +26,12 @@ export class CreateNewsDTO{
     @Type(() => Number) // Converte string de query/body para Number
     @IsIn([1, 2, 3])
     moduloDestino?: number;
+
+    @IsOptional()
+    @IsString()
+    imageUrl?: string; 
+    
+    @IsOptional()
+    @IsString()
+    imageHash?: string;
 }
