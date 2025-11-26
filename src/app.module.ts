@@ -10,7 +10,6 @@ import { ComplaintsModule } from './complaints/complaints.module';
 import { LoginJwtModule } from './login-jwt/login-jwt.module';
 import { FormsModule } from './forms/forms.module';
 import { NewsModule } from './news/news.module';
-import { ResponseModule } from './response/response.module';
 import { MailerModule } from './mailer/mailer.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
@@ -29,10 +28,10 @@ import { ResponsesModule } from './responses/responses.module';
     LoginJwtModule,
     FormsModule,
     NewsModule,
-    ResponseModule,
     MailerModule, 
     AuthModule, 
-    CloudinaryModule, ResponsesModule
+    CloudinaryModule, 
+    ResponsesModule
   ],
   controllers: [AppController],
   providers: [AppService], 

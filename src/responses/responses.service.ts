@@ -21,7 +21,7 @@ export class ResponsesService {
         }
 
         const responseCompleta = {
-            fomr: form._id,
+            form: form._id,
             autor: userId,
             respostas: createResponseDto.respostas,
         };

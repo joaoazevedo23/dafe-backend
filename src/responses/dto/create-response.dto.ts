@@ -7,7 +7,7 @@ class AnswerDto {
     questionId: string; // Id da pergunta do Form
 
     @IsNotEmpty()
-    summittedAnswer: any; //Resposta
+    submittedAnswer: any; //Resposta
 }
 
 export class CreateResponseDto {

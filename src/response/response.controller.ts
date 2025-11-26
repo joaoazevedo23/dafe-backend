@@ -1,4 +1,4 @@
-import { Controller, Post, Param, Body, Get, UseGuards, Req } from '@nestjs/common';
+/* import { Controller, Post, Param, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { ResponseService } from './response.service';
 import { CreateResponseDto } from './dtos/create-response.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard'; 
@@ -29,4 +29,4 @@ export class ResponseController {
   async getResponses(@Param('formId') formId: string) {
     return this.responseService.findAll(formId);
   }
-}
+} */
