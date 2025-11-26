@@ -1,7 +1,13 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, isValidObjectId } from 'mongoose';
-import { User } from '../../models/user.schema'; 
+import { isValidObjectId, Model } from 'mongoose';
+import { User } from '../../models/user.schema';
+import { Document } from 'mongoose';
+type UserDocument = User & Document;
 import { CreateUsersDTO } from './dtos/create-users.dto';
 import { UpdateUsersDTO } from './dtos/update-users.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service'; 
@@ -31,29 +37,23 @@ export class UsersService {
         if (modulo) {
             query['studentDetails.modulo'] = modulo;
         }
-        if(role){
+        if (role) {
             query['role'] = role;
         }
 
         return this.userModel.find(query).exec();
     }
 
-    async findOne(idOrSlug: string): Promise<User> {
-        let user: User | null;
-
-        if (isValidObjectId(idOrSlug)) {
-            user = await this.userModel.findById(idOrSlug).exec();
-        } else {
-            user = await this.userModel.findOne({ slug: idOrSlug }).exec();
-        }
-
+    async findOne(id: string): Promise<UserDocument> {
+        validateId(id);
+        const user = await this.userModel.findById(id).exec();
         if (!user) {
             throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
         }
         return user;
     }
 
-    async findByEmail(email: string): Promise<User | null> {
+    async findByEmail(email: string): Promise<UserDocument | null> {
         return this.userModel.findOne({ email }).exec();
     }
 

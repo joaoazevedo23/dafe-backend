@@ -42,6 +42,13 @@ export class FormsController {
     return this.formsService.findOne(idOrSlug);
   }
 
+  @Post()
+  @Roles(UserRole.MANAGER, UserRole.PROFESSOR, UserRole.ADMIN) 
+  @UseGuards(RolesGuard)
+  create(@Body() createFormDto: CreateFormDto) {
+    return this.formsService.create(createFormDto);
+  }
+
   @Delete(':id')
   @Roles(UserRole.MANAGER, UserRole.ADMIN)
   @UseGuards(RolesGuard)
