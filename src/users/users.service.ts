@@ -4,13 +4,26 @@ import { Model, isValidObjectId } from 'mongoose';
 import { User } from '../../models/user.schema'; 
 import { CreateUsersDTO } from './dtos/create-users.dto';
 import { UpdateUsersDTO } from './dtos/update-users.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service'; 
+
+// Tipo Multer.File do Express simplificado
+interface File {
+    buffer: Buffer; 
+    // Outras propriedades como originalname, mimetype, etc., são tipadas aqui se necessário
+}
+
+// Define a pasta de destino para as fotos de perfil no Cloudinary
+const USER_PROFILE_FOLDER = 'perfil_usuario'; 
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
+    constructor(
+        @InjectModel(User.name) private readonly userModel: Model<User>,
+        private readonly cloudinaryService: CloudinaryService,
+    ) {}
 
     async findAll(curso?: string, modulo?: number, role?: string): Promise<User[]> {
-        const query = {};
+        const query: any = {};
 
         if (curso) {
             query['studentDetails.curso'] = curso;
@@ -44,19 +57,51 @@ export class UsersService {
         return this.userModel.findOne({ email }).exec();
     }
 
-    async create(createUsersDTO: CreateUsersDTO): Promise<User> {
+    async create(createUsersDTO: CreateUsersDTO, file?: File): Promise<User> {
+        let imageUrl: string | undefined;
+        let imageHash: string | undefined; 
+
+        if (file) {
+            // Chama o upload passando o arquivo e a pasta de destino
+            const uploadResult = await this.cloudinaryService.uploadImage(file as any, USER_PROFILE_FOLDER); 
+            imageUrl = uploadResult.secure_url; 
+            imageHash = uploadResult.public_id; // Salva o ID público do Cloudinary
+        }
+
+        const UsersCompleto = {
+            ...createUsersDTO,
+            imageUrl: imageUrl,
+            imageHash: imageHash, 
+        };
+
         try {
-            const createdUser = await this.userModel.create(createUsersDTO);
+            const createdUser = await this.userModel.create(UsersCompleto);
             return createdUser;
         } catch (error) {
-            if (error.code === 11000) {
+            if ((error as any).code === 11000) {
                 throw new NotFoundException('Já existe um usuário com este email ou nome de usuário.');
             }
-            throw new NotFoundException('Erro ao criar usuário: ' + error.message);
+            throw new NotFoundException('Erro ao criar usuário: ' + (error as Error).message);
         }
     }
 
-    async update(idOrSlug: string, updateUsersDTO: UpdateUsersDTO): Promise<User> {
+    async update(idOrSlug: string, updateUsersDTO: UpdateUsersDTO, file?: File): Promise<User> {
+
+        if (file) {
+            try {
+                // Chama o upload, garantindo a pasta correta
+                const uploadResult = await this.cloudinaryService.uploadImage(file as any, USER_PROFILE_FOLDER);
+                
+                updateUsersDTO.imageUrl = uploadResult.secure_url;
+                updateUsersDTO.imageHash = uploadResult.public_id; // Salva o novo hash/ID
+                
+                // NOTA: A lógica para DELETAR a imagem antiga pode ser adicionada aqui.
+                
+            } catch (error) {
+                throw new Error(`Falha no upload para o Cloudinary: ${(error as Error).message}`)
+            }
+        }
+
         let user: User | null;
 
         if (isValidObjectId(idOrSlug)) {
@@ -83,6 +128,7 @@ export class UsersService {
         if (!user) {
             throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
         }
+        // NOTA: Se o CloudinaryService tiver um método deleteImage(hash), ele seria chamado aqui.
         return { message: `Usuário com id ou slug "${idOrSlug}" deletado com sucesso` };
     }
 }

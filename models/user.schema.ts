@@ -73,6 +73,12 @@ export class User {
   })
   role: UserRole;
 
+  @Prop({ required: false })
+  imageUrl?: string;
+
+  @Prop({ required: false })
+  imageHash?: string;
+
   // Campos Específicos de Cada Role
 
   @Prop({

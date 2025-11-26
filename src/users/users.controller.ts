@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service'; 
 import { CreateUsersDTO } from './dtos/create-users.dto'; 
 import { UpdateUsersDTO } from './dtos/update-users.dto';
@@ -33,21 +34,25 @@ export class UsersController {
     }
 
     @Post()
-    async create(@Body() createUserDto: CreateUsersDTO): Promise<User> {
+    @UseInterceptors(FileInterceptor('image')) 
+    
+    async create(@Body() createUserDto: CreateUsersDTO, @UploadedFile() file: Express.Multer.File, ): Promise<User> {
         createUserDto.senha = await this.encryptService.encrypt(createUserDto.senha);
-        return this.usersService.create(createUserDto);
+        return this.usersService.create(createUserDto, file);
     }
 
     @Patch(':idOrSlug')
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('image'))
     async update(
       @Param('idOrSlug') idOrSlug: string, 
-      @Body() updateUserDto: UpdateUsersDTO
+      @Body() updateUserDto: UpdateUsersDTO,
+      @UploadedFile() file: Express.Multer.File
     ): Promise<User> {
         if (updateUserDto.senha) {
             updateUserDto.senha = await this.encryptService.encrypt(updateUserDto.senha);
         }
-        return this.usersService.update(idOrSlug, updateUserDto);
+        return this.usersService.update(idOrSlug, updateUserDto, file);
     }
 
     @Delete(':idOrSlug')

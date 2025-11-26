@@ -1,4 +1,4 @@
-import {Controller, HttpStatus, Get, Post, Patch, Delete, Param, Query, Body, HttpCode, Req, UseGuards} from '@nestjs/common';
+import { Controller, HttpStatus, Get, Post, Patch, Delete, Param, Query, Body, HttpCode, Req, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { Request } from 'express';
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
@@ -7,57 +7,81 @@ import { UserRole } from '../../models/user.schema';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 interface UserPayload {
-  id: string;
-  nome: string;
-  email: string;
-  usuario: string;
-  role: UserRole;
-  instituicao: string;
-  curso?: string;
-  modulo?: number;
-  matricula?: number;
-  periodo?: string;
+    id: string;
+    nome: string;
+    email: string;
+    usuario: string;
+    role: UserRole;
+    instituicao: string;
+    curso?: string;
+    modulo?: number;
+    matricula?: number;
+    periodo?: string;
 }
 
 @UseGuards(JwtAuthGuard)
 @Controller('news')
 export class NewsController {
-  constructor(private readonly newsService: NewsService) {}
+    constructor(private readonly newsService: NewsService) { }
 
-  @Get()
-  findAll(@Query('autor') autor?: string) {
-    return this.newsService.findAll(autor);
-  }
+    @Get()
+    findAll(@Req() req: Request, @Query('autor') autor?: string) {
+        const user = req.user as UserPayload;
 
-  @Get(':idOrSlug')
-  findOne(@Param('idOrSlug') idOrSlug: string) {
-    return this.newsService.findOne(idOrSlug);
-  }
+        let curso: string | undefined = undefined;
+        let modulo: number | undefined = undefined;
 
-  @Post()
-  @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN)
-  @UseGuards(RolesGuard)
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() createNewsDTO: CreateNewsDTO, @Req() req: Request) {
-    const user = req.user as UserPayload;
-    return this.newsService.create(createNewsDTO, user.id);
-  }
+        if (user.role === UserRole.STUDENT && user.curso && user.modulo) {
+            curso = user.curso;
+            modulo = user.modulo;
+        }
 
-  @Patch(':idOrSlug')
-  @UseGuards(RolesGuard)
-  update(@Param('idOrSlug') idOrSlug: string, @Body() updateNewsDTO: UpdateNewsDTO, @Req() req: Request) {
-    const user = req.user as UserPayload;
-    return this.newsService.update(idOrSlug, updateNewsDTO, user.id);
-  }
+        return this.newsService.findAll(autor, user.role, curso, modulo);
+    }
 
-  @Delete(':idOrSlug')
-  @Roles(UserRole.MANAGER, UserRole.ADMIN)
-  @UseGuards(RolesGuard)
-  @HttpCode(HttpStatus.OK)
-  delete(@Param('idOrSlug') idOrSlug: string, @Req() req: Request) {
-    const user = req.user as UserPayload;
-    return this.newsService.delete(idOrSlug, user.id);
-  }
+    @Get(':idOrSlug')
+    findOne(@Param('idOrSlug') idOrSlug: string) {
+        return this.newsService.findOne(idOrSlug);
+    }
+
+    // Rota para Criação: Recebe o arquivo e injeta no service
+    @Post()
+    @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN)
+    @UseGuards(RolesGuard)
+    @UseInterceptors(FileInterceptor('image'))
+    @HttpCode(HttpStatus.CREATED)
+    create(
+        @Body() createNewsDTO: CreateNewsDTO,
+        @Req() req: Request,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
+        const user = req.user as UserPayload;
+        return this.newsService.create(createNewsDTO, user.id, file);
+    }
+
+    // Rota para Atualização: Recebe o arquivo e injeta no service
+    @Patch(':idOrSlug')
+    @UseGuards(RolesGuard)
+    @UseInterceptors(FileInterceptor('image'))
+    update(
+        @Param('idOrSlug') idOrSlug: string,
+        @Body() updateNewsDTO: UpdateNewsDTO,
+        @Req() req: Request,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
+        const user = req.user as UserPayload;
+        return this.newsService.update(idOrSlug, updateNewsDTO, user.id, file);
+    }
+
+    @Delete(':idOrSlug')
+    @Roles(UserRole.MANAGER, UserRole.ADMIN)
+    @UseGuards(RolesGuard)
+    @HttpCode(HttpStatus.OK)
+    delete(@Param('idOrSlug') idOrSlug: string, @Req() req: Request) {
+        const user = req.user as UserPayload;
+        return this.newsService.delete(idOrSlug, user.id);
+    }
 }

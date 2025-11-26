@@ -1,4 +1,4 @@
-import { ResponseController } from './response.controller';
+/* import { ResponseController } from './response.controller';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -17,3 +17,4 @@ import { ResponseService } from './response.service';
   providers: [ResponseService],
 })
 export class ResponseModule {}
+ */

@@ -6,25 +6,25 @@ import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
 import { validateId, isValidObjectId } from 'src/utils/decorators/validate-id';
 import { UserRole } from '../../models/user.schema';
-import { CloudinaryService } from '../cloudinary/cloudinary.service'; // Importar CloudinaryService
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
-// Interface para o payload do usuário, espelhando a do controller
+const POSTS_FOLDER = 'posts';
+
 interface UserPayload {
   id: string;
   role: UserRole;
 }
 
-// Tipo Multer.File do Express simplificado
 interface File {
-    buffer: Buffer; // Tipo simplificado
+  buffer: Buffer;
 }
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostSchema>,
-    private readonly cloudinaryService: CloudinaryService, // Injetar CloudinaryService
-  ) {}
+    private readonly cloudinaryService: CloudinaryService,
+  ) { }
 
   private readonly userPopulateFields = 'nome email usuario role studentDetails';
 
@@ -65,21 +65,21 @@ export class PostService {
 
   async create(createPostDto: CreatePostDTO, autorId: string, file?: File): Promise<Post> {
     let imageUrl: string | undefined;
+    let imageHash: string | undefined;
+
     if (file) {
-      const uploadResult = await this.cloudinaryService.uploadImage(file as any); 
-      imageUrl = uploadResult.secure_url; 
-    }
-    
-    if (createPostDto.imageHash && !imageUrl) {
-        imageUrl = createPostDto.imageHash;
+      const uploadResult = await this.cloudinaryService.uploadImage(file as any, POSTS_FOLDER);
+      imageUrl = uploadResult.secure_url;
+      imageHash = uploadResult.public_id;
     }
 
     const postCompleto = {
       ...createPostDto,
       autor: autorId,
-      imageHash: imageUrl, 
+      imageUrl: imageUrl,
+      imageHash: imageHash,
     };
-    
+
     const novoPost = new this.postModel(postCompleto);
     const postSalvo = await novoPost.save();
 

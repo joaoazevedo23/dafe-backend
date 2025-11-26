@@ -29,6 +29,7 @@ export class CreatePostDTO{
     commentsCount?: number;
 
     @IsOptional()
-    @IsUrl({}, { message: 'A URL da imagem deve ser válida.' })
+    @IsString() 
+    @MinLength(32)
     imageHash?: string;
 }

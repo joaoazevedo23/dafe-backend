@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -10,7 +10,27 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useGlobalPipes(new ValidationPipe({}));
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+
+    exceptionFactory: (errors) => {
+      const messages = errors.flatMap(error => {
+        if (error.constraints) {
+          return Object.values(error.constraints);
+        }
+        if (error.children && error.children.length > 0) {
+          return error.children.flatMap(childError =>
+            Object.values(childError.constraints || {})
+          );
+        }
+        return [];
+      });
+
+      return new BadRequestException(messages);
+    },
+
+  }));
   await app.listen(process.env.PORT ?? 3030);
 }
 bootstrap();

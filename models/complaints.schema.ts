@@ -6,6 +6,13 @@ import slugify from 'slugify';
 
 export type ComplaintsSchema = Complaints & Document;
 
+export enum ComplaintStatus {
+  PENDING = 'Pendente',
+  IN_PROGRESS = 'Em Análise',
+  RESOLVED = 'Resolvida',
+  ARCHIVED = 'Arquivada',
+}
+
 @Schema()
 
 export class Complaints {
@@ -15,11 +22,27 @@ export class Complaints {
   @Prop({ required: [true, 'Adicione um tópico'] })
   topico: string;
 
-  @Prop({ required: [true, 'Adicione o conteudo da denúncia']})
+  @Prop({ required: [true, 'Adicione o conteudo da denúncia'] })
   conteudo: string;
 
-  @Prop({ unique: true }) /* Campo slugify */
+  @Prop({ unique: true }) /* slug */
   slugify: string;
+
+  @Prop({ /* Campo de destino */
+    type: String,
+    enum: ['professor', 'manager', 'admin'],
+    required: true,
+  })
+  destinoRole: string;
+
+  @Prop({
+    type: String,
+    enum: ComplaintStatus,
+    default: ComplaintStatus.PENDING, // Começa sempre como Pendente
+    required: true,
+    index: true
+  })
+  status: ComplaintStatus;
 }
 
 export const ComplaintsSchema = SchemaFactory.createForClass(Complaints);

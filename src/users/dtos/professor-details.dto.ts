@@ -8,11 +8,11 @@ const periodo = [
 
 export class ProfessorDetailsDto {
 
-  @IsEnum(periodo, { message: 'O periodo fornecido não é válido' })
-  @IsNotEmpty({ message: 'O periodo é obrigatório' })
+  @IsEnum(periodo, { message: 'O periodo fornecido não é válido.' })
+  @IsNotEmpty({ message: 'O periodo é obrigatório.' })
   periodo: string;
 
-  @IsNumber({}, { message: 'A matricula deve ser um número' })
-  @IsNotEmpty({ message: 'A matricula é obrigatória' })
+  @IsNotEmpty({ message: 'A matricula é obrigatória.' })
+  @IsNumber({}, { message: 'A matricula deve ser um número.' })
   matricula: number;
 }
