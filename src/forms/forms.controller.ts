@@ -1,13 +1,12 @@
-// src/forms/forms.controller.ts
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { FormsService } from './forms.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
-import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { UserRole } from 'models/user.schema';
+import { RolesGuard } from 'src/utils/guards/roles.guard';
 
-interface UserPayload {
+export interface UserPayload {
   id: string;
   nome: string;
   email: string;
@@ -23,15 +22,21 @@ interface UserPayload {
 @UseGuards(JwtAuthGuard)
 @Controller('forms')
 export class FormsController {
-  constructor(
-    private readonly formsService: FormsService) {}
+  constructor(private readonly formsService: FormsService) {}
+
+  @Post()
+  @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN)
+  @UseGuards(RolesGuard)
+  create(@Body() createFormDto: CreateFormDto, @Req() req: Request) {
+    const user = (req as any).user as UserPayload;
+    return this.formsService.create(createFormDto, user.id);
+  }
 
   @Get()
   findAll() {
     return this.formsService.findAll();
   }
 
-  // Alterar para idOrSlug
   @Get(':idOrSlug')
   findOne(@Param('idOrSlug') idOrSlug: string) {
     return this.formsService.findOne(idOrSlug);
@@ -45,9 +50,9 @@ export class FormsController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.PROFESSOR, UserRole.ADMIN) 
+  @Roles(UserRole.MANAGER, UserRole.ADMIN)
   @UseGuards(RolesGuard)
-  remove(@Param('id') id: string) {
-    return this.formsService.remove(id);
+  deleteOne(@Param('id') id: string) {
+    return this.formsService.deleteOne(id);
   }
 }

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import slug from 'slug';
+import slugify from 'slugify';
 
 
 export enum UserRole {
@@ -73,6 +73,12 @@ export class User {
   })
   role: UserRole;
 
+  @Prop({ required: false })
+  imageUrl?: string;
+
+  @Prop({ required: false })
+  imageHash?: string;
+
   // Campos Específicos de Cada Role
 
   @Prop({
@@ -95,7 +101,7 @@ export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('usuario')) {
-    this.slug = slug(this.usuario, { lower: true });
+    this.slugify = slugify(this.usuario, { lower: true });
   }
   next();
 });

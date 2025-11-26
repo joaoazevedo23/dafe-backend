@@ -1,20 +1,32 @@
-import { Controller, Post, Param, Body } from '@nestjs/common';
+/* import { Controller, Post, Param, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { ResponseService } from './response.service';
-import { CreateResponseDto } from './dto/create-response.dto';
+import { CreateResponseDto } from './dtos/create-response.dto';
+import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard'; 
+import { Request } from 'express';
 
-@Controller('forms')
+interface UserPayload {
+  id: string;
+  role: string;
+}
+
+@UseGuards(JwtAuthGuard) 
+@Controller('forms') 
 export class ResponseController {
-  constructor(private readonly responseService: ResponseService) {}
+  constructor(private readonly responseService: ResponseService) { }
 
-  @Post(':formId/responses')
+  @Post(':formId/responses') 
   async createResponse(
     @Param('formId') formId: string,
-    @Body() body: CreateResponseDto
+    @Body() body: CreateResponseDto,
+    @Req() req: Request 
   ) {
-    const { usuario, respostas } = body;
-    if (typeof usuario !== 'string') {
-      throw new Error('usuario must be a string');
-    }
-    return this.responseService.create(formId, usuario, respostas, { usuario, respostas });
+    const user = req.user as UserPayload;
+
+    return this.responseService.create(formId, user.id, body.respostas);
   }
-}
+
+  @Get(':formId/responses') 
+  async getResponses(@Param('formId') formId: string) {
+    return this.responseService.findAll(formId);
+  }
+} */

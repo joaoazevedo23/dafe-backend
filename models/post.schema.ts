@@ -2,12 +2,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose'; 
 import { User } from './user.schema';
-import slug from 'slug';
+import slugify from 'slugify';
+
 
 export type PostSchema = Post & Document;
 
 
-@Schema()
+@Schema( {timestamps: true })
 export class Post {
   _id: Types.ObjectId;
   @Prop({ required: true })
@@ -36,12 +37,15 @@ export class Post {
 
   @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User', required: true})
   autor: User | MongooseSchema.Types.ObjectId;
-
+  
   @Prop({required: false})
+  imageUrl?: string;
+
+  @Prop({required: false, index: true})
   imageHash?: string;
 
   @Prop({ unique: true })
-  slug: string;
+  slugify: string;
 } 
 
 export const PostSchema = SchemaFactory.createForClass(Post);
@@ -54,7 +58,7 @@ next();
 
 PostSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('titulo')) {
-    this.slug = slug(this.titulo, { lower: true });
+    this.slugify = slugify(this.titulo, { lower: true });
   }
   next();
 });

@@ -1,6 +1,8 @@
-// src/forms/schemas/form.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import { User } from 'models/user.schema'; 
+import { ResponseDocument } from './response.schema';
 
 export type FormDocument = Form & Document;
 
@@ -10,11 +12,13 @@ export class Option {
   label: string;
 
   @Prop({ default: false })
-  checked?: boolean; 
+  checked?: boolean;
 }
 
 @Schema()
 export class Question {
+  declare _id: Types.ObjectId;
+
   @Prop({ required: true, enum: ['MÚLTIPLA_ESCOLHA', 'ESCOLHA_ÚNICA', 'DISSERTATIVA'] })
   tipo: string;
 
@@ -36,6 +40,9 @@ export class Question {
 
 @Schema({ timestamps: true })
 export class Form {
+  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: User.name })
+  autor: MongooseSchema.Types.ObjectId; // Campo 'autor' adicionado com referência ao User
+
   @Prop({ required: true })
   formTitulo: string;
 
@@ -44,6 +51,15 @@ export class Form {
 
   @Prop({ type: [Question], default: [] })
   perguntas: Question[];
+
+  @Prop({ unique: true, default: () => uuidv4() })
+  slug: string;
 }
 
 export const FormSchema = SchemaFactory.createForClass(Form);
+
+FormSchema.pre('deleteOne', { document: true, query: false }, async function(next) {
+    await this.model('Response').deleteMany({ form: this._id }); 
+    console.log(`Form com id ${this._id} deletado, removendo as respostas associadas.`);
+    next();
+});

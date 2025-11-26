@@ -6,7 +6,7 @@ import { Post } from './post.schema';
 
 export type CommentsSchema = Comments & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Comments {
   _id: Types.ObjectId;
   @Prop({ required: true })
