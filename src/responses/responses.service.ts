@@ -1,9 +1,8 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Form, FormDocument } from 'models/forms.schema';
+import { FormDocument } from 'models/forms.schema';
 import { Response, ResponseDocument } from 'models/response.schema';
 import { Model } from 'mongoose';
-import { In } from 'typeorm';
 import { CreateResponseDto } from './dto/create-response.dto';
 
 @Injectable()
@@ -30,14 +29,14 @@ export class ResponsesService {
     }
 
     async getResultsByFormId(formIdOrSlug: string): Promise<any> {
-        // 1. Buscar o Formulário (para obter todas as perguntas)
+        // Buscar o Formulário (para obter todas as perguntas)
         const form = await this.formModel.findOne({ $or: [{ _id: formIdOrSlug }, { slug: formIdOrSlug }] }).exec();
 
         if (!form) {
             throw new NotFoundException(`Formulário com ID/Slug "${formIdOrSlug}" não encontrado.`);
         }
 
-        // 2. Buscar TODAS as respostas para este formulário
+        // As respostas para este formulário
         const responses = await this.responseModel
             .find({ form: form._id })
             .populate('autor', 'nome email role')
@@ -47,10 +46,9 @@ export class ResponsesService {
             return { formTitulo: form.formTitulo, results: [], summary: "Nenhuma resposta encontrada." };
         }
 
-        // 3. Mapear as perguntas do Formulário para acesso rápido pelo _id
+        // Mapear as perguntas do Formulário para acesso rápido pelo _id
         const questionsMap = new Map<string, any>();
         form.perguntas.forEach(q => {
-            // O toString() é crucial para garantir que a comparação de IDs funcione
             questionsMap.set(q._id.toString(), {
                 titulo: q.titulo,
                 enunciado: q.enunciado,
@@ -59,7 +57,7 @@ export class ResponsesService {
             });
         });
 
-        // 4. Estruturar os resultados mesclando perguntas e respostas
+        // Mesclar perguntas e respostas
         const finalResults = responses.map(response => {
             const result: any = {
                 responder: response.autor,

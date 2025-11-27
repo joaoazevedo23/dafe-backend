@@ -18,7 +18,6 @@ interface File {
 export class NewsService {
     constructor(
         @InjectModel(News.name) private readonly newsModel: Model<NewsSchema>,
-        // Adiciona o CloudinaryService
         private readonly cloudinaryService: CloudinaryService,
     ) { }
 
@@ -89,13 +88,11 @@ export class NewsService {
         return news;
     }
 
-    // MODIFICADO para receber o arquivo
     async create(createNewsDTO: CreateNewsDTO, autorId: string, file?: File): Promise<News> {
         let imageUrl: string | undefined;
         let imageHash: string | undefined;
 
         if (file) {
-            // Faz o upload para a pasta 'noticias'
             const uploadResult = await this.cloudinaryService.uploadImage(file as any, NEWS_FOLDER); 
             imageUrl = uploadResult.secure_url; 
             imageHash = uploadResult.public_id;
@@ -113,7 +110,6 @@ export class NewsService {
         return this.findOne(noticiaSalva._id.toString());
     }
 
-    // MODIFICADO para receber o arquivo
     async update(idOrSlug: string, updateNewsDTO: UpdateNewsDTO, userId: string, file?: File): Promise<News> {
         let noticiaExistente;
 
@@ -128,18 +124,17 @@ export class NewsService {
             throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
         }
         
-        // Permissão: Apenas o autor original pode editar
+        // Apenas o autor original pode editar
         if (noticiaExistente.autor.toString() !== userId) {
             throw new UnauthorizedException('Você não tem permissão para editar esta notícia.');
         }
 
         if (file) {
-            // Faz o upload do novo arquivo, sobrescrevendo URL e Hash no DTO
+            // Upload do novo arquivo, sobrescrevendo URL e Hash no DTO
             const uploadResult = await this.cloudinaryService.uploadImage(file as any, NEWS_FOLDER);
             updateNewsDTO.imageUrl = uploadResult.secure_url;
             updateNewsDTO.imageHash = uploadResult.public_id;
             
-            // NOTA: Para ser completo, a imagem antiga deveria ser deletada aqui.
         }
 
         let noticiaAtualizada;
@@ -177,16 +172,11 @@ export class NewsService {
             throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
         }
 
-        // Permissão: Apenas o autor original ou Admin/Manager pode deletar (assumindo a regra do Controller)
+        // Apenas o autor original ou Admin/Manager pode deletar (assumindo a regra do Controller)
         if (noticiaExistente.autor.toString() !== userId) {
             throw new UnauthorizedException('Você não tem permissão para deletar esta notícia.');
         }
         
-        // NOTA: Se a lógica de deleção do Cloudinary fosse implementada:
-        // if (noticiaExistente.imageHash) {
-        //    await this.cloudinaryService.deleteImage(noticiaExistente.imageHash);
-        // }
-
         if (isValidObjectId(idOrSlug)) {
             await this.newsModel.deleteOne({ _id: idOrSlug }).exec();
         } else {

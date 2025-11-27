@@ -33,7 +33,7 @@ export class LoginJwtService {
             throw new UnauthorizedException('Senha incorreta');
         }
 
-        const payload: { [key: string]: any } = {
+        const payload: { [key: string]: any } = { // Criação do payload do JWT
             id: user._id, 
             email: user.email,
             nome: user.nome,
@@ -53,7 +53,7 @@ export class LoginJwtService {
             payload.matricula = user.professorDetails.matricula;
         }
 
-        const token = this.jwtService.sign(payload, { expiresIn: '1h' });
+        const token = this.jwtService.sign(payload, { expiresIn: '3h' });
 
         const refreshTokenValue = crypto.randomBytes(64).toString('hex');
         const refreshTokenExpiresInMs = lembrar ? 30 * 24 * 60 * 60 * 1000 : 1 * 24 * 60 * 60 * 1000;
