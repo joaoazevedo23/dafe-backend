@@ -78,7 +78,7 @@ export class NewsService {
                 .exec();
         } else {
             news = await this.newsModel
-                .findOne({ slug: idOrSlug })
+                .findOne({ slugify: idOrSlug })
                 .populate('autor', this.userPopulateFields)
                 .exec();
         }
@@ -121,7 +121,7 @@ export class NewsService {
             validateId(idOrSlug);
             noticiaExistente = await this.newsModel.findById(idOrSlug).exec();
         } else {
-            noticiaExistente = await this.newsModel.findOne({ slug: idOrSlug }).exec();
+            noticiaExistente = await this.newsModel.findOne({ slugify: idOrSlug }).exec();
         }
 
         if (!noticiaExistente) {
@@ -151,7 +151,7 @@ export class NewsService {
                 .exec();
         } else {
             noticiaAtualizada = await this.newsModel
-                .findOneAndUpdate({ slug: idOrSlug }, updateNewsDTO, { new: true })
+                .findOneAndUpdate({ slugify: idOrSlug }, updateNewsDTO, { new: true })
                 .populate('autor', this.userPopulateFields)
                 .exec();
         }
@@ -170,7 +170,7 @@ export class NewsService {
             validateId(idOrSlug);
             noticiaExistente = await this.newsModel.findById(idOrSlug).exec();
         } else {
-            noticiaExistente = await this.newsModel.findOne({ slug: idOrSlug }).exec();
+            noticiaExistente = await this.newsModel.findOne({ slugify: idOrSlug }).exec();
         }
 
         if (!noticiaExistente) {
@@ -190,7 +190,7 @@ export class NewsService {
         if (isValidObjectId(idOrSlug)) {
             await this.newsModel.deleteOne({ _id: idOrSlug }).exec();
         } else {
-            await this.newsModel.deleteOne({ slug: idOrSlug }).exec();
+            await this.newsModel.deleteOne({ slugify: idOrSlug }).exec();
         }
 
         return { message: `Notícia com identificador "${idOrSlug}" foi deletada com sucesso.` };

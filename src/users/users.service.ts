@@ -6,13 +6,12 @@ import { CreateUsersDTO } from './dtos/create-users.dto';
 import { UpdateUsersDTO } from './dtos/update-users.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service'; 
 
-// Tipo Multer.File do Express simplificado
+// Garante que o arquivo tenha os dados binários
 interface File {
     buffer: Buffer; 
-    // Outras propriedades como originalname, mimetype, etc., são tipadas aqui se necessário
 }
 
-// Define a pasta de destino para as fotos de perfil no Cloudinary
+// Pasta de destino das fotos de perfil
 const USER_PROFILE_FOLDER = 'perfil_usuario'; 
 
 @Injectable()
@@ -77,6 +76,7 @@ export class UsersService {
         try {
             const createdUser = await this.userModel.create(UsersCompleto);
             return createdUser;
+
         } catch (error) {
             if ((error as any).code === 11000) {
                 throw new NotFoundException('Já existe um usuário com este email ou nome de usuário.');
@@ -89,14 +89,11 @@ export class UsersService {
 
         if (file) {
             try {
-                // Chama o upload, garantindo a pasta correta
                 const uploadResult = await this.cloudinaryService.uploadImage(file as any, USER_PROFILE_FOLDER);
                 
                 updateUsersDTO.imageUrl = uploadResult.secure_url;
                 updateUsersDTO.imageHash = uploadResult.public_id; // Salva o novo hash/ID
-                
-                // NOTA: A lógica para DELETAR a imagem antiga pode ser adicionada aqui.
-                
+                                
             } catch (error) {
                 throw new Error(`Falha no upload para o Cloudinary: ${(error as Error).message}`)
             }
@@ -128,7 +125,7 @@ export class UsersService {
         if (!user) {
             throw new NotFoundException(`Usuário com id ou slug "${idOrSlug}" não encontrado`);
         }
-        // NOTA: Se o CloudinaryService tiver um método deleteImage(hash), ele seria chamado aqui.
+
         return { message: `Usuário com id ou slug "${idOrSlug}" deletado com sucesso` };
     }
 }

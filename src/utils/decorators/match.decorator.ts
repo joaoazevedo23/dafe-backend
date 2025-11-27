@@ -1,13 +1,4 @@
-// src/utils/decorators/match.decorator.ts
-
-import {
-  registerDecorator,
-  ValidationOptions,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-  ValidationArguments,
-} from 'class-validator';
-
+import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments} from 'class-validator';
 
 // Esta classe contém a lógica de validação.
 @ValidatorConstraint({ name: 'Match', async: false })
@@ -21,11 +12,11 @@ export class MatchConstraint implements ValidatorConstraintInterface {
 
   defaultMessage(args: ValidationArguments) {
     const [relatedPropertyName] = args.constraints;
-    // Retorna a mensagem de erro padrão se nenhuma for fornecida no DTO.
+
+    // Mensagem de erro padrão.
     return `${args.property} e ${relatedPropertyName} não são compatíveis`;
   }
 }
-
 
 // Função que registra a validação.
 export function Match(property: string, validationOptions?: ValidationOptions) {
@@ -34,9 +25,9 @@ export function Match(property: string, validationOptions?: ValidationOptions) {
       name: 'Match',
       target: object.constructor,
       propertyName: propertyName,
-      constraints: [property], // Passa o nome do campo a ser comparado (ex: 'senha')
-      options: validationOptions, // Passa opções como a mensagem de erro customizada
-      validator: MatchConstraint, // Especifica que a classe MatchConstraint deve ser usada para a lógica
+      constraints: [property], // Campo a ser comparado - senha
+      options: validationOptions, // Mensagem de erro customizada
+      validator: MatchConstraint, // Classe MatchConstraint deve ser usada para a comparação
     });
   };
 }

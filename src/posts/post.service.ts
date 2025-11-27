@@ -26,7 +26,7 @@ export class PostService {
     private readonly cloudinaryService: CloudinaryService,
   ) { }
 
-  private readonly userPopulateFields = 'nome email usuario role studentDetails';
+    private readonly userPopulateFields = 'nome email usuario role studentDetails imageUrl';
 
   async findAll(topico?: string, autor?: string): Promise<Post[]> {
     const query: any = {};

@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
 import * as toStream from 'buffer-to-stream';
 
-// Tipo Multer.File do Express simplificado
 interface File {
   fieldname: string;
   originalname: string;
@@ -34,7 +33,7 @@ export class CloudinaryService {
           }
 
           if (!result) {
-            return reject(new Error('Cloudinary upload returned no result.'));
+            return reject(new Error('O envio pelo Cloudinary não retornou nenhum resultado.'));
           }
 
           resolve(result);

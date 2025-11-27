@@ -11,13 +11,13 @@ import { RolesGuard } from 'src/utils/guards/roles.guard';
 
 @Controller('users')
 export class UsersController { 
-    constructor(
+    constructor( // Injeção de dependências
         private readonly usersService: UsersService, 
         private readonly encryptService: EncryptService,
     ) {}
 
     @Get()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard) // Proteção a rota com autenticação JWT
     async findAll(
       @Query('modulo') modulo?: string, 
       @Query('curso') curso?: string, 
@@ -34,8 +34,7 @@ export class UsersController {
     }
 
     @Post()
-    @UseInterceptors(FileInterceptor('image')) 
-    
+    @UseInterceptors(FileInterceptor('image')) // Interceptor para upload de arquivo
     async create(@Body() createUserDto: CreateUsersDTO, @UploadedFile() file: Express.Multer.File, ): Promise<User> {
         createUserDto.senha = await this.encryptService.encrypt(createUserDto.senha);
         return this.usersService.create(createUserDto, file);

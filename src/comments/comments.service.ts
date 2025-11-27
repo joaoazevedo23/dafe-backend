@@ -21,7 +21,7 @@ export class CommentsService {
   ) {}
 
   // Consistência nos dados populados
-  private readonly userPopulateFields = 'nome email usuario role';
+  private readonly userPopulateFields = 'nome email usuario role imageUrl';
 
   async create(dto: CreateCommentDTO, autorId: string, postId: string): Promise<Comments> {
     validateId(postId);
