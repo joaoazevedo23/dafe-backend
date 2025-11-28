@@ -19,6 +19,15 @@ export class ResponsesService {
             throw new NotFoundException(`Formulário "${createResponseDto.formIdOrSlug}" não encontrado.`);
         }
 
+        const existingResponse = await this.responseModel.findOne({
+            form: form._id,
+            autor: userId
+        });
+
+        if (existingResponse) {
+            throw new NotFoundException("Você já respondeu esse formulário.")
+        }
+
         const responseCompleta = {
             form: form._id,
             autor: userId,
@@ -27,6 +36,24 @@ export class ResponsesService {
         const createdResponse = new this.responseModel(responseCompleta);
         return createdResponse.save();
     }
+
+    async hasUserResponded(formIdOrSlug: string, userId: string) {
+    const form = await this.formModel.findOne({
+        $or: [{ _id: formIdOrSlug }, { slug: formIdOrSlug }]
+    });
+
+    if (!form)
+        return { 
+            answered: false 
+    };
+
+    const existing = await this.responseModel.findOne({
+        form: form._id,
+        autor: userId
+    });
+
+    return { answered: !!existing };
+}
 
     async getResultsByFormId(formIdOrSlug: string): Promise<any> {
         // Buscar o Formulário (para obter todas as perguntas)
