@@ -37,23 +37,23 @@ export class ResponsesService {
         return createdResponse.save();
     }
 
-    async hasUserResponded(formIdOrSlug: string, userId: string) {
-    const form = await this.formModel.findOne({
-        $or: [{ _id: formIdOrSlug }, { slug: formIdOrSlug }]
-    });
+    async hasUserResponded(formId: string, userId: string) {
+        const form = await this.formModel.findOne({
+             _id: formId
+        });
 
-    if (!form)
-        return { 
-            answered: false 
-    };
+        if (!form)
+            return {
+                answered: false
+            };
 
-    const existing = await this.responseModel.findOne({
-        form: form._id,
-        autor: userId
-    });
+        const existing = await this.responseModel.findOne({
+            form: form._id,
+            autor: userId
+        });
 
-    return { answered: !!existing };
-}
+        return { answered: !!existing };
+    }
 
     async getResultsByFormId(formIdOrSlug: string): Promise<any> {
         // Buscar o Formulário (para obter todas as perguntas)

@@ -28,9 +28,9 @@ export class ResponsesController {
         return this.responsesService.getResultsByFormId(formIdOrSlug);
     }
 
-    @Get("hasResponded/:formIdOrSlug")
-    hasResponded(@Param('formIdOrSlug') formIdOrSlug: string, @Req() req: Request) {
+    @Get("hasResponded/:formId")
+    hasResponded(@Param('formId') formId: string, @Req() req: Request) {
         const user = (req as any).user as UserPayload;
-        return this.responsesService.hasUserResponded(formIdOrSlug, user.id);
+        return this.responsesService.hasUserResponded(formId, user.id);
     }    
 }
