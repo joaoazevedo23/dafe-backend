@@ -99,6 +99,12 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
+UserSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+  await this.model('Post').deleteMany({ autor: this._id });
+  console.log(`Usuário com id ${this._id} deletado, removendo posts associados.`);
+  next();
+});
+
 UserSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('usuario')) {
     this.slugify = slugify(this.usuario, { lower: true });

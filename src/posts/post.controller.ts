@@ -41,7 +41,7 @@ export class PostController {
   }
 
   @Post()
-  @Roles(UserRole.STUDENT, UserRole.PROFESSOR)
+  @Roles(UserRole.STUDENT, UserRole.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('image'))
   create(

@@ -18,10 +18,13 @@ export class Answer {
 export class Response {
   @Prop({ type: Types.ObjectId, ref: Form.name, required: true })
   form: Types.ObjectId;
+
   @Prop({ type: Types.ObjectId, ref: User.name, required: true })
   autor: Types.ObjectId; 
+
   @Prop({ type: [Answer], required: true })
   respostas: Answer[];
+  
   createdAt: Date; 
   updatedAt: Date;
 }
