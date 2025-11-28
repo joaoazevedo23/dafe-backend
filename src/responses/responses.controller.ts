@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { ResponsesService } from './responses.service';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
-import { UserRole } from 'models/user.schema';
+import { UserRole } from 'src/models/user.schema';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { CreateResponseDto } from './dto/create-response.dto';

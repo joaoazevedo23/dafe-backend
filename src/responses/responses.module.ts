@@ -1,10 +1,9 @@
 import { Module, Res } from '@nestjs/common';
 import { ResponsesController } from './responses.controller';
 import { ResponsesService } from './responses.service';
-import { Mongoose } from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Form, FormSchema } from 'models/forms.schema';
-import { ResponseSchema } from 'models/response.schema';
+import { Form, FormSchema } from 'src/models/forms.schema';
+import { ResponseSchema } from 'src/models/response.schema';
 
 @Module({
   imports: [

@@ -4,7 +4,7 @@ import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { Request } from 'express';
-import { UserRole } from 'models/user.schema';
+import { UserRole } from 'src/models/user.schema';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';

@@ -1,6 +1,6 @@
 import { IsDefined, IsEmail, IsEnum, IsNotEmpty, IsString, ValidateIf, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UserRole } from '../../../models/user.schema';
+import { UserRole } from '../../models/user.schema';
 import { StudentDetailsDto } from './student-details.dto';
 import { ProfessorDetailsDto } from './professor-details.dto';
 import { Match } from 'src/utils/decorators/match.decorator';

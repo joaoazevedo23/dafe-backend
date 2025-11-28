@@ -4,11 +4,11 @@ import { LoginJwtController } from './login-jwt.controller';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt'; // Importe JwtModuleOptions
 import { EncryptService } from 'src/utils/encrypt/encrypt.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'models/user.schema';
+import { User, UserSchema } from 'src/models/user.schema';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
-import { RefreshToken, RefreshTokenSchema } from 'models/refreshToken.schema';
+import { RefreshToken, RefreshTokenSchema } from 'src/models/refreshToken.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({

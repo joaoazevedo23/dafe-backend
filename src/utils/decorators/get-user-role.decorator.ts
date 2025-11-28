@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UserRole } from '../../../models/user.schema'; 
+import { UserRole } from '../../models/user.schema'; 
 
 // Extrair o 'role' do usuário logado (req.user.role)
 export const GetUserRole = createParamDecorator(

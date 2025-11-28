@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateFormDto } from './dto/create-form.dto';
-import { Form, FormDocument } from 'models/forms.schema';
+import { Form, FormDocument } from 'src/models/forms.schema';
 import { isValidObjectId } from 'src/utils/decorators/validate-id'; // Assumindo o import
 
 @Injectable()

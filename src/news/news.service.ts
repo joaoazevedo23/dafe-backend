@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { News, NewsSchema } from '../../models/news.schema';
+import { News, NewsSchema } from '../models/news.schema';
 import { CreateNewsDTO } from './dtos/create-news.dto';
 import { UpdateNewsDTO } from './dtos/update-news.dto';
 import { validateId, isValidObjectId } from 'src/utils/decorators/validate-id';
-import { UserRole } from 'models/user.schema';
+import { UserRole } from 'src/models/user.schema';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 const NEWS_FOLDER = 'noticias';

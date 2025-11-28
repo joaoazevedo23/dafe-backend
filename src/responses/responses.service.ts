@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FormDocument } from 'models/forms.schema';
-import { Response, ResponseDocument } from 'models/response.schema';
+import { FormDocument } from 'src/models/forms.schema';
+import { Response, ResponseDocument } from 'src/models/response.schema';
 import { Model } from 'mongoose';
 import { CreateResponseDto } from './dto/create-response.dto';
 

@@ -3,11 +3,11 @@ import { ComplaintsService } from './complaints.service';
 import { CreateComplaintsDTO } from './dtos/create-complaints.dto';
 import { UpdateComplaintsDTO } from './dtos/update-complaints.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
-import { UserRole } from '../../models/user.schema';
+import { UserRole } from '../models/user.schema';
 import { GetUserRole } from 'src/utils/decorators/get-user-role.decorator';
 import { UpdateComplaintStatusDto } from './dtos/update-complaints-status.dto';
 import { UserPayload } from 'src/forms/forms.controller';
-import { ComplaintStatus } from 'models/complaints.schema';
+import { ComplaintStatus } from 'src/models/complaints.schema';
 
 @UseGuards(JwtAuthGuard)
 @Controller('complaints')

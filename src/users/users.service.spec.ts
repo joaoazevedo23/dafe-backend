@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UsersService } from './users.service'; 
-import { User } from '../../models/user.schema'; 
+import { User } from '../models/user.schema'; 
 
 
 describe('UsersService', () => { 

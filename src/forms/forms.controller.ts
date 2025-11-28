@@ -3,7 +3,7 @@ import { FormsService } from './forms.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
-import { UserRole } from 'models/user.schema';
+import { UserRole } from 'src/models/user.schema';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 
 export interface UserPayload {

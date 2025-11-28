@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, isValidObjectId } from 'mongoose';
-import { Complaints, ComplaintsSchema, ComplaintStatus } from '../../models/complaints.schema';
+import { Complaints, ComplaintsSchema, ComplaintStatus } from '../models/complaints.schema';
 import { CreateComplaintsDTO } from './dtos/create-complaints.dto';
 import { UpdateComplaintsDTO } from './dtos/update-complaints.dto';
-import { UserRole } from '../../models/user.schema';
+import { UserRole } from '../models/user.schema';
 import { UserPayload } from 'src/forms/forms.controller';
 
 @Injectable()

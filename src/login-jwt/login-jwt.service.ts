@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { User, UserSchema, UserRole } from 'models/user.schema'; 
+import { User, UserSchema, UserRole } from 'src/models/user.schema'; 
 import { EncryptService } from 'src/utils/encrypt/encrypt.service';
-import { RefreshToken, RefreshTokenSchema } from 'models/refreshToken.schema';
+import { RefreshToken, RefreshTokenSchema } from 'src/models/refreshToken.schema';
 import * as crypto from 'crypto';
 
 @Injectable()

@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { CreateUsersDTO } from './dtos/create-users.dto'; 
 import { UpdateUsersDTO } from './dtos/update-users.dto';
 import { EncryptService } from 'src/utils/encrypt/encrypt.service';
-import { User, UserRole } from '../../models/user.schema'; 
+import { User, UserRole } from '../models/user.schema'; 
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';

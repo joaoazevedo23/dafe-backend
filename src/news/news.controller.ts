@@ -3,7 +3,7 @@ import { Request } from 'express';
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
 import { UpdateNewsDTO } from './dtos/update-news.dto';
-import { UserRole } from '../../models/user.schema';
+import { UserRole } from '../models/user.schema';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';

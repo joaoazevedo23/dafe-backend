@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Comments, CommentsSchema } from './../../models/comments.schema';
+import { Comments, CommentsSchema } from './../models/comments.schema';
 import { CreateCommentDTO } from './dtos/create-comment.dto';
 import { validateId } from 'src/utils/decorators/validate-id';
 import { PostService } from '../posts/post.service';
-import { UserRole } from '../../models/user.schema';
+import { UserRole } from '../models/user.schema';
 
 interface UserPayload {
   id: string;

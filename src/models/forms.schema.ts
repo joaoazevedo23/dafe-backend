@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from 'models/user.schema'; 
+import { User } from 'src/models/user.schema'; 
 import { ResponseDocument } from './response.schema';
 
 export type FormDocument = Form & Document;

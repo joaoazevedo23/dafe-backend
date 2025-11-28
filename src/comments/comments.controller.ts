@@ -3,7 +3,7 @@ import { Request } from 'express';
 import { CommentsService } from './comments.service';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { CreateCommentDTO } from './dtos/create-comment.dto';
-import { UserRole } from 'models/user.schema';
+import { UserRole } from 'src/models/user.schema';
 
 
 interface UserPayload {

@@ -1,11 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Post, PostSchema } from '../../models/post.schema';
+import { Post, PostSchema } from '../models/post.schema';
 import { CreatePostDTO } from './dtos/create-post.dto';
 import { UpdatePostDTO } from './dtos/update-post.dto';
 import { validateId, isValidObjectId } from 'src/utils/decorators/validate-id';
-import { UserRole } from '../../models/user.schema';
+import { UserRole } from '../models/user.schema';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 const POSTS_FOLDER = 'posts';

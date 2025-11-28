@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, isValidObjectId } from 'mongoose';
-import { User } from '../../models/user.schema'; 
+import { User } from '../models/user.schema'; 
 import { CreateUsersDTO } from './dtos/create-users.dto';
 import { UpdateUsersDTO } from './dtos/update-users.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service'; 

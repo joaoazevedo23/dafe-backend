@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ComplaintsController } from './complaints.controller';
 import { ComplaintsService } from './complaints.service';
-import { Complaints, ComplaintsSchema } from './../../models/complaints.schema';
+import { Complaints, ComplaintsSchema } from './../models/complaints.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // Módulo mais avançado, pois é independende de outros post e do id do usuário, pois é anônimo.
