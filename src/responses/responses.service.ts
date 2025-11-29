@@ -36,7 +36,7 @@ export class ResponsesService {
             respostas: createResponseDto.respostas,
         };
 
-        
+
         const createdResponse = new this.responseModel(responseCompleta);
         await this.formsService.incrementResponsesCount(form._id.toString());
 
@@ -45,7 +45,7 @@ export class ResponsesService {
 
     async hasUserResponded(formId: string, userId: string) {
         const form = await this.formModel.findOne({
-             _id: formId
+            _id: formId
         });
 
         if (!form)
@@ -62,21 +62,31 @@ export class ResponsesService {
     }
 
     async getResultsByFormId(formIdOrSlug: string): Promise<any> {
-        // Buscar o Formulário (para obter todas as perguntas)
-        const form = await this.formModel.findOne({ $or: [{ _id: formIdOrSlug }, { slug: formIdOrSlug }] }).exec();
+
+        const formAuthorPopulateFields = 'nome email usuario role instituicao';
+
+        const form = await this.formModel
+            .findOne({ $or: [{ _id: formIdOrSlug }, { slug: formIdOrSlug }] })
+            .populate('autor', formAuthorPopulateFields) 
+            .exec();
 
         if (!form) {
             throw new NotFoundException(`Formulário com ID/Slug "${formIdOrSlug}" não encontrado.`);
         }
 
-        // As respostas para este formulário
+        const userPopulateFields = 'nome email role'; 
         const responses = await this.responseModel
             .find({ form: form._id })
-            .populate('autor', 'nome email role')
+            .populate('autor', userPopulateFields) 
             .exec();
 
         if (!responses.length) {
-            return { formTitulo: form.formTitulo, results: [], summary: "Nenhuma resposta encontrada." };
+            return {
+                formTitulo: form.formTitulo,
+                autorFormulario: form.autor, // Autor do Form aqui
+                results: [],
+                summary: "Nenhuma resposta encontrada."
+            };
         }
 
         // Mapear as perguntas do Formulário para acesso rápido pelo _id
@@ -90,10 +100,9 @@ export class ResponsesService {
             });
         });
 
-        // Mesclar perguntas e respostas
         const finalResults = responses.map(response => {
             const result: any = {
-                responder: response.autor,
+                responder: response.autor, // Quem respondeu
                 dataResposta: response.createdAt,
                 respostasDetalhadas: []
             };
@@ -115,6 +124,7 @@ export class ResponsesService {
         return {
             formId: form._id,
             formTitulo: form.formTitulo,
+            autorFormulario: form.autor, 
             totalRespostas: responses.length,
             results: finalResults,
         };
@@ -122,10 +132,10 @@ export class ResponsesService {
 
     async getAnsweredFormsIds(userId: string): Promise<string[]> {
         const answeredResponses = await this.responseModel
-        .find({ autor: userId})
-        .select('form')
-        .lean()
-        .exec();
+            .find({ autor: userId })
+            .select('form')
+            .lean()
+            .exec();
 
         return answeredResponses.map(response => response.form.toString());
     }
