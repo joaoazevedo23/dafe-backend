@@ -119,4 +119,14 @@ export class ResponsesService {
             results: finalResults,
         };
     }
+
+    async getAnsweredFormsIds(userId: string): Promise<string[]> {
+        const answeredResponses = await this.responseModel
+        .find({ autor: userId})
+        .select('form')
+        .lean()
+        .exec();
+
+        return answeredResponses.map(response => response.form.toString());
+    }
 }

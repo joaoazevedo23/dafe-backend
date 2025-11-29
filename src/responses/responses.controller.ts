@@ -32,5 +32,13 @@ export class ResponsesController {
     hasResponded(@Param('formId') formId: string, @Req() req: Request) {
         const user = (req as any).user as UserPayload;
         return this.responsesService.hasUserResponded(formId, user.id);
-    }    
+    }   
+    
+    @Get("answeredFormsIds") // Indentficar os formulários respondidos
+    async getAsweredFormsIds(@Req() req: Request) {
+        const user = (req as any).user as UserPayload;
+
+        return this.responsesService.getAnsweredFormsIds(user.id);
+
+    }
 }

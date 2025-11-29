@@ -21,6 +21,9 @@ export class News extends Document {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   autor: User | MongooseSchema.Types.ObjectId;
 
+  @Prop({ default: Date.now })
+  data: Date;
+
   @Prop({
     required: false, // Opcional: Se não preenchido, a notícia é geral
     enum: ['Desenvolvimento de Sistemas', 'Administração', 'Logística', 'Marketing', 'Gestão de Recursos Humanos'],

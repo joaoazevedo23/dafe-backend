@@ -3,11 +3,12 @@ import { Request } from 'express';
 import { NewsService } from './news.service';
 import { CreateNewsDTO } from './dtos/create-news.dto';
 import { UpdateNewsDTO } from './dtos/update-news.dto';
-import { UserRole } from '../models/user.schema';
+import { User, UserRole } from '../models/user.schema';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { GetUserRole } from 'src/utils/decorators/get-user-role.decorator';
 
 interface UserPayload {
     id: string;
@@ -77,11 +78,15 @@ export class NewsController {
     }
 
     @Delete(':idOrSlug')
-    @Roles(UserRole.MANAGER, UserRole.ADMIN)
+    @Roles(UserRole.MANAGER, UserRole.ADMIN, UserRole.PROFESSOR)
     @UseGuards(RolesGuard)
     @HttpCode(HttpStatus.OK)
-    delete(@Param('idOrSlug') idOrSlug: string, @Req() req: Request) {
+    delete(
+        @Param('idOrSlug') idOrSlug: string,
+        @Req() req: Request,
+        @GetUserRole() userRole: UserRole, // Captura a role logada
+    ) {
         const user = req.user as UserPayload;
-        return this.newsService.delete(idOrSlug, user.id);
+        return this.newsService.delete(idOrSlug, user.id, userRole);
     }
 }

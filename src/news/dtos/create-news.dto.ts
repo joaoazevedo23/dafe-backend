@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, MinLength, IsOptional, IsNumber, IsIn, IsInt} from 'class-validator';
+import { IsString, IsNotEmpty, MinLength, IsOptional, IsNumber, IsIn, IsInt, ValidateIf} from 'class-validator';
 
 export class CreateNewsDTO{
 
@@ -15,11 +15,15 @@ export class CreateNewsDTO{
     @MinLength(5)
     descricao: string;
 
+    @ValidateIf(o => o.moduloDestino)
+    @IsNotEmpty({message: 'O curso é obrigatório quando o módulo é fornecido.'})
     @IsOptional()
     @IsString()
     @IsIn(['Desenvolvimento de Sistemas', 'Administração', 'Logística', 'Marketing', 'Gestão de Recursos Humanos'])
     cursoDestino?: string;
 
+    @ValidateIf(o => o.cursoDestino)
+    @IsNotEmpty({message: 'O módulo é obrigatório quando o curso é fornecido.'})
     @IsOptional()
     @IsNumber()
     @IsInt()

@@ -11,7 +11,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 const NEWS_FOLDER = 'noticias';
 
 interface File {
-    buffer: Buffer; 
+    buffer: Buffer;
 }
 
 @Injectable()
@@ -23,15 +23,15 @@ export class NewsService {
 
     private readonly userPopulateFields = 'nome email usuario role instituicao';
 
-    async findAll( autorId?: string, userRole?: UserRole, cursoUser?: string, moduloUser?: number): Promise<News[]> {
+    async findAll(autorId?: string, userRole?: UserRole, cursoUser?: string, moduloUser?: number): Promise<News[]> {
         const conditions: any[] = [];
 
         if (userRole === UserRole.STUDENT && cursoUser && moduloUser) {
-            
+
             const studentVisibilityFilter = {
                 $or: [
                     // Notícias Gerais: Ambos os campos não existem
-                    { 
+                    {
                         $and: [
                             { cursoDestino: { $exists: false } },
                             { moduloDestino: { $exists: false } }
@@ -39,26 +39,26 @@ export class NewsService {
                     },
                     // Notícias Segmentadas para a turma
                     {
-                        cursoDestino: cursoUser, 
-                        moduloDestino: moduloUser, 
+                        cursoDestino: cursoUser,
+                        moduloDestino: moduloUser,
                     },
                 ],
-            } as any; 
-            
+            } as any;
+
             conditions.push(studentVisibilityFilter);
 
-        } 
-        
+        }
+
         if (autorId) {
             conditions.push({ autor: autorId });
         }
 
         let finalQuery: any = {};
-        
+
         if (conditions.length > 0) {
             finalQuery = { $and: conditions };
         }
-        
+
         return this.newsModel
             .find(finalQuery)
             .sort({ createdAt: -1 })
@@ -93,11 +93,11 @@ export class NewsService {
         let imageHash: string | undefined;
 
         if (file) {
-            const uploadResult = await this.cloudinaryService.uploadImage(file as any, NEWS_FOLDER); 
-            imageUrl = uploadResult.secure_url; 
+            const uploadResult = await this.cloudinaryService.uploadImage(file as any, NEWS_FOLDER);
+            imageUrl = uploadResult.secure_url;
             imageHash = uploadResult.public_id;
         }
-        
+
         const newsCompleta = {
             ...createNewsDTO,
             autor: autorId,
@@ -123,7 +123,7 @@ export class NewsService {
         if (!noticiaExistente) {
             throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
         }
-        
+
         // Apenas o autor original pode editar
         if (noticiaExistente.autor.toString() !== userId) {
             throw new UnauthorizedException('Você não tem permissão para editar esta notícia.');
@@ -134,7 +134,7 @@ export class NewsService {
             const uploadResult = await this.cloudinaryService.uploadImage(file as any, NEWS_FOLDER);
             updateNewsDTO.imageUrl = uploadResult.secure_url;
             updateNewsDTO.imageHash = uploadResult.public_id;
-            
+
         }
 
         let noticiaAtualizada;
@@ -158,7 +158,7 @@ export class NewsService {
         return noticiaAtualizada;
     }
 
-    async delete(idOrSlug: string, userId: string): Promise<{ message: string }> {
+    async delete(idOrSlug: string, userId: string, userRole: UserRole): Promise<{ message: string }> {
         let noticiaExistente;
 
         if (isValidObjectId(idOrSlug)) {
@@ -172,11 +172,16 @@ export class NewsService {
             throw new NotFoundException(`Notícia com identificador "${idOrSlug}" não encontrada.`);
         }
 
-        // Apenas o autor original ou Admin/Manager pode deletar (assumindo a regra do Controller)
-        if (noticiaExistente.autor.toString() !== userId) {
-            throw new UnauthorizedException('Você não tem permissão para deletar esta notícia.');
+        // Determina quem tem permissão
+        const isOriginalAuthor = noticiaExistente.autor.toString() === userId;
+        const isAdminOrManager = userRole === UserRole.ADMIN || userRole === UserRole.MANAGER;
+
+        // Se não for o autor original E não for Admin/Manager, nega o acesso
+        if (!isOriginalAuthor && !isAdminOrManager) {
+            // Em ambientes de produção, ForbiddenException (403) é mais apropriado do que Unauthorized
+            throw new ForbiddenException('Você não tem permissão para deletar esta notícia.');
         }
-        
+
         if (isValidObjectId(idOrSlug)) {
             await this.newsModel.deleteOne({ _id: idOrSlug }).exec();
         } else {
