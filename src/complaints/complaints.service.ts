@@ -21,7 +21,7 @@ export class ComplaintsService {
   constructor(@InjectModel(Complaints.name) private readonly complaintsModel: Model<ComplaintsSchema>) { }
 
   private determineDestinoRole(topico: string): string {
-    return this.destinoRoleMap[topico] || 'admin';
+    return this.destinoRoleMap[topico];
   }
 
   private checkActionPermission(
