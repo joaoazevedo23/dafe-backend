@@ -4,6 +4,7 @@ import { ResponsesService } from './responses.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Form, FormSchema } from 'src/models/forms.schema';
 import { ResponseSchema } from 'src/models/response.schema';
+import { FormsModule } from 'src/forms/forms.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ResponseSchema } from 'src/models/response.schema';
       { name: Response.name, schema: ResponseSchema },
       { name: Form.name, schema: FormSchema },
     ]),
+    FormsModule
 
   ],
   controllers: [ResponsesController],
