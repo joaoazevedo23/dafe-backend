@@ -4,12 +4,14 @@ import { FormDocument } from 'src/models/forms.schema';
 import { Response, ResponseDocument } from 'src/models/response.schema';
 import { Model } from 'mongoose';
 import { CreateResponseDto } from './dto/create-response.dto';
+import { FormsService } from 'src/forms/forms.service';
 
 @Injectable()
 export class ResponsesService {
     constructor(
         @InjectModel('Response') private responseModel: Model<ResponseDocument>,
         @InjectModel('Form') private formModel: Model<FormDocument>,
+        private readonly formsService: FormsService,
     ) { }
 
     async submitResponse(createResponseDto: CreateResponseDto, userId: string): Promise<Response> {
@@ -33,7 +35,11 @@ export class ResponsesService {
             autor: userId,
             respostas: createResponseDto.respostas,
         };
+
+        
         const createdResponse = new this.responseModel(responseCompleta);
+        await this.formsService.incrementResponsesCount(form._id.toString());
+
         return createdResponse.save();
     }
 

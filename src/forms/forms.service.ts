@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateFormDto } from './dto/create-form.dto';
 import { Form, FormDocument } from 'src/models/forms.schema';
-import { isValidObjectId } from 'src/utils/decorators/validate-id'; // Assumindo o import
+import { isValidObjectId, validateId } from 'src/utils/decorators/validate-id'; // Assumindo o import
 
 @Injectable()
 export class FormsService {
@@ -40,6 +40,20 @@ export class FormsService {
     if (!form) throw new NotFoundException(`Formulário com identificador "${idOrSlug}" não encontrado`);
     return form;
   }
+
+  async incrementResponsesCount(formId: string): Promise<Form> {
+    validateId(formId);
+    const updatedForm = await this.formModel
+      .findByIdAndUpdate(formId, { $inc: { responsesCount: 1 } }, { new: true })
+      .populate('autor', this.userPopulateFields)
+      .exec();
+
+    if (!updatedForm) {
+      throw new NotFoundException(`Formulário  com id ${formId} não encontrado`);
+    }
+    return updatedForm;
+  }
+
 
   async deleteOne(id: string): Promise<void> {
     const result = await this.formModel.findByIdAndDelete(id).exec();

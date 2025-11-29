@@ -1,5 +1,4 @@
-// src/forms/dto/create-form.dto.ts
-import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class OptionDto {
@@ -51,4 +50,9 @@ export class CreateFormDto {
   @ValidateNested({ each: true })
   @Type(() => QuestionDto)
   perguntas?: QuestionDto[];
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  responsesCount?: number;
 }
