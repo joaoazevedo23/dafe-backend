@@ -1,17 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, Req } from '@nestjs/common';
 import { FormsService } from './forms.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { JwtAuthGuard } from 'src/login-jwt/jwt-auth.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { UserRole } from 'src/models/user.schema';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
+import { GetUserRole } from 'src/utils/decorators/get-user-role.decorator';
 
 export interface UserPayload {
   id: string;
   nome: string;
   email: string;
   usuario: string;
-  role: UserRole; 
+  role: UserRole;
   instituicao: string;
   curso?: string;
   modulo?: number;
@@ -22,7 +23,7 @@ export interface UserPayload {
 @UseGuards(JwtAuthGuard)
 @Controller('forms')
 export class FormsController {
-  constructor(private readonly formsService: FormsService) {}
+  constructor(private readonly formsService: FormsService) { }
 
   @Post()
   @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN)
@@ -43,9 +44,15 @@ export class FormsController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN)
   @UseGuards(RolesGuard)
-  deleteOne(@Param('id') id: string) {
-    return this.formsService.deleteOne(id);
+  deleteOne(
+    @Param('id') id: string,
+    @Req() req: Request, // Usado para obter user.id
+    @GetUserRole() userRole: UserRole, // Usado para obter user.role
+  ) {
+    const user = (req as any).user as UserPayload;
+    // Passamos o ID do Form, o ID do usuário logado e a Role para o Service
+    return this.formsService.deleteOne(id, user.id, userRole);
   }
 }
