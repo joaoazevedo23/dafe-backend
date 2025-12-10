@@ -33,7 +33,7 @@ class QuestionDto {
   opcoes?: OptionDto[];
 
   @IsOptional()
-  resposta?: string | number;
+  resposta: string | number | null = null;
 }
 
 export class CreateFormDto {
@@ -54,5 +54,6 @@ export class CreateFormDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
-  responsesCount?: number;
+  @Type(() => Number)
+  responsesCount: number = 0;
 }

@@ -5,8 +5,8 @@ import { UserRole } from 'src/models/user.schema';
 import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { CreateResponseDto } from './dto/create-response.dto';
-import { Request } from 'express'; 
-import { UserPayload } from '../forms/forms.controller'; 
+import { Request } from 'express';
+import { UserPayload } from '../forms/forms.controller';
 
 @Controller('responses')
 @UseGuards(JwtAuthGuard)
@@ -15,30 +15,26 @@ export class ResponsesController {
 
     @Post()
     submit(@Body() createResponseDto: CreateResponseDto, @Req() req: Request) {
-        const user = (req as any).user as UserPayload; 
+        const user = (req as any).user as UserPayload;
         return this.responsesService.submitResponse(createResponseDto, user.id);
     }
 
-    // Rota de Visualização de Resultados: GET /responses/results/:formIdOrSlug
     @Get('results/:formIdOrSlug')
-    @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN) 
+    @Roles(UserRole.PROFESSOR, UserRole.MANAGER, UserRole.ADMIN)
     @UseGuards(RolesGuard)
     getResults(@Param('formIdOrSlug') formIdOrSlug: string) {
-        // O serviço faz a mesclagem e retorna os resultados estruturados
         return this.responsesService.getResultsByFormId(formIdOrSlug);
     }
 
-    @Get("hasResponded/:formId")
+    @Get('hasResponded/:formId')
     hasResponded(@Param('formId') formId: string, @Req() req: Request) {
         const user = (req as any).user as UserPayload;
         return this.responsesService.hasUserResponded(formId, user.id);
-    }   
-    
-    @Get("answeredFormsIds") // Indentficar os formulários respondidos
-    async getAsweredFormsIds(@Req() req: Request) {
+    }
+
+    @Get("answeredFormsIds")
+    async getAnsweredFormsIds(@Req() req: Request) {
         const user = (req as any).user as UserPayload;
-
         return this.responsesService.getAnsweredFormsIds(user.id);
-
     }
 }

@@ -1,13 +1,13 @@
 import { Type } from "class-transformer";
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 
 class AnswerDto {
     @IsNotEmpty()
     @IsString()
-    questionId: string; // Id da pergunta do Form
+    questionId: string;
 
-    @IsNotEmpty()
-    submittedAnswer: any; //Resposta
+    @IsOptional()
+    submittedAnswer: string | number | string[] | number[] | null;
 }
 
 export class CreateResponseDto {
@@ -17,6 +17,6 @@ export class CreateResponseDto {
 
     @IsArray()
     @ValidateNested({ each: true })
-    @Type   (() => AnswerDto)
+    @Type(() => AnswerDto)
     respostas: AnswerDto[];
 }

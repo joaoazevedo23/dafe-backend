@@ -33,8 +33,8 @@ export class Question {
   @Prop({ type: [{ label: String, checked: Boolean }], required: false })
   opcoes?: Option[];
 
-  @Prop({ type: MongooseSchema.Types.Mixed })
-  resposta?: string | number | string[];
+  @Prop({ type: MongooseSchema.Types.Mixed, default: null })
+  resposta?: string | number | string[] | null;
 }
 
 @Schema({ timestamps: true })
