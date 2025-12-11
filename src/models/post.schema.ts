@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema, Types } from 'mongoose'; 
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import { User } from './user.schema';
 import slugify from 'slugify';
 
@@ -8,7 +8,7 @@ import slugify from 'slugify';
 export type PostSchema = Post & Document;
 
 
-@Schema( {timestamps: true })
+@Schema({ timestamps: true })
 export class Post {
   _id: Types.ObjectId;
   @Prop({ required: true })
@@ -28,37 +28,39 @@ export class Post {
 
   @Prop({ required: false, min: 0, default: 0 })
   interacao: number;
-  
-  @Prop({type: [{type: MongooseSchema.Types.ObjectId, ref: 'User'}], default: []})
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }], default: [] })
   interactedBy: Types.ObjectId[];
 
-  @Prop({required: false, min: 0, default: 0})
+  @Prop({ required: false, min: 0, default: 0 })
   commentsCount: number;
 
-  @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User', required: true})
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   autor: User | MongooseSchema.Types.ObjectId;
-  
-  @Prop({required: false})
+
+  @Prop({ required: false })
   imageUrl?: string;
 
-  @Prop({required: false, index: true})
+  @Prop({ required: false, index: true })
   imageHash?: string;
 
   @Prop({ unique: true })
   slugify: string;
-} 
+}
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
-PostSchema.pre('deleteOne', { document:true, query: false}, async function(next){
-await this.model('Comments').deleteMany({ post: this._id });
-console.log(`Post com id ${this._id} deletado, removendo comentários associados.`);
-next();
+PostSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+  await this.model('Comments').deleteMany({ post: this._id });
+  console.log(`Post com id ${this._id} deletado, removendo comentários associados.`);
+  next();
 });
 
 PostSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('titulo')) {
-    this.slugify = slugify(this.titulo, { lower: true });
+    const baseSlug = slugify(this.titulo, { lower: true });
+    const uniqueSuffix = Date.now().toString(36);
+    this.slugify = `${baseSlug}-${uniqueSuffix}`;
   }
   next();
 });

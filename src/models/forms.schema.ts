@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
-import { User } from 'src/models/user.schema'; 
+import { User } from 'src/models/user.schema';
+import slugify from 'slugify'; 
 
 export type FormDocument = Form & Document;
 
@@ -40,7 +40,7 @@ export class Question {
 @Schema({ timestamps: true })
 export class Form {
   @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: User.name })
-  autor: MongooseSchema.Types.ObjectId; // Campo 'autor' adicionado com referência ao User
+  autor: MongooseSchema.Types.ObjectId;
 
   @Prop({ required: true })
   formTitulo: string;
@@ -51,17 +51,26 @@ export class Form {
   @Prop({ type: [Question], default: [] })
   perguntas: Question[];
 
-  @Prop({ unique: true, default: () => uuidv4() })
+  @Prop({ unique: true })
   slug: string;
 
-  @Prop({required: false, min: 0, default: 0})
+  @Prop({ required: false, min: 0, default: 0 })
   responsesCount: number;
 }
 
 export const FormSchema = SchemaFactory.createForClass(Form);
 
-FormSchema.pre('deleteOne', { document: true, query: false }, async function(next) {
-    await this.model('Response').deleteMany({ form: this._id }); 
-    console.log(`Form com id ${this._id} deletado, removendo as respostas associadas.`);
-    next();
+FormSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+  await this.model('Response').deleteMany({ form: this._id });
+  console.log(`Form com id ${this._id} deletado, removendo as respostas associadas.`);
+  next();
+});
+
+FormSchema.pre('save', function (next) {
+  if (this.isNew || this.isModified('formTitulo')) {
+    const baseSlug = slugify(this.formTitulo, { lower: true });
+    const uniqueSuffix = Date.now().toString(36);
+    this.slug = `${baseSlug}-${uniqueSuffix}`;
+  }
+  next();
 });

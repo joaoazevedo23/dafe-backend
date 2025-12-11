@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import slugify from 'slugify';
 
 
@@ -11,9 +11,7 @@ export enum UserRole {
 }
 
 @Schema({ _id: false })
-
 class StudentDetails {
-
   @Prop({
     required: true,
     enum: ['Desenvolvimento de Sistemas', 'Administração', 'Logística', 'Marketing', 'Gestão de Recursos Humanos'],
@@ -24,8 +22,8 @@ class StudentDetails {
   modulo: number;
 }
 
+@Schema({ _id: false })
 class ProfessorDetails {
-
   @Prop({ required: [true, 'A matrícula é obrigatória'], unique: true })
   matricula: number;
 
@@ -37,9 +35,6 @@ export type UserSchema = User & Document;
 
 @Schema({ timestamps: true })
 export class User {
-  [x: string]: any;
-  // Campos Gerais de Todos os Usuários
-
   @Prop({ required: [true, 'O nome é obrigatório'], trim: true })
   nome: string;
 
@@ -79,8 +74,6 @@ export class User {
   @Prop({ required: false })
   imageHash?: string;
 
-  // Campos Específicos de Cada Role
-
   @Prop({
     type: StudentDetails,
     required: false,
@@ -93,7 +86,7 @@ export class User {
   })
   professorDetails?: ProfessorDetails;
 
-  @Prop({ unique: true }) /* Campo slug */
+  @Prop({ unique: true })
   slug: string;
 }
 
@@ -107,7 +100,9 @@ UserSchema.pre('deleteOne', { document: true, query: false }, async function (ne
 
 UserSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('usuario')) {
-    this.slugify = slugify(this.usuario, { lower: true });
+    const baseSlug = slugify(this.usuario, { lower: true });
+    const uniqueSuffix = Date.now().toString(36);
+    this.slug = `${baseSlug}-${uniqueSuffix}`;
   }
   next();
 });

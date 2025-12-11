@@ -50,8 +50,9 @@ export const NewsSchema = SchemaFactory.createForClass(News);
 
 NewsSchema.pre('save', function (next) {
   if (this.isNew || this.isModified('titulo')) {
-    this.slugify = slugify(this.titulo, { lower: true });
+    const baseSlug = slugify(this.titulo, { lower: true });
+    const uniqueSuffix = Date.now().toString(36);
+    this.slugify = `${baseSlug}-${uniqueSuffix}`;
   }
   next();
 });
-
